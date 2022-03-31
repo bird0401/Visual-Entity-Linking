@@ -16,5 +16,6 @@
 - https://www.mgo-tec.com/blog-entry-colab-dataset01.html
 - https://axa.biopapyrus.jp/deep-learning/sample/image-shape.html
 
-### 参考スライド
+### 水野さんのもの
 - https://docs.google.com/presentation/d/1JCk3mXnx4DpVSHhqqnmepY5Mtwhp1E5U/edit#slide=id.p19
+- https://github.com/bird0401/Visual-Entity-Linking-for-Proper-Nouns/blob/main/src/03_create_testdata.py
