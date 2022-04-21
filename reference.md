@@ -19,3 +19,6 @@
 ### 水野さんのもの
 - https://docs.google.com/presentation/d/1JCk3mXnx4DpVSHhqqnmepY5Mtwhp1E5U/edit#slide=id.p19
 - https://github.com/bird0401/Visual-Entity-Linking-for-Proper-Nouns/blob/main/src/03_create_testdata.py
+
+### dataset
+- [VTKEL: A resource for Visual-Textual-Knowledge Entity Linking](https://dl.acm.org/doi/pdf/10.1145/3341105.3373958?casa_token=9E8DWM1X3XQAAAAA:_IAmuLlswCayT6v5ibWmnDmQvSq35yygh4PGXIW0_EMDMTkEolzR3cRJSuTvgwShCdgofGKeBDWV)
