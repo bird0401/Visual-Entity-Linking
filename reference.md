@@ -21,6 +21,8 @@
 ## dataset
 - [VTKEL: A resource for Visual-Textual-Knowledge Entity Linking](https://dl.acm.org/doi/pdf/10.1145/3341105.3373958?casa_token=9E8DWM1X3XQAAAAA:_IAmuLlswCayT6v5ibWmnDmQvSq35yygh4PGXIW0_EMDMTkEolzR3cRJSuTvgwShCdgofGKeBDWV)
 - [Flickr30k Entities: Collecting Region-to-Phrase Correspondences for Richer Image-to-Sentence Models](https://arxiv.org/pdf/1505.04870.pdf)
+- [On Visual-Textual-Knowledge Entity Linking](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=9031450)
+- [Jointly Linking Visual and Textual Entity Mentions with Background Knowledge](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7298199/pdf/978-3-030-51310-8_Chapter_24.pdf)
 
 ## entity linking
 [Entity Linking チュートリアル 前編　ざっくりとした歴史編](https://qiita.com/izuna385/items/9d658620b9b96b0b4ec9)
