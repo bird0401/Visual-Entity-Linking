@@ -30,3 +30,12 @@
   - using entity extraction tool (PIKES)
   - link entity to YAGO Knowledge
 - github: https://github.com/shahidost/VTKEL
+
+## 24
+- reserch dataset of existing research
+- [Jointly Linking Visual and Textual Entity Mentions with Background Knowledge](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7298199/pdf/978-3-030-51310-8_Chapter_24.pdf)
+  - some usable dataset is introduced in related work
+  - entity link to flicker text
+  - propose comprehensive method to create VTKEL dataset
+- these papers are based on flicker, and assuming there is a dataset consisting of image and text
+- it deviates from the propose of finding dataset for instance level recognition
