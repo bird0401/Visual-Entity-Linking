@@ -39,3 +39,16 @@
   - propose comprehensive method to create VTKEL dataset
 - these papers are based on flicker, and assuming there is a dataset consisting of image and text
 - it deviates from the propose of finding dataset for instance level recognition
+
+## 29
+- search paper from [Instance-level Recognition](https://towardsdatascience.com/instance-level-recognition-6afa229e2151)
+- [Google Landmarks Dataset v2 A Large-Scale Benchmark for Instance-Level Recognition and Retrieval](https://arxiv.org/pdf/2004.01804.pdf)
+  - used for kaggle in 2020
+  - 5M images and 200k distinct instance labels
+  - get images from wikimedia commons
+  - there are no top-level category in wikimedia, so get category from google KG
+  - anotated these images human work
+  - re-annotation by showing and annotate some of highest confidenciak images
+  - there many other landmark datasets for instance level recognition
+  - no bounding box
+- Conceptual Captions, coco
