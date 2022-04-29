@@ -1,4 +1,7 @@
 # references
+## Instance level recognition
+- [Instance-level Recognition](https://towardsdatascience.com/instance-level-recognition-6afa229e2151)
+
 ## resnet周り
 - https://aizine.ai/cnn-0801/
 - http://pchun.work/resnet%E3%82%92fine-tuning%E3%81%97%E3%81%A6%E8%87%AA%E5%88%86%E3%81%8C%E7%94%A8%E6%84%8F%E3%81%97%E3%81%9F%E7%94%BB%E5%83%8F%E3%82%92%E5%AD%A6%E7%BF%92%E3%81%95%E3%81%9B%E3%82%8B/#i-2
@@ -23,6 +26,8 @@
 - [Flickr30k Entities: Collecting Region-to-Phrase Correspondences for Richer Image-to-Sentence Models](https://arxiv.org/pdf/1505.04870.pdf)
 - [On Visual-Textual-Knowledge Entity Linking](https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=9031450)
 - [Jointly Linking Visual and Textual Entity Mentions with Background Knowledge](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7298199/pdf/978-3-030-51310-8_Chapter_24.pdf)
+- [Google Landmarks Dataset v2 A Large-Scale Benchmark for Instance-Level Recognition and Retrieval](https://arxiv.org/pdf/2004.01804.pdf)
+  - [kaggle site](https://www.kaggle.com/competitions/landmark-recognition-2020/data)
 
 ## entity linking
 [Entity Linking チュートリアル 前編　ざっくりとした歴史編](https://qiita.com/izuna385/items/9d658620b9b96b0b4ec9)
