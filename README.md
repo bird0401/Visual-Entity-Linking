@@ -52,3 +52,12 @@
   - there many other landmark datasets for instance level recognition
   - no bounding box
 - Conceptual Captions, coco
+
+# 5月
+## 14
+### method to collect data 
+- [icrawler](https://icrawler.readthedocs.io/en/latest/)
+  - web crawler
+  - search by keyword
+  - quality of images are middle
+- [機械学習のデータの集め方](https://qiita.com/nonbiri15/items/f5c5c4357458bfeb03bb)
