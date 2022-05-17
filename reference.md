@@ -12,6 +12,8 @@
 
 ## データ収集周り
 - https://mtmt-nlp.com/?p=5
+- [icrawler](https://icrawler.readthedocs.io/en/latest/)
+- [機械学習のデータの集め方](https://qiita.com/nonbiri15/items/f5c5c4357458bfeb03bb)
 
 ## 前処理周り
 - https://www.mgo-tec.com/blog-entry-colab-dataset01.html
