@@ -1,4 +1,4 @@
-# 4月
+# April
 ## ~9
 - solve the problem that pre-processing is not well conducted
 
@@ -53,11 +53,16 @@
   - no bounding box
 - Conceptual Captions, coco
 
-# 5月
-## 14
+# May
 ### method to collect data 
 - [icrawler](https://icrawler.readthedocs.io/en/latest/)
   - web crawler
   - search by keyword
   - quality of images are middle
 - [機械学習のデータの集め方](https://qiita.com/nonbiri15/items/f5c5c4357458bfeb03bb)
+
+# July
+- each mL model learn in each domain to build model for each domain
+- datasets have specific labels on each domain
+- models predict only certtain domain
+- [Google Knowledge Graph Search API](https://developers.google.com/knowledge-graph)
