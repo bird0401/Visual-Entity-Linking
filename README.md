@@ -66,3 +66,4 @@
 - datasets have specific labels on each domain
 - models predict only certtain domain
 - [Google Knowledge Graph Search API](https://developers.google.com/knowledge-graph)
+- build environment using docker iamge
