@@ -1,8 +1,6 @@
 # April
-## ~9
 - solve the problem that pre-processing is not well conducted
 
-## 10-14
 - enable to train and test
 - using dog dataset
   - 2000 images
@@ -14,7 +12,7 @@
   -  car
   -  tower
   -  uspresident
-## 21
+
 - reserch dataset of existing research
 - [Flickr30k Entities: Collecting Region-to-Phrase Correspondences for Richer Image-to-Sentence Models](https://arxiv.org/pdf/1505.04870.pdf)
   - text to image annotation
@@ -23,7 +21,7 @@
   - problems: few images, similar meaning word(infant, baby)
   - annotation takes a lot of effort
     - using clowd sourcing method to collect annotation data
-## 22-23
+
 - reserch dataset of existing research
 - [VTKEL: A resource for Visual-Textual-Knowledge Entity Linking](https://dl.acm.org/doi/pdf/10.1145/3341105.3373958?casa_token=dKJoNPVmxagAAAAA:5fR30eES4eC7qQ5_pYoppkbZiL3baE9JXVC0iz5umy08hlGj8v6IpwiePTXIZ20-l8bw6g4ozSaT)
   - visual-textual-knowledge entity linking
@@ -31,7 +29,6 @@
   - link entity to YAGO Knowledge
 - github: https://github.com/shahidost/VTKEL
 
-## 24
 - reserch dataset of existing research
 - [Jointly Linking Visual and Textual Entity Mentions with Background Knowledge](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7298199/pdf/978-3-030-51310-8_Chapter_24.pdf)
   - some usable dataset is introduced in related work
@@ -40,7 +37,6 @@
 - these papers are based on flicker, and assuming there is a dataset consisting of image and text
 - it deviates from the propose of finding dataset for instance level recognition
 
-## 29
 - search paper from [Instance-level Recognition](https://towardsdatascience.com/instance-level-recognition-6afa229e2151)
 - [Google Landmarks Dataset v2 A Large-Scale Benchmark for Instance-Level Recognition and Retrieval](https://arxiv.org/pdf/2004.01804.pdf)
   - used for kaggle in 2020
@@ -59,7 +55,6 @@
   - web crawler
   - search by keyword
   - quality of images are middle
-- [機械学習のデータの集め方](https://qiita.com/nonbiri15/items/f5c5c4357458bfeb03bb)
 
 # July
 - each mL model learn in each domain to build model for each domain
@@ -67,3 +62,26 @@
 - models predict only certtain domain
 - [Google Knowledge Graph Search API](https://developers.google.com/knowledge-graph)
 - build environment using docker iamge
+
+- google vision api only predict general name, not instance name
+- if you want to predict instance name using google vision api, you should train by exported images
+- I train it by images exploited from wikimedia commons, the merits are
+  - noise data is few
+  - free license
+
+### other datasets
+- imagenet: labeled manually
+- COCO: labeled manually
+- Conceptual Captions: image and alt tag, not label. also instance name in alt-text is converted to general name
+
+
+### predict category  
+- dog
+- cat
+- bird
+- flower
+- sushi
+- horse
+- car
+
+
