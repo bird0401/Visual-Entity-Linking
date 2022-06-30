@@ -1,5 +1,9 @@
 # references
 
+## DBpedia
+- https://qiita.com/pika_shi/items/eb56fc205e2d670062ae
+- https://qiita.com/AAA0125/items/ba73bc216916d158dc90
+
 ## GCE docker
 - https://qiita.com/karaage0703/items/77d6d75db9105a5e8983
 - https://qiita.com/jhorikawa_err/items/fb9c03c0982c29c5b6d5
@@ -7,24 +11,24 @@
 ## Instance level recognition
 - [Instance-level Recognition](https://towardsdatascience.com/instance-level-recognition-6afa229e2151)
 
-## resnet周り
+## resnet
 - https://aizine.ai/cnn-0801/
 - http://pchun.work/resnet%E3%82%92fine-tuning%E3%81%97%E3%81%A6%E8%87%AA%E5%88%86%E3%81%8C%E7%94%A8%E6%84%8F%E3%81%97%E3%81%9F%E7%94%BB%E5%83%8F%E3%82%92%E5%AD%A6%E7%BF%92%E3%81%95%E3%81%9B%E3%82%8B/#i-2
 - https://pystyle.info/pytorch-how-to-use-pretrained-model/
 
-## few-shot周り
+## few-shot
 - https://spjai.com/keras-fine-tuning/
 
-## データ収集周り
+## data collection
 - https://mtmt-nlp.com/?p=5
 - [icrawler](https://icrawler.readthedocs.io/en/latest/)
 - [機械学習のデータの集め方](https://qiita.com/nonbiri15/items/f5c5c4357458bfeb03bb)
 
-## 前処理周り
+## pre-processing
 - https://www.mgo-tec.com/blog-entry-colab-dataset01.html
 - https://axa.biopapyrus.jp/deep-learning/sample/image-shape.html
 
-## 水野さんのもの
+## method of mizuno-san
 - https://docs.google.com/presentation/d/1JCk3mXnx4DpVSHhqqnmepY5Mtwhp1E5U/edit#slide=id.p19
 - https://github.com/bird0401/Visual-Entity-Linking-for-Proper-Nouns/blob/main/src/03_create_testdata.py
 
