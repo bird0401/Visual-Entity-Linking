@@ -68,6 +68,10 @@
 - I train it by images exploited from wikimedia commons, the merits are
   - noise data is few
   - free license
+  
+  - kg seems not to suitable for my research, this can only narrow down 30 types, which is not generally used for hyponym searching
+  - using wikidata as I wanted to use before
+  
 
 ### other datasets
 - imagenet: labeled manually
@@ -84,4 +88,4 @@
 - horse
 - car
 
-
+### 
