@@ -1,0 +1,7 @@
+PREFIX dbpj: <http://ja.dbpedia.org/resource/>
+PREFIX dbp-owl: <http://dbpedia.org/ontology/>
+SELECT DISTINCT ?name
+WHERE {
+    dbpj:犬の品種一覧 dbp-owl:wikiPageWikiLink ?kinds.
+    ?kinds rdfs:label ?name.
+}
