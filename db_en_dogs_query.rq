@@ -1,0 +1,8 @@
+PREFIX dbpj: <http://dbpedia.org/resource/>
+PREFIX dbp-owl: <http://dbpedia.org/ontology/>
+SELECT DISTINCT ?name
+WHERE {
+    dbpj:List_of_dog_breeds dbp-owl:wikiPageWikiLink ?kinds.
+    ?kinds rdfs:label ?name. 
+}
+LIMIT 100
