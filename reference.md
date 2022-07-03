@@ -1,5 +1,9 @@
 # references
 
+## SPARQL
+- https://qiita.com/uedayou/items/9e4c6029a2cb6b76de9f
+- 
+
 ## DBpedia
 - https://qiita.com/pika_shi/items/eb56fc205e2d670062ae
 - https://qiita.com/AAA0125/items/ba73bc216916d158dc90
