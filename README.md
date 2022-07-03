@@ -88,4 +88,9 @@
 - horse
 - car
 
-### 
+## July
+### wikimedia
+- it has hierachical structure in popular domains
+- when there is no structure in certain domain, I use wikidata that can exploit instances of certain domain.
+- https://query.wikidata.org/
+- I will do scraping in wikimedia page.
