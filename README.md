@@ -56,7 +56,7 @@
   - search by keyword
   - quality of images are middle
 
-# July
+# June
 - each mL model learn in each domain to build model for each domain
 - datasets have specific labels on each domain
 - models predict only certtain domain
