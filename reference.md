@@ -1,8 +1,12 @@
 # references
 
+## Scraping
+- https://ai-inter1.com/python-requests/
+- https://ai-inter1.com/beautifulsoup_1/
+- https://ai-inter1.com/python-selenium/
+
 ## SPARQL
 - https://qiita.com/uedayou/items/9e4c6029a2cb6b76de9f
-- 
 
 ## DBpedia
 - https://qiita.com/pika_shi/items/eb56fc205e2d670062ae
