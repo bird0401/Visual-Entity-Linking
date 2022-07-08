@@ -95,3 +95,7 @@
 - https://query.wikidata.org/
 - I will do scraping in wikimedia page.
 - sample url of wikimedia category: https://commons.wikimedia.org/wiki/Category:Dog_breeds_by_name
+- this approach can be used to take any subcategories' images and labels pair
+
+### research interests
+- exploit noise images using super-categories' classification
