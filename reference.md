@@ -1,5 +1,8 @@
 # references
 
+## singularity
+- https://rnakato.hatenablog.jp/entry/2019/08/23/144656
+
 ## Scraping
 - https://ai-inter1.com/python-requests/
 - https://ai-inter1.com/beautifulsoup_1/
