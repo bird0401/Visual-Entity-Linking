@@ -17,3 +17,4 @@ RUN pip install --upgrade setuptools
 RUN python -m pip install jupyterlab
 RUN python -m pip install requests
 RUN python -m pip install beautifulsoup4
+RUN python -m pip install fake_useragent
