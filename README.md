@@ -85,6 +85,7 @@
 ## create Singularity image
 - create docker image
 - install singularity to local 
+- check singularity version of ist-cluster
 
 # Others
 ## other datasets
