@@ -71,7 +71,8 @@
   
   - kg seems not to suitable for my research, this can only narrow down 30 types, which is not generally used for hyponym searching
   - using wikidata as I wanted to use before
-  
+
+- implement code which scrapes images from wikimedia using wikimedia hierachical structure
 
 ### other datasets
 - imagenet: labeled manually
@@ -99,3 +100,7 @@
 
 ### research interests
 - exploit noise images using super-categories' classification
+
+### problems
+- wikimedia images are generally raugh
+- what extent I should specify instances
