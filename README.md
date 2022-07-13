@@ -50,7 +50,7 @@
 - Conceptual Captions, coco
 
 # May
-### method to collect data 
+## method to collect data 
 - [icrawler](https://icrawler.readthedocs.io/en/latest/)
   - web crawler
   - search by keyword
@@ -72,15 +72,27 @@
   - kg seems not to suitable for my research, this can only narrow down 30 types, which is not generally used for hyponym searching
   - using wikidata as I wanted to use before
 
+# July
+## wikimedia
+- it has hierachical structure in popular domains
+- when there is no structure in certain domain, I use wikidata that can exploit instances of certain domain.
+- https://query.wikidata.org/
+- I will do scraping in wikimedia page.
+- sample url of wikimedia category: https://commons.wikimedia.org/wiki/Category:Dog_breeds_by_name
+- this approach can be used to take any subcategories' images and labels pair
 - implement code which scrapes images from wikimedia using wikimedia hierachical structure
 
-### other datasets
+## create Singularity image
+- create docker image
+- install singularity to local 
+
+# Others
+## other datasets
 - imagenet: labeled manually
 - COCO: labeled manually
 - Conceptual Captions: image and alt tag, not label. also instance name in alt-text is converted to general name
 
-
-### predict category  
+## predict category  
 - dog
 - cat
 - bird
@@ -89,18 +101,9 @@
 - horse
 - car
 
-## July
-### wikimedia
-- it has hierachical structure in popular domains
-- when there is no structure in certain domain, I use wikidata that can exploit instances of certain domain.
-- https://query.wikidata.org/
-- I will do scraping in wikimedia page.
-- sample url of wikimedia category: https://commons.wikimedia.org/wiki/Category:Dog_breeds_by_name
-- this approach can be used to take any subcategories' images and labels pair
-
-### research interests
+## research interests
 - exploit noise images using super-categories' classification
 
-### problems
+## problems
 - wikimedia images are generally raugh
 - what extent I should specify instances
