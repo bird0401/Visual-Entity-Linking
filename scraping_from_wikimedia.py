@@ -1,5 +1,3 @@
-pip install fake_useragent
-
 import requests
 from bs4 import BeautifulSoup
 import re
@@ -57,7 +55,7 @@ for instance_url in instance_urls:
   extiw_class=soup.select('a[href^="https://www.wikidata.org/wiki/Q"]')
   try:  wikidata_id=pathlib.Path(extiw_class[0].attrs['href']).stem
   except:  continue
-  path = "/content/imgs/" + wikidata_id
+  path = "./imgs/" + wikidata_id
   os.makedirs(path,exist_ok=True)
 
   img_urls=[]
