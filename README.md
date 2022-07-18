@@ -86,6 +86,11 @@
 - create docker image
 - install singularity to local 
 - check singularity version of ist-cluster
+- singularity in ist-cluster is ver2.5.2
+- ubuntu is version 18.04
+- convert docker image to singularity container
+- caution that it happends error when os is not ubuntu 18.04 and use singularity 2.5.2
+- 
 
 # Others
 ## other datasets
