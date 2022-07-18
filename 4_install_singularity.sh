@@ -1,17 +1,17 @@
 
 #!/bin/sh
 
-git clone https://github.com/sylabs/singularity.git
+sudo git clone https://github.com/sylabs/singularity.git
 
 cd singularity
 
-git fetch --all
+sudo git fetch --all
 
-git checkout 2.5.0
+sudo git checkout 2.5.0
 
-./autogen.sh
+sudo ./autogen.sh
 
-./configure --prefix=/usr/local
+sudo ./configure --prefix=/usr/local
 
 make
 
