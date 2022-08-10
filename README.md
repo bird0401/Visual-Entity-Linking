@@ -109,6 +109,9 @@
 
 ## research interests
 - exploit noise images using super-categories' classification
+- use image-net's hierachical structure
+  - the problem is that how to identify the entity link, when there are some identical name
+  - use supercategory, I will solve it.
 
 ## problems
 - wikimedia images are generally raugh
