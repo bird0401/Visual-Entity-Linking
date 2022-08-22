@@ -1,5 +1,11 @@
 #!/bin/sh
 
+# for installing make command
+sudo rm /var/lib/apt/lists/lock
+sudo rm /var/lib/dpkg/lock
+sudo rm /var/lib/dpkg/lock-frontend
+sudo apt install -y make
+
 sudo apt-get update && sudo apt-get -y install python dh-autoreconf build-essential libarchive-dev
 
 sudo git clone https://github.com/sylabs/singularity.git
