@@ -6,11 +6,15 @@ import shutil
 from fake_useragent import UserAgent
 import pathlib
 import time
+from requests.exceptions import Timeout
 
 def download_images(url, file_path):
   ua = UserAgent()
   header = {'user-agent':ua.chrome}
-  r = requests.get(url, stream=True, headers=header)
+  try:
+    r = requests.get(url, stream=True, headers=header, timeout=10)
+  except Timeout:
+    print('Timeout has been raised.')
   time.sleep(1)
 
   if r.status_code == 200:
@@ -30,11 +34,17 @@ while move_to_next_page:
   category_url=f'/wiki/Category:{category}'
   
   if first_loop: 
-    res = requests.get(wikimedia_url+category_url)
+    try:
+      res = requests.get(wikimedia_url+category_url, timeout=10)
+    except Timeout:
+      print('Timeout has been raised.')
     time.sleep(1)
     first_loop=False
   else: 
-    res = requests.get(wikimedia_url+next_page_url)
+    try:
+      res = requests.get(wikimedia_url+next_page_url, timeout=10)
+    except Timeout:
+      print('Timeout has been raised.')
     time.sleep(1)
 
   soup = BeautifulSoup(res.text, "html.parser")
@@ -51,7 +61,10 @@ while move_to_next_page:
 
 # collect image urls of each instance
 for instance_url in instance_urls:
-  res = requests.get(wikimedia_url+instance_url)
+  try:
+      res = requests.get(wikimedia_url+instance_url, timeout=10)
+  except Timeout:
+      print('Timeout has been raised.')
   time.sleep(1)
   soup = BeautifulSoup(res.text, "html.parser")
 
@@ -65,7 +78,10 @@ for instance_url in instance_urls:
   move_to_next_page=True
 
   while move_to_next_page:
-    res = requests.get(wikimedia_url+instance_url)
+    try:
+      res = requests.get(wikimedia_url+instance_url, timeout=10)
+    except Timeout:
+      print('Timeout has been raised.')
     time.sleep(1)
     soup = BeautifulSoup(res.text, "html.parser")
 
