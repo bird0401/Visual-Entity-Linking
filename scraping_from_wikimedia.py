@@ -11,6 +11,7 @@ def download_images(url, file_path):
   ua = UserAgent()
   header = {'user-agent':ua.chrome}
   r = requests.get(url, stream=True, headers=header)
+  time.sleep(1)
 
   if r.status_code == 200:
     with open(file_path, "wb") as f:
@@ -32,7 +33,9 @@ while move_to_next_page:
     res = requests.get(wikimedia_url+category_url)
     time.sleep(1)
     first_loop=False
-  else: res = requests.get(wikimedia_url+next_page_url)
+  else: 
+    res = requests.get(wikimedia_url+next_page_url)
+    time.sleep(1)
 
   soup = BeautifulSoup(res.text, "html.parser")
   try:  next_page_url=soup.find_all(text="next page")[0].parent.attrs['href']
