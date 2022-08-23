@@ -90,7 +90,11 @@
 - ubuntu is version 18.04
 - convert docker image to singularity container
 - caution that it happends error when os is not ubuntu 18.04 and use singularity 2.5.2
-- 
+
+# August
+- execute in ist-cluster
+- collect images of dogs
+
 
 # Others
 ## other datasets
