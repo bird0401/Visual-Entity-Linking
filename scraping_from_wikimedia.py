@@ -40,9 +40,9 @@ while move_to_next_page:
       time.sleep(1)
 #     except Timeout:
 #       print('Timeout has been raised.')
-      
+      first_loop=False
     
-    first_loop=False
+      
   else: 
 #     try:
       res = requests.get(wikimedia_url+next_page_url)
