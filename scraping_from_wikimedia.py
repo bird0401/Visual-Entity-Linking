@@ -15,6 +15,7 @@ def download_images(url, file_path):
     r = requests.get(url, stream=True, headers=header, timeout=10)
   except Timeout:
     print('Timeout has been raised.')
+    return
   time.sleep(1)
 
   if r.status_code == 200:
@@ -22,7 +23,7 @@ def download_images(url, file_path):
       f.write(r.content)
   else: print(f'error {r.status_code}')
 
-# collect instance urls
+# collect instance urls in the page
 first_loop=True
 move_to_next_page=True
 instance_urls=[]
@@ -34,18 +35,21 @@ while move_to_next_page:
   category_url=f'/wiki/Category:{category}'
   
   if first_loop: 
-    try:
-      res = requests.get(wikimedia_url+category_url, timeout=10)
-    except Timeout:
-      print('Timeout has been raised.')
-    time.sleep(1)
+#     try:
+      res = requests.get(wikimedia_url+category_url)
+      time.sleep(1)
+#     except Timeout:
+#       print('Timeout has been raised.')
+      
+    
     first_loop=False
   else: 
-    try:
-      res = requests.get(wikimedia_url+next_page_url, timeout=10)
-    except Timeout:
-      print('Timeout has been raised.')
-    time.sleep(1)
+#     try:
+      res = requests.get(wikimedia_url+next_page_url)
+      time.sleep(1)
+#     except Timeout:
+#       print('Timeout has been raised.')
+    
 
   soup = BeautifulSoup(res.text, "html.parser")
   try:  next_page_url=soup.find_all(text="next page")[0].parent.attrs['href']
@@ -62,9 +66,10 @@ while move_to_next_page:
 # collect image urls of each instance
 for instance_url in instance_urls:
   try:
-      res = requests.get(wikimedia_url+instance_url, timeout=10)
+      res = requests.get(wikimedia_url+instance_url, timeout=60)
   except Timeout:
       print('Timeout has been raised.')
+      continue
   time.sleep(1)
   soup = BeautifulSoup(res.text, "html.parser")
 
@@ -79,10 +84,11 @@ for instance_url in instance_urls:
 
   while move_to_next_page:
     try:
-      res = requests.get(wikimedia_url+instance_url, timeout=10)
+      res = requests.get(wikimedia_url+instance_url, timeout=60)
+      time.sleep(1)
     except Timeout:
       print('Timeout has been raised.')
-    time.sleep(1)
+      continue
     soup = BeautifulSoup(res.text, "html.parser")
 
     try:  instance_url=soup.find_all(text="next page")[0].parent.attrs['href']
