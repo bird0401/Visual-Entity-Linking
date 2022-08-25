@@ -94,7 +94,9 @@
 # August
 - execute in ist-cluster
 - collect images of dogs
-
+- pre-process them
+- predict using simple model
+- analyze images collected
 
 # Others
 ## other datasets
