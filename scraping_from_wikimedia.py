@@ -8,15 +8,16 @@ import pathlib
 import time
 from requests.exceptions import Timeout
 
+
 def download_images(url, file_path):
   ua = UserAgent()
   header = {'user-agent':ua.chrome}
   try:
     r = requests.get(url, stream=True, headers=header, timeout=10)
+    time.sleep(1)
   except Timeout:
     print('Timeout has been raised.')
     return
-  time.sleep(1)
 
   if r.status_code == 200:
     with open(file_path, "wb") as f:
@@ -28,6 +29,7 @@ first_loop=True
 move_to_next_page=True
 instance_urls=[]
 
+
 while move_to_next_page:
   # requests to wikimedia regarding category which I want to exploit images
   wikimedia_url = 'https://commons.wikimedia.org'
@@ -35,21 +37,12 @@ while move_to_next_page:
   category_url=f'/wiki/Category:{category}'
   
   if first_loop: 
-#     try:
       res = requests.get(wikimedia_url+category_url)
       time.sleep(1)
-#     except Timeout:
-#       print('Timeout has been raised.')
       first_loop=False
-    
-      
   else: 
-#     try:
       res = requests.get(wikimedia_url+next_page_url)
-      time.sleep(1)
-#     except Timeout:
-#       print('Timeout has been raised.')
-    
+      time.sleep(1)    
 
   soup = BeautifulSoup(res.text, "html.parser")
   try:  next_page_url=soup.find_all(text="next page")[0].parent.attrs['href']
@@ -61,16 +54,16 @@ while move_to_next_page:
     instance_url=elem.find('a').attrs['href']
     instance_urls.append(instance_url)
 
-# len(instance_urls)
 
 # collect image urls of each instance
 for instance_url in instance_urls:
   try:
       res = requests.get(wikimedia_url+instance_url, timeout=60)
+      time.sleep(1)
   except Timeout:
       print('Timeout has been raised.')
       continue
-  time.sleep(1)
+  
   soup = BeautifulSoup(res.text, "html.parser")
 
   extiw_class=soup.select('a[href^="https://www.wikidata.org/wiki/Q"]')
@@ -90,15 +83,19 @@ for instance_url in instance_urls:
       print('Timeout has been raised.')
       continue
     soup = BeautifulSoup(res.text, "html.parser")
-
     try:  instance_url=soup.find_all(text="next page")[0].parent.attrs['href']
     except: move_to_next_page=False
-    
-    image_classes=soup.find_all(class_="image")
+    image_classes=soup.find_all(class_="galleryfilename galleryfilename-truncate")
+
     for image_class in image_classes:
-      img_url=image_class.img.attrs['src']
-      img_urls.append(img_url)
-      
+      img_page_url=image_class.attrs['href']
+      res = requests.get(wikimedia_url+img_page_url)
+      soup = BeautifulSoup(res.text, "html.parser")
+      try: img_url = soup.find(class_="fullImageLink").a.attrs['href']
+      except: 
+        print(f"can't fetch {wikimedia_url+img_page_url}")
+        continue
+      img_urls.append(img_url)      
 
   for index, url in enumerate(img_urls):
       filename = 'image_' + str(index) + '.jpg'
