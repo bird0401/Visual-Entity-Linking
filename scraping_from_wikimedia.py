@@ -7,100 +7,134 @@ from fake_useragent import UserAgent
 import pathlib
 import time
 from requests.exceptions import Timeout
+from tenacity import retry, stop_after_attempt, wait_exponential
+import traceback    
 
+ua = UserAgent()
+header = {'user-agent':ua.chrome}
+wikimedia_url = 'https://commons.wikimedia.org'
 
-def download_images(url, file_path):
-  ua = UserAgent()
-  header = {'user-agent':ua.chrome}
-  try:
-    r = requests.get(url, stream=True, headers=header, timeout=10)
-    time.sleep(1)
+def ToAbsURL(related_url = '/wiki/Category'):
+  base_url = wikimedia_url
+  return base_url+related_url
+  
+@retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1))
+def Fetch(url):
+  """
+  add below handlings to normal request
+  - 3 times retry
+  - 1s sleep
+  - exception handling
+  """
+
+  # when 200<=res.status_code<300 execute code in try statement
+  # this time, 200 will return because of success of get request is 200
+  try: 
+    res = requests.get(url, headers=header, timeout=10)
   except Timeout:
     print('Timeout has been raised.')
-    return
-
-  if r.status_code == 200:
-    with open(file_path, "wb") as f:
-      f.write(r.content)
-  else: print(f'error {r.status_code}')
-
-# collect instance urls in the page
-first_loop=True
-move_to_next_page=True
-instance_urls=[]
-
-
-while move_to_next_page:
-  # requests to wikimedia regarding category which I want to exploit images
-  wikimedia_url = 'https://commons.wikimedia.org'
-  category='Dog_breeds_by_name'
-  category_url=f'/wiki/Category:{category}'
+    return None
+  except:
+    traceback.print_exc()
+    return None
   
-  if first_loop: 
-      res = requests.get(wikimedia_url+category_url)
-      time.sleep(1)
-      first_loop=False
-  else: 
-      res = requests.get(wikimedia_url+next_page_url)
-      time.sleep(1)    
+  time.sleep(1) 
+  return res
 
+def ExtractNextPageURL(url, text="next page"):
+  res = Fetch(url)
   soup = BeautifulSoup(res.text, "html.parser")
-  try:  next_page_url=soup.find_all(text="next page")[0].parent.attrs['href']
-  except: move_to_next_page=False
-
-  elems=soup.find_all(class_="CategoryTreeItem")
-
-  for elem in elems:
-    instance_url=elem.find('a').attrs['href']
-    instance_urls.append(instance_url)
-
-
-# collect image urls of each instance
-for instance_url in instance_urls:
   try:
-      res = requests.get(wikimedia_url+instance_url, timeout=60)
-      time.sleep(1)
-  except Timeout:
-      print('Timeout has been raised.')
-      continue
-  
-  soup = BeautifulSoup(res.text, "html.parser")
+    t=soup.find(text=text)
+    if t: return ToAbsURL(related_url = t.parent.attrs['href'])
+  except: 
+    traceback.print_exc()
+    return None
 
-  extiw_class=soup.select('a[href^="https://www.wikidata.org/wiki/Q"]')
-  try:  wikidata_id=pathlib.Path(extiw_class[0].attrs['href']).stem
-  except:  continue
-  path = "./imgs/" + wikidata_id
-  os.makedirs(path,exist_ok=True)
+def ExtractEntityURLs(category):
+  entity_urls=[]
+  entity_list_page_url=ToAbsURL(related_url = f'/wiki/Category:{category}')
 
-  img_urls=[]
-  move_to_next_page=True
-
-  while move_to_next_page:
-    try:
-      res = requests.get(wikimedia_url+instance_url, timeout=60)
-      time.sleep(1)
-    except Timeout:
-      print('Timeout has been raised.')
-      continue
+  while entity_list_page_url:
+    res = Fetch(entity_list_page_url)
     soup = BeautifulSoup(res.text, "html.parser")
-    try:  instance_url=soup.find_all(text="next page")[0].parent.attrs['href']
-    except: move_to_next_page=False
-    image_classes=soup.find_all(class_="galleryfilename galleryfilename-truncate")
+    
+    try:
+      elems=soup.find_all(class_="CategoryTreeItem")
+      for elem in elems:
+        entity_url=elem.find('a').attrs['href']
+        yield ToAbsURL(related_url = entity_url)
+    except:
+      traceback.print_exc()
 
-    for image_class in image_classes:
-      img_page_url=image_class.attrs['href']
-      res = requests.get(wikimedia_url+img_page_url)
-      soup = BeautifulSoup(res.text, "html.parser")
-      try: img_url = soup.find(class_="fullImageLink").a.attrs['href']
+    print(entity_list_page_url)
+    entity_list_page_url=ExtractNextPageURL(entity_list_page_url)
+
+def ExtractEntityID(entity_url):
+  try: 
+    res = Fetch(entity_url)
+    soup = BeautifulSoup(res.text, "html.parser") 
+    wikidata_url=soup.find(href=re.compile("^https://www.wikidata.org/wiki/Q")).attrs["href"]
+    wikidata_id=pathlib.Path(wikidata_url).stem
+    return wikidata_id
+  except:
+    traceback.print_exc()
+    return None
+
+def MakeEntityImgDir(id):
+  img_path = "./imgs/" + id
+  os.makedirs(img_path,exist_ok=True)
+  return img_path
+
+def ExtractImageURL(img_page_url):
+      try: 
+        res = Fetch(img_page_url)
+        soup = BeautifulSoup(res.text, "html.parser")
+        l=soup.find(class_="fullImageLink")
+        if l: 
+          img_url = l.a.attrs['href']
+          return img_url
+        else: 
+          print("can't extract image URL") # for example, in the case that the file is mp3
       except: 
-        print(f"can't fetch {wikimedia_url+img_page_url}")
-        continue
-      img_urls.append(img_url)      
+        traceback.print_exc()
+        return None
 
-  for index, url in enumerate(img_urls):
-      filename = 'image_' + str(index) + '.jpg'
-      image_path = os.path.join(path, filename)
-      print(url)
-      print(image_path)
-      download_images(url=url, file_path=image_path)
-  print()
+def ExtractImageURLs(entity_img_list_page_url):
+  """
+  Image Page is the page which contains image, description, bottons, etc.
+  after extract Image Page URL, I should extract image url from this Page 
+  """
+  while entity_img_list_page_url:
+    res = Fetch(entity_img_list_page_url)
+    soup = BeautifulSoup(res.text, "html.parser")
+    try:
+      image_classes=soup.find_all(class_="galleryfilename galleryfilename-truncate")
+      for image_class in image_classes:
+        img_page_url=ToAbsURL(image_class.attrs['href'])
+        img_url = ExtractImageURL(img_page_url)
+        if img_url: yield img_url
+    except:
+      traceback.print_exc()
+    entity_img_list_page_url=ExtractNextPageURL(entity_img_list_page_url)
+
+def DownloadImage(url, file_path):
+  res=Fetch(url)
+  if res: 
+    with open(file_path, "wb") as f: f.write(res.content)
+
+def DownloadImages(entity_url):
+  wikidata_id = ExtractEntityID(entity_url)
+  if not wikidata_id: return None
+  img_dir_path = MakeEntityImgDir(wikidata_id)
+  for i, img_url in enumerate(ExtractImageURLs(entity_url)):
+    filename = 'image_' + str(i).zfill(3) + '.jpg'
+    img_file_path = os.path.join(img_dir_path, filename)
+    print(f"URL: {img_url}")
+    print(f"Path: {img_file_path}")
+    DownloadImage(url=img_url, file_path=img_file_path)
+
+ # we can iterate only one time because entity_urls is iterator
+entity_urls=ExtractEntityURLs(category='Dog_breeds_by_name')
+for entity_url in entity_urls:
+  DownloadImages(entity_url)

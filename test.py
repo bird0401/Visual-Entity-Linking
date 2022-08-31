@@ -1,6 +1,4 @@
-import requests
-from bs4 import BeautifulSoup
-
-url = 'https://www.yomiuri.co.jp'
-res = requests.get(url)
-print(res.text)
+l=["1","2","3","4","5"]
+for e in l:
+    if e=="3": continue
+    print(e)
