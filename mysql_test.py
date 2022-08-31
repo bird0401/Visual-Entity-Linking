@@ -7,7 +7,7 @@ connection = MySQLdb.connect(
     host='localhost',
     user='scraper',
     passwd='vnajr3495',
-    db='scraping'
+    db='scraping',
     charset='utf8mb4')
 cursor = connection.cursor()
  
