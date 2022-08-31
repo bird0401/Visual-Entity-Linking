@@ -1,4 +1,5 @@
 # MySQLdbのインポート
+from email import charset
 import MySQLdb
  
 # データベースへの接続とカーソルの生成
@@ -6,7 +7,8 @@ connection = MySQLdb.connect(
     host='localhost',
     user='scraper',
     passwd='vnajr3495',
-    db='scraping')
+    db='scraping'
+    charset='utf8mb4')
 cursor = connection.cursor()
  
 # ここに実行したいコードを入力します
