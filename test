@@ -1,0 +1,4 @@
+#!/bin/sh
+
+oldfile=`date --date "$period days ago" +%y%m%d`
+echo $oldfile
