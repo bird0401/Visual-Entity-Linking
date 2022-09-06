@@ -122,3 +122,6 @@
 ## problems
 - wikimedia images are generally raugh
 - what extent I should specify instances
+
+## Versino 
+- Python 3.10.5
