@@ -34,7 +34,7 @@ insert_new_name = (
   "VALUES (%s, %s)")
 insert_new_img_url = (
   "INSERT INTO img_urls (img_url) "
-  "VALUE (%s)")
+  "VALUES (%s)")
 insert_new_img_wikidata_id = (
   "INSERT INTO img_wikidata_id (img_id, wikidata_id) "
   "VALUES (%s, %s)")
