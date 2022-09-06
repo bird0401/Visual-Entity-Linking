@@ -24,10 +24,10 @@ connection = mysql.connector.connect(
     )
 
 cur = connection.cursor()
-cur.execute("SELECT img_url FROM img_urls")
-img_urls_in_db = cur.fetchall()
-cur.execute("SELECT wikidata_id FROM names")
-wikidata_ids_in_db = cur.fetchall()
+# cur.execute("SELECT img_url FROM img_urls")
+# img_urls_in_db = cur.fetchall()
+# cur.execute("SELECT wikidata_id FROM names")
+# wikidata_ids_in_db = cur.fetchall()
 
 insert_new_name = (
   "INSERT INTO names (wikidata_id, name) "
@@ -44,7 +44,7 @@ insert_new_img_path = (
 
 wikidata_id = "hiro"
 for url in ["a", "b", "c", "d", "e"]:
-    cur.execute(insert_new_img_url, (url))
+    cur.execute(insert_new_img_url, url)
     img_id = cur.execute("SELECT LAST_INSERT_ID();")
     cur.execute(insert_new_img_wikidata_id, (img_id, wikidata_id))
     # cur.execute(insert_new_img_path, (img_id, file_path))
