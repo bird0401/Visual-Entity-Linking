@@ -34,8 +34,8 @@ insert_new_name = (
   "VALUES(%s, %s)")
 
 insert_new_img_url = (
-  "INSERT INTO img_urls img_url "
-  "VALUE(%(img_url)s)")
+  "INSERT INTO img_urls (img_url) "
+  "VALUE(%s)")
 # insert_new_img_url = (
 #   "INSERT INTO img_urls (img_id, img_url) "
 #   "VALUES(%s, %s)")
