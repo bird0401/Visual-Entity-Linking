@@ -42,7 +42,7 @@ insert_new_img_path = (
   "INSERT INTO img_path (img_id, path) "
   "VALUES (%s, %s)")
 
-wikidata_id = "hiro"
+wikidata_id = 'hiro'
 # url = ['b', 'c', 'd', 'e']
 url = 'b'
 # for url in ['a', 'b', 'c', 'd', 'e']:
