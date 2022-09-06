@@ -43,11 +43,12 @@ insert_new_img_path = (
 
 wikidata_id = 'hiro'
 entity_name = 'matsu'
+file_path = '/re'
 for url in ['i', 'j', 'k', 'l', 'm']:
     cur.execute(insert_new_img_url, (url,))
     img_id = cur.lastrowid
     cur.execute(insert_new_name, (wikidata_id+str(img_id), entity_name+str(img_id)))
-    # cur.execute(insert_new_img_wikidata_id, (img_id, wikidata_id))
-    # cur.execute(insert_new_img_path, (img_id, file_path))
+    cur.execute(insert_new_img_wikidata_id, (img_id, wikidata_id+str(img_id)))
+    cur.execute(insert_new_img_path, (img_id, file_path))
     connection.commit()
 connection.close()
