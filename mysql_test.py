@@ -14,7 +14,7 @@ import sys
 
 args = sys.argv
 mysql_user, mysql_password = args[1], args[2]
-database, host = 'scraping', 'localhost'
+database, host = 'scraping_dog_breeds_by_name', 'localhost'
 
 connection = mysql.connector.connect(
     user = mysql_user,
