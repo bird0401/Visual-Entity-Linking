@@ -43,8 +43,8 @@ insert_new_img_path = (
   "VALUES (%s, %s)")
 
 wikidata_id = "hiro"
-for url in ["a", "b", "c", "d", "e"]:
-    cur.execute(insert_new_img_url, url)
+for url in ['a', 'b', 'c', 'd', 'e']:
+    cur.execute(insert_new_img_url, (url))
     img_id = cur.execute("SELECT LAST_INSERT_ID();")
     cur.execute(insert_new_img_wikidata_id, (img_id, wikidata_id))
     # cur.execute(insert_new_img_path, (img_id, file_path))
