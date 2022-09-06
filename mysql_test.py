@@ -46,7 +46,7 @@ entity_name = 'matsu'
 for url in ['i', 'j', 'k', 'l', 'm']:
     cur.execute(insert_new_img_url, (url,))
     # img_id = cur.execute("SELECT LAST_INSERT_ID()")
-    img_id = cur.getGeneratedKeys()
+    img_id = cur.lastrowid
     print(img_id, type(img_id))
     # cur.execute(insert_new_name, (wikidata_id+str(img_id, entity_name+img_id))
     # cur.execute(insert_new_img_wikidata_id, (img_id, wikidata_id))
