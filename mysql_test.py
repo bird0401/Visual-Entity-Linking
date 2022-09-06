@@ -19,8 +19,8 @@ database, host = 'scraping_dog_breeds_by_name', 'localhost'
 connection = mysql.connector.connect(
     user = mysql_user,
     password = mysql_password,
-    host = host,
-    database = database,
+    # host = host,
+    database = database
     )
 
 cur = connection.cursor()
