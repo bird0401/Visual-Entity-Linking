@@ -32,9 +32,10 @@ cur = connection.cursor()
 insert_new_name = (
   "INSERT INTO names (wikidata_id, name) "
   "VALUES(%s, %s)")
+
 insert_new_img_url = (
   "INSERT INTO img_urls img_url "
-  "VALUE(%s)")
+  "VALUE(%(img_url)s)")
 # insert_new_img_url = (
 #   "INSERT INTO img_urls (img_id, img_url) "
 #   "VALUES(%s, %s)")
@@ -42,6 +43,7 @@ insert_new_img_url = (
 insert_new_img_wikidata_id = (
   "INSERT INTO img_wikidata_id (img_id, wikidata_id) "
   "VALUES(%s, %s)")
+
 insert_new_img_path = (
   "INSERT INTO img_path (img_id, path) "
   "VALUES(%s, %s)")
