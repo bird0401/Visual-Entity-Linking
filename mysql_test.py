@@ -1,43 +1,52 @@
-# MySQLdbのインポート
-from email import charset
-import MySQLdb
- 
-# データベースへの接続とカーソルの生成
-connection = MySQLdb.connect(
-    host='localhost',
-    user='scraper',
-    passwd='vnajr3495',
-    db='scraping',
-    charset='utf8mb4')
-cursor = connection.cursor()
- 
-# ここに実行したいコードを入力します
-# テーブルの初期化
-cursor.execute("DROP TABLE IF EXISTS name_age_list")
- 
-# テーブルの作成
-cursor.execute("""CREATE TABLE name_age_list(
-    id INT(11) AUTO_INCREMENT NOT NULL, 
-    name VARCHAR(30) NOT NULL COLLATE utf8mb4_unicode_ci, 
-    age INT(3) NOT NULL,
-    PRIMARY KEY (id)
-    )""")
- 
-# データの追加
-cursor.execute("""INSERT INTO name_age_list (name, age)
-    VALUES ('タロー', '25'),
-    ('ジロー', '23'),
-    ('サブロー', '21')
-    """)
- 
-# 一覧の表示
-cursor.execute("SELECT * FROM name_age_list")
- 
-for row in cursor:
-    print(row)
- 
-# 保存を実行
-connection.commit()
- 
-# 接続を閉じる
+import requests
+from requests.exceptions import Timeout
+from bs4 import BeautifulSoup
+import re
+import os
+import shutil
+from fake_useragent import UserAgent
+import pathlib
+import time
+from tenacity import retry, stop_after_attempt, wait_exponential
+import traceback    
+import mysql.connector
+import sys
+
+args = sys.argv
+mysql_user, mysql_password = args[1], args[2]
+database, host = 'scraping', 'localhost'
+
+connection = mysql.connector.connect(
+    user = mysql_user,
+    password = mysql_password,
+    host = host,
+    database = database,
+    )
+
+cur = connection.cursor()
+cur.execute("SELECT img_url FROM img_urls")
+img_urls_in_db = cur.fetchall()
+cur.execute("SELECT wikidata_id FROM names")
+wikidata_ids_in_db = cur.fetchall()
+
+insert_new_name = (
+  "INSERT INTO names (wikidata_id, name) "
+  "VALUES (%s, %s)")
+insert_new_img_url = (
+  "INSERT INTO img_urls (img_url) "
+  "VALUE (%s)")
+insert_new_img_wikidata_id = (
+  "INSERT INTO img_wikidata_id (img_id, wikidata_id) "
+  "VALUES (%s, %s)")
+insert_new_img_path = (
+  "INSERT INTO img_path (img_id, path) "
+  "VALUES (%s, %s)")
+
+wikidata_id = "hiro"
+for url in ["a", "b", "c", "d", "e"]:
+    cur.execute(insert_new_img_url, (url))
+    img_id = cur.execute("SELECT LAST_INSERT_ID();")
+    cur.execute(insert_new_img_wikidata_id, (img_id, wikidata_id))
+    # cur.execute(insert_new_img_path, (img_id, file_path))
+    connection.commit()
 connection.close()
