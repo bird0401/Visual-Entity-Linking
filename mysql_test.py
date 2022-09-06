@@ -41,10 +41,12 @@ insert_new_img_path = (
   "INSERT INTO img_path (img_id, path) "
   "VALUES(%s, %s)")
 
-# file_path = 'hiro'
+wikidata_id = 'hiro'
+entity_name = 'matsu'
 for url in ['i', 'j', 'k', 'l', 'm']:
     cur.execute(insert_new_img_url, (url,))
     img_id = cur.execute("SELECT LAST_INSERT_ID();")
+    cur.execute(insert_new_name, (wikidata_id+img_id, entity_name+img_id))
     # cur.execute(insert_new_img_wikidata_id, (img_id, wikidata_id))
     # cur.execute(insert_new_img_path, (img_id, file_path))
     connection.commit()
