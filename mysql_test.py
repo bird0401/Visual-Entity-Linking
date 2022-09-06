@@ -17,10 +17,10 @@ mysql_user, mysql_password = args[1], args[2]
 database, host = 'scraping_dog_breeds_by_name', 'localhost'
 
 connection = mysql.connector.connect(
-    user = mysql_user,
-    password = mysql_password,
+    user=mysql_user,
+    password=mysql_password,
     # host = host,
-    database = database
+    database=database
     )
 
 cur = connection.cursor()
