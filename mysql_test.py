@@ -23,7 +23,7 @@ connection = mysql.connector.connect(
     database=database
     )
 
-cur = connection.cursor()
+cur = connection.cursor(buffered=True)
 
 insert_new_name = (
   "INSERT INTO names (wikidata_id, name) "
