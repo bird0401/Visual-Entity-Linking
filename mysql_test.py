@@ -53,7 +53,7 @@ wikidata_id = 'hiro'
 url = 'f'
 img_id = 100
 # for url in ['a', 'b', 'c', 'd', 'e']:
-cur.execute(insert_new_img_url, (url))
+cur.execute(insert_new_img_url, (url,))
 # cur.execute(insert_new_img_url, (img_id, url))
 
     # img_id = cur.execute("SELECT LAST_INSERT_ID();")
