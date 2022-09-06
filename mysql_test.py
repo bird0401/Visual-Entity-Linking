@@ -31,27 +31,29 @@ cur = connection.cursor()
 
 insert_new_name = (
   "INSERT INTO names (wikidata_id, name) "
-  "VALUES (%s, %s)")
-# insert_new_img_url = (
-#   "INSERT INTO img_urls (img_url) "
-#   "VALUES (%s)")
+  "VALUES(%s, %s)")
 insert_new_img_url = (
-  "INSERT INTO img_urls (img_id, img_url) "
-  "VALUES (%s, %s)")
+  "INSERT INTO img_urls (img_url) "
+  "VALUES(%s)")
+# insert_new_img_url = (
+#   "INSERT INTO img_urls (img_id, img_url) "
+#   "VALUES(%s, %s)")
 
 insert_new_img_wikidata_id = (
   "INSERT INTO img_wikidata_id (img_id, wikidata_id) "
-  "VALUES (%s, %s)")
+  "VALUES(%s, %s)")
 insert_new_img_path = (
   "INSERT INTO img_path (img_id, path) "
-  "VALUES (%s, %s)")
+  "VALUES(%s, %s)")
 
 wikidata_id = 'hiro'
 # url = ['b', 'c', 'd', 'e']
 url = 'b'
 img_id = 100
 # for url in ['a', 'b', 'c', 'd', 'e']:
-cur.execute(insert_new_img_url, (img_id, url))
+cur.execute(insert_new_img_url, (url))
+# cur.execute(insert_new_img_url, (img_id, url))
+
     # img_id = cur.execute("SELECT LAST_INSERT_ID();")
 # cur.execute(insert_new_img_wikidata_id, (img_id, wikidata_id))
     # cur.execute(insert_new_img_path, (img_id, file_path))
