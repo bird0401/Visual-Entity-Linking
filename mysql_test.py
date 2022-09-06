@@ -34,8 +34,8 @@ insert_new_name = (
   "VALUES(%s, %s)")
 
 insert_new_img_url = (
-  "INSERT INTO img_urls (img_url) "
-  "VALUE(%s)")
+  "INSERT INTO img_urls (img_url,) "
+  "VALUE(%s,)")
 # insert_new_img_url = (
 #   "INSERT INTO img_urls (img_id, img_url) "
 #   "VALUES(%s, %s)")
@@ -53,7 +53,7 @@ wikidata_id = 'hiro'
 url = 'f'
 img_id = 100
 # for url in ['a', 'b', 'c', 'd', 'e']:
-cur.execute(insert_new_img_url, url)
+cur.execute(insert_new_img_url, (url,))
 # cur.execute(insert_new_img_url, (img_id, url))
 
     # img_id = cur.execute("SELECT LAST_INSERT_ID();")
