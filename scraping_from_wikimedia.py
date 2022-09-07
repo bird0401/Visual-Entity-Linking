@@ -15,7 +15,6 @@ import sys
 args = sys.argv
 mysql_user, mysql_password = args[1], args[2]
 database, host = 'scraping', 'localhost'
-
 connection = mysql.connector.connect(
     user = mysql_user,
     password = mysql_password,
@@ -24,24 +23,9 @@ connection = mysql.connector.connect(
     )
 
 cur = connection.cursor()
-cur.execute("SELECT img_url FROM img_urls")
-img_urls_in_db = cur.fetchall()
-cur.execute("SELECT wikidata_id FROM names")
-wikidata_ids_in_db = cur.fetchall()
 
-insert_new_name = (
-  "INSERT INTO names (wikidata_id, name) "
-  "VALUES (%s, %s)")
-insert_new_img_url = (
-  "INSERT INTO img_urls (img_url) "
-  "VALUE (%s)")
-insert_new_img_wikidata_id = (
-  "INSERT INTO img_wikidata_id (img_id, wikidata_id) "
-  "VALUES (%s, %s)")
-insert_new_img_path = (
-  "INSERT INTO img_path (img_id, path) "
-  "VALUES (%s, %s)")
-
+img_urls_in_db = cur.execute("SELECT img_url FROM img_urls")
+wikidata_ids_in_db = cur.execute("SELECT wikidata_id FROM names")
 
 ua = UserAgent()
 header = {'user-agent':ua.chrome}
@@ -155,8 +139,19 @@ def DownloadImage(url, file_path, wikidata_id):
   res=Fetch(url)
   if res: 
     with open(file_path, "wb") as f: f.write(res.content)
-    cur.execute(insert_new_img_url, (url))
-    img_id = cur.execute("SELECT LAST_INSERT_ID();")
+
+    insert_new_img_url = (
+      "INSERT INTO img_urls (img_url) "
+      "VALUE (%s)")
+    insert_new_img_wikidata_id = (
+      "INSERT INTO img_wikidata_id (img_id, wikidata_id) "
+      "VALUES (%s, %s)")
+    insert_new_img_path = (
+      "INSERT INTO img_path (img_id, path) "
+      "VALUES (%s, %s)")
+    
+    cur.execute(insert_new_img_url, (url,))
+    img_id = cur.lastrowid
     cur.execute(insert_new_img_wikidata_id, (img_id, wikidata_id))
     cur.execute(insert_new_img_path, (img_id, file_path))
     connection.commit()
@@ -164,7 +159,11 @@ def DownloadImage(url, file_path, wikidata_id):
 def DownloadImages(entity_name, entity_url):
   wikidata_id = ExtractEntityID(entity_url)
   if not wikidata_id: return None
+  insert_new_name = (
+  "INSERT INTO names (wikidata_id, name) "
+  "VALUES (%s, %s)")
   if wikidata_id not in wikidata_ids_in_db: cur.execute(insert_new_name, (wikidata_id, entity_name))
+
   img_dir_path = MakeEntityImgDir(wikidata_id)
   for i, img_url in enumerate(ExtractImageURLs(entity_url)):
     if img_url in img_urls_in_db: continue
