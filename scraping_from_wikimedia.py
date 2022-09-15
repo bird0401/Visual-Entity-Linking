@@ -12,20 +12,25 @@ import traceback
 import mysql.connector
 import sys
 
-args = sys.argv
-mysql_user, mysql_password = args[1], args[2]
-database, host = 'scraping', 'localhost'
+mysql_user = 'scraper'
+mysql_password = os.environ['MYSQL_PASS']
+host = 'db1'
+database = 'scraping_dog_breeds_by_name'
+
 connection = mysql.connector.connect(
-    user = mysql_user,
-    password = mysql_password,
+    user=mysql_user,
+    password=mysql_password,
     host = host,
-    database = database,
+    database=database,
+    port=3306
     )
 
 cur = connection.cursor()
 
-img_urls_in_db = cur.execute("SELECT img_url FROM img_urls")
-wikidata_ids_in_db = cur.execute("SELECT wikidata_id FROM names")
+cur.execute("SELECT img_url FROM img_urls")
+img_urls_in_db = cur.fetchall()
+cur.execute("SELECT wikidata_id FROM names")
+wikidata_ids_in_db = cur.fetchall()
 
 ua = UserAgent()
 header = {'user-agent':ua.chrome}
