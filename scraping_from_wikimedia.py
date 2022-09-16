@@ -13,7 +13,9 @@ import mysql.connector
 import sys
 
 mysql_user = 'scraper'
-mysql_password = os.environ['MYSQL_PASS']
+# mysql_password = os.environ['MYSQL_PASS']
+mysql_password = 'vnej2048'
+
 host = 'db1'
 database = 'scraping_dog_breeds_by_name'
 
@@ -29,8 +31,10 @@ cur = connection.cursor()
 
 cur.execute("SELECT img_url FROM img_urls")
 img_urls_in_db = cur.fetchall()
+img_urls_in_db = [img_url for (img_url,) in img_urls_in_db]
 cur.execute("SELECT wikidata_id FROM names")
 wikidata_ids_in_db = cur.fetchall()
+wikidata_ids_in_db = [wikidata_id for (wikidata_id,) in wikidata_ids_in_db]
 
 ua = UserAgent()
 header = {'user-agent':ua.chrome}
@@ -56,7 +60,9 @@ def Fetch(url):
   except Timeout:
     print('Timeout has been raised.')
     return None
-  except:
+  # except KeyboardInterrupt:
+  #     sys.exit(1)
+  except Exception:
     traceback.print_exc()
     return None
   
@@ -69,28 +75,35 @@ def ExtractNextPageURL(url, text="next page"):
   try:
     t=soup.find(text=text)
     if t: return ToAbsURL(related_url = t.parent.attrs['href'])
-  except: 
+  # except KeyboardInterrupt:
+  #     sys.exit(1)
+  except Exception: 
     traceback.print_exc()
     return None
 
 def ExtractEntityURLs(category):
-  entity_urls=[]
+  # entity_urls=[]
   entity_list_page_url=ToAbsURL(related_url = f'/wiki/Category:{category}')
 
   while entity_list_page_url:
     res = Fetch(entity_list_page_url)
     soup = BeautifulSoup(res.text, "html.parser")
     
+
     try:
       elems=soup.find_all(class_="CategoryTreeItem")
       for elem in elems:
-        entity_url=elem.find('a').attrs['href']
-        yield ToAbsURL(related_url = entity_url)
-    except:
+        entity_name = elem.find('a').text
+        entity_url = ToAbsURL(related_url = elem.find('a').attrs['href'])
+        yield entity_name, entity_url
+        # entity_urls.append((entity_name, entity_url)) 
+    # except KeyboardInterrupt:
+    #     sys.exit(1)
+    except Exception:
       traceback.print_exc()
 
-    print(entity_list_page_url)
     entity_list_page_url=ExtractNextPageURL(entity_list_page_url)
+  # return entity_urls
 
 def ExtractEntityID(entity_url):
   try: 
@@ -99,7 +112,9 @@ def ExtractEntityID(entity_url):
     wikidata_url=soup.find(href=re.compile("^https://www.wikidata.org/wiki/Q")).attrs["href"]
     wikidata_id=pathlib.Path(wikidata_url).stem
     return wikidata_id
-  except:
+  # except KeyboardInterrupt:
+  #     sys.exit(1)
+  except Exception:
     traceback.print_exc()
     return None
 
@@ -118,15 +133,18 @@ def ExtractImageURL(img_page_url):
           return img_url
         else: 
           print("can't extract image URL") # for example, in the case that the file is mp3
-      except: 
+      # except KeyboardInterrupt:
+      #     sys.exit(1)
+      except Exception: 
         traceback.print_exc()
         return None
 
 def ExtractImageURLs(entity_img_list_page_url):
   """
-  Image Page is the page which contains image, description, bottons, etc.
-  after extract Image Page URL, I should extract image url from this Page 
+  Image Page is the page which contains an image, description, bottons, etc.
+  after extract Image Page URL, extract image url from this Page 
   """
+  # img_urls = []
   while entity_img_list_page_url:
     res = Fetch(entity_img_list_page_url)
     soup = BeautifulSoup(res.text, "html.parser")
@@ -135,10 +153,14 @@ def ExtractImageURLs(entity_img_list_page_url):
       for image_class in image_classes:
         img_page_url=ToAbsURL(image_class.attrs['href'])
         img_url = ExtractImageURL(img_page_url)
-        if img_url: yield img_url
-    except:
+        yield img_url
+        # if img_url: img_urls.append(img_url) 
+    # except KeyboardInterrupt:
+    #     sys.exit(1)
+    except Exception:
       traceback.print_exc()
     entity_img_list_page_url=ExtractNextPageURL(entity_img_list_page_url)
+  # return img_urls
 
 def DownloadImage(url, file_path, wikidata_id):
   res=Fetch(url)
@@ -165,21 +187,22 @@ def DownloadImages(entity_name, entity_url):
   wikidata_id = ExtractEntityID(entity_url)
   if not wikidata_id: return None
   insert_new_name = (
-  "INSERT INTO names (wikidata_id, name) "
-  "VALUES (%s, %s)")
+    "INSERT INTO names (wikidata_id, name) "
+    "VALUES (%s, %s)")
   if wikidata_id not in wikidata_ids_in_db: cur.execute(insert_new_name, (wikidata_id, entity_name))
 
   img_dir_path = MakeEntityImgDir(wikidata_id)
   for i, img_url in enumerate(ExtractImageURLs(entity_url)):
-    if img_url in img_urls_in_db: continue
+    if img_url in img_urls_in_db: 
+      print("The image still exists")
+      continue
     filename = 'image_' + str(i).zfill(3) + '.jpg'
     img_file_path = os.path.join(img_dir_path, filename)
     print(f"URL: {img_url}")
     print(f"Path: {img_file_path}")
     DownloadImage(url=img_url, file_path=img_file_path, wikidata_id = wikidata_id)
 
- # we can iterate only one time because entity_urls is iterator
-entity_names_urls=ExtractEntityURLs(category='Dog_breeds_by_name')
+entity_names_urls = ExtractEntityURLs(category='Dog_breeds_by_name')
 for entity_name, entity_url in entity_names_urls:
   DownloadImages(entity_name, entity_url)
 connection.close() 
