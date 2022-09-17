@@ -1,4 +1,5 @@
 /.api_key
+/.env
 /docker-python_python3.simg
 /imgs/
 /imgs2/

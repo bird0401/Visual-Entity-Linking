@@ -45,10 +45,8 @@ insert_new_img_path = (
   "INSERT INTO img_path (img_id, path) "
   "VALUES(%s, %s)")
 
-# img_urls_in_db = cur.execute("SELECT img_url FROM img_urls")
 cur.execute("SELECT img_url FROM img_urls")
 img_urls_in_db = cur.fetchall()
-# wikidata_ids_in_db = cur.execute("SELECT wikidata_id FROM names")
 cur.execute("SELECT wikidata_id FROM names")
 wikidata_ids_in_db = cur.fetchall()
 
