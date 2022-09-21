@@ -1,16 +1,12 @@
-import requests
-from requests.exceptions import Timeout
 from bs4 import BeautifulSoup
 import re
 import os
 import shutil
-from fake_useragent import UserAgent
 import pathlib
-import time
-from tenacity import retry, stop_after_attempt, wait_exponential
 import traceback    
 import mysql.connector
 import sys
+from util import *
 
 mysql_user = os.environ['MYSQL_USER']
 mysql_password = os.environ['MYSQL_PASS']
@@ -32,36 +28,6 @@ img_urls_in_db = set([(wikidata_id, img_url) for (wikidata_id, img_url) in img_u
 cur.execute("SELECT wikidata_id FROM names")
 wikidata_ids_in_db = cur.fetchall()
 wikidata_ids_in_db = set([wikidata_id for (wikidata_id,) in wikidata_ids_in_db])
-
-ua = UserAgent()
-header = {'user-agent':ua.chrome}
-wikimedia_url = 'https://commons.wikimedia.org'
-
-def ToAbsURL(related_url = '/wiki/Category'):
-  base_url = wikimedia_url
-  return base_url+related_url
-  
-@retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1))
-def Fetch(url):
-  """
-  add below handlings to normal request
-  - 3 times retry
-  - 1s sleep
-  - exception handling
-  """
-  # when 200<=res.status_code<300 execute code in try statement
-  # this time, 200 will return because of success of get request is 200
-  try: 
-    res = requests.get(url, headers=header, timeout=10)
-  except Timeout:
-    print('Timeout has been raised.')
-    return None
-  except Exception:
-    traceback.print_exc()
-    return None
-  
-  time.sleep(1) 
-  return res
 
 def ExtractNextPageURL(url, text="next page"):
   res = Fetch(url)
@@ -134,7 +100,7 @@ def ExtractImageURLs(entity_img_list_page_url):
     try:
       image_classes=soup.find_all(class_="galleryfilename galleryfilename-truncate")
       for image_class in image_classes:
-        img_page_url=ToAbsURL(image_class.attrs['href'])
+        img_page_url=ToAbsURL(related_url = image_class.attrs['href'])
         img_url = ExtractImageURL(img_page_url)
         if img_url: yield img_url
         else: continue
@@ -181,7 +147,7 @@ def DownloadImages(entity_name, entity_url):
   img_dir_path = MakeEntityImgDir(wikidata_id)
   for i, img_url in enumerate(ExtractImageURLs(entity_url)):
     if (wikidata_id, img_url) in img_urls_in_db: 
-      print(f"still exists {wikidata_id}, {img_url}")
+      print(f"still exists: ({wikidata_id}, {img_url})")
       continue
     filename = 'image_' + str(i).zfill(4) + '.jpg'
     img_file_path = os.path.join(img_dir_path, filename)

@@ -9,7 +9,7 @@ services:
     image: my_mysql # name image
     container_name: db3
     environment:
-      MYSQL_ROOT_PASSWORD: $MYSQL_PASS # keep pass secret by using host env
+      MYSQL_ROOT_PASSWORD: $MYSQL_PASS # keep pass secret
       TZ: Asia/Tokyo
     networks:
       - scraping_net
@@ -33,7 +33,7 @@ services:
     image: my_python # name image
     container_name: app3
     tty: true
-    working_dir: /usr/local/mount_dir
+    working_dir: /usr/local/mount_dir/app/scraping
     environment:
       TZ: Asia/Tokyo
       MYSQL_USER: $MYSQL_USER
