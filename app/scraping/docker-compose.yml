@@ -1,0 +1,60 @@
+version: '3'
+
+services:
+  database:
+    restart: always
+    build:
+      context: ./customed_mysql5_7
+      dockerfile: Dockerfile
+    image: my_mysql # name image
+    container_name: db3
+    environment:
+      MYSQL_ROOT_PASSWORD: $MYSQL_PASS # keep pass secret by using host env
+      TZ: Asia/Tokyo
+    networks:
+      - scraping_net
+    ports:
+      - 3306:3306
+    volumes:
+      - type: volume
+        source: dog_breeds_by_name_db_volume
+        target: /var/lib/mysql
+      - type: bind
+        source: ./customed_mysql5_7/config/my.cnf
+        target: /etc/my.cnf
+
+  application:
+    restart: always
+    depends_on: 
+      - database
+    build:
+      context: ./customed_python3_10
+      dockerfile: Dockerfile
+    image: my_python # name image
+    container_name: app3
+    tty: true
+    working_dir: /usr/local/mount_dir
+    environment:
+      TZ: Asia/Tokyo
+      MYSQL_USER: $MYSQL_USER
+      MYSQL_PASS: $MYSQL_PASS 
+      DB_HOST: $DB_HOST
+      DATABASE: $DATABASE
+    networks:
+      - scraping_net
+    ports:
+      - 8000:8000
+    volumes:
+      - type: bind
+        source: $CUR_DIR
+        target: /usr/local/mount_dir
+
+networks: 
+  scraping_net:
+    external: true
+    name: scraping
+
+volumes:
+  dog_breeds_by_name_db_volume:
+    external: true
+    name: dog_breeds_by_name_db

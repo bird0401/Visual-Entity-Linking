@@ -12,10 +12,10 @@ import traceback
 import mysql.connector
 import sys
 
-mysql_user = 'scraper'
+mysql_user = os.environ['MYSQL_USER']
 mysql_password = os.environ['MYSQL_PASS']
-host = 'db1'
-database = 'scraping_dog_breeds_by_name'
+host = os.environ['DB_HOST']
+database = os.environ['DATABASE']
 
 connection = mysql.connector.connect(
     user=mysql_user,
@@ -26,9 +26,9 @@ connection = mysql.connector.connect(
     )
 
 cur = connection.cursor()
-cur.execute("SELECT img_url FROM img_urls")
+cur.execute("SELECT wikidata_id, img_url FROM img_urls")
 img_urls_in_db = cur.fetchall()
-img_urls_in_db = set([img_url for (img_url,) in img_urls_in_db])
+img_urls_in_db = set([(wikidata_id, img_url) for (wikidata_id, img_url) in img_urls_in_db])
 cur.execute("SELECT wikidata_id FROM names")
 wikidata_ids_in_db = cur.fetchall()
 wikidata_ids_in_db = set([wikidata_id for (wikidata_id,) in wikidata_ids_in_db])
@@ -148,8 +148,8 @@ def DownloadImage(url, file_path, wikidata_id):
     with open(file_path, "wb") as f: f.write(res.content)
 
     insert_new_img_url = (
-      "INSERT INTO img_urls (img_url) "
-      "VALUE (%s)")
+      "INSERT INTO img_urls (wikidata_id, img_url) "
+      "VALUE (%s, %s)")
     insert_new_img_wikidata_id = (
       "INSERT INTO img_wikidata_id (img_id, wikidata_id) "
       "VALUES (%s, %s)")
@@ -159,8 +159,8 @@ def DownloadImage(url, file_path, wikidata_id):
     
     try:
       print(file_path)
-      cur.execute(insert_new_img_url, (url,))
-      img_urls_in_db.add(url)
+      cur.execute(insert_new_img_url, (wikidata_id, url))
+      img_urls_in_db.add((wikidata_id, url))
       img_id = cur.lastrowid
       cur.execute(insert_new_img_wikidata_id, (img_id, wikidata_id))
       cur.execute(insert_new_img_path, (img_id, file_path))
@@ -180,8 +180,8 @@ def DownloadImages(entity_name, entity_url):
 
   img_dir_path = MakeEntityImgDir(wikidata_id)
   for i, img_url in enumerate(ExtractImageURLs(entity_url)):
-    if img_url in img_urls_in_db: 
-      print(f"still exists {wikidata_id}: {img_url}")
+    if (wikidata_id, img_url) in img_urls_in_db: 
+      print(f"still exists {wikidata_id}, {img_url}")
       continue
     filename = 'image_' + str(i).zfill(4) + '.jpg'
     img_file_path = os.path.join(img_dir_path, filename)
