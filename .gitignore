@@ -1,8 +1,7 @@
 /.api_key
-/.env
-/docker-python_python3.simg
-/imgs/
-/imgs2/
+/app/scraping/.env
+/app/scraping/docker-python_python3.simg
+/app/scraping/imgs/
 /.scraping_env/
 /.DS_Store
 
