@@ -2,6 +2,7 @@
 /app/scraping/.env
 /app/scraping/docker-python_python3.simg
 /app/scraping/imgs/
+/app/scraping/imgs.tar.gz
 /.scraping_env/
 /.DS_Store
 
