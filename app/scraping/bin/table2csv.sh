@@ -17,5 +17,6 @@ sudo docker exec db3 mysql -p${MYSQL_PASS} \
     -e "SELECT 'id', 'name' 
         UNION SELECT * FROM names INTO OUTFILE '/tmp/csv/names.csv' 
         FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' LINES TERMINATED BY '\n';"
-sudo docker cp b4ef6fed4c41:/tmp/csv . \
-&& sudo chmod 755 csv
+sudo docker cp b4ef6fed4c41:/tmp/csv  \
+&& sudo chmod 755 ./csv \
+&& sudo mv ./csv ../data
