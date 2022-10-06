@@ -98,6 +98,11 @@
 - predict using simple model
 - analyze images collected
 
+# September
+- build docker environment
+- construct server
+- construct ml system by GCP
+
 # Others
 ## other datasets
 - imagenet: labeled manually
