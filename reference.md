@@ -5,11 +5,6 @@
 - about singularity: https://rnakato.hatenablog.jp/entry/2019/08/23/144656
 - docker image to docker hub: https://chigusa-web.com/blog/dockerfile%E3%82%92%E3%83%93%E3%83%AB%E3%83%89%E3%81%97%E3%81%A6docker-hub%E3%81%AB%E5%85%AC%E9%96%8B%E3%81%99%E3%82%8B/
 
-## Scraping
-- https://ai-inter1.com/python-requests/
-- https://ai-inter1.com/beautifulsoup_1/
-- https://ai-inter1.com/python-selenium/
-
 ## SPARQL
 - https://qiita.com/uedayou/items/9e4c6029a2cb6b76de9f
 
@@ -55,3 +50,7 @@
 
 ## entity linking
 [Entity Linking チュートリアル 前編　ざっくりとした歴史編](https://qiita.com/izuna385/items/9d658620b9b96b0b4ec9)
+
+# tech stack
+- tmux 
+- cron
