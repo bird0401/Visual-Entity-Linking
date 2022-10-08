@@ -1,9 +1,11 @@
 .api_key
 .env
 .scraping_env/
+.key/
 .DS_Store
 docker-python_python3.simg
 /app/scraping/data/
+
 
 
 # Byte-compiled / optimized / DLL files
