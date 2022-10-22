@@ -4,7 +4,7 @@
 .key/
 .DS_Store
 docker-python_python3.simg
-/app/scraping/data/
+/app/scraping/data/imgs
 
 
 
