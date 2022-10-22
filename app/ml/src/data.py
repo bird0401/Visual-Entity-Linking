@@ -1,13 +1,12 @@
-import albumentations as A
-from albumentations.pytorch import ToTensorV2
-
-from torch.utils.data import Dataset
 import cv2
 import torch
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
+from torch.utils.data import Dataset
 import traceback    
 
-def GetTransform(input_size, color_mean = [0.485, 0.456, 0.406], color_std = [0.229, 0.224, 0.225], phase = "train"):
-    data_transform = {
+def GetTransforms(input_size, color_mean = [0.485, 0.456, 0.406], color_std = [0.229, 0.224, 0.225]):
+    data_transforms = {
         "train": A.Compose([
             A.Resize(input_size, input_size),
             A.ShiftScaleRotate(shift_limit=0.1, 
@@ -44,16 +43,14 @@ def GetTransform(input_size, color_mean = [0.485, 0.456, 0.406], color_std = [0.
             ToTensorV2()], p=1.)
     }
     
-    return data_transform[phase]
-
+    return data_transforms
 
 class EntityLinkingDataset(Dataset):
-    def __init__(self, df, transform=None):
+    def __init__(self, df, transforms=None):
         self.df = df
-        # self.file_names = df['file_path'].values
         self.file_names = df['path'].values
         self.labels = df['label'].values
-        self.transform = transform
+        self.transforms = transforms
         
     def __len__(self):
         return len(self.df)
@@ -65,8 +62,8 @@ class EntityLinkingDataset(Dataset):
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         label = self.labels[index]
         
-        if self.transform:
-            img = self.transform(image=img)
+        if self.transforms:
+            img = self.transforms(image=img)["image"]
             
         return {
             'image': img,

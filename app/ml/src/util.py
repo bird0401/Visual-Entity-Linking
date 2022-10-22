@@ -1,6 +1,6 @@
 import os
-import torch
 import numpy as np
+import torch
 
 def set_seed(seed=42):
     '''Sets the seed of the entire notebook so results are the same every time we run.
@@ -13,7 +13,3 @@ def set_seed(seed=42):
     torch.backends.cudnn.benchmark = False
     # Set a fixed value for the hash seed
     os.environ['PYTHONHASHSEED'] = str(seed)
-
-
-# def t():
-#     os.environ['ZZE'] = "ok"

@@ -15,7 +15,7 @@ weight_decay: 1.0e-06
 n_fold: 5
 n_accumulate: 1
 # ArcFace Hyperparameters
-s: 30.0
-m: 0.5
-ls_eps: 0.0
-easy_margin: false
+# s: 30.0
+# m: 0.5
+# ls_eps: 0.0
+# easy_margin: false
