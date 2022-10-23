@@ -1,11 +1,13 @@
 seed: 2022
-epochs: 6
-# img_size: 224
-img_size: 32
+epochs: 8
+epochs_debug: 2
+img_size: 224
 model_name: efficientnet_b0
 embedding_size: 512
 train_batch_size: 32
+train_batch_size_debug: 128
 valid_batch_size: 64
+valid_batch_size_debug: 256
 learning_rate: 0.0001
 scheduler: CosineAnnealingLR
 min_lr: 1.0e-06
@@ -14,8 +16,31 @@ T_0: 500
 weight_decay: 1.0e-06
 n_fold: 5
 n_accumulate: 1
-# ArcFace Hyperparameters
-# s: 30.0
-# m: 0.5
-# ls_eps: 0.0
-# easy_margin: false
+
+
+# CONFIG = {"seed": 2022,
+#           "epochs": 20,
+#           "img_size": 512,
+#           "model_name": "tf_efficientnet_b7_ns",
+#           "num_classes": 15587,
+#           "train_batch_size": 4,
+#           "valid_batch_size": 4,
+#           "learning_rate": 0.0001,
+#           "scheduler": 'OneCycleLR',
+#           "min_lr": 1e-6,
+#           "T_max": 500,
+#           "weight_decay": 1e-6,
+#           "n_fold": 100, #use almost all data for training after determining the right arhitecture and proper parameters
+#           "n_accumulate": 1,
+#           "device": torch.device("cuda" if torch.cuda.is_available() else "cpu"),
+#           "test_mode":True, # enable for testing pipeline, changes epochs to 2 and uses just 100 training samples
+#           "enable_amp_half_precision": False, # Try it in your local machine (the code is made for working with !pip install apex, not the pytorch native apex)
+#           # ArcFace Hyperparameters
+#           "s": 30.0, 
+#           "m": 0.30,
+#           "ls_eps": 0.0,
+#           "easy_margin": False
+#           }
+
+
+
