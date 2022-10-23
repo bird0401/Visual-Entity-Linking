@@ -53,7 +53,14 @@
 
 ## Kaggle models
 - https://www.kaggle.com/code/debarshichanda/pytorch-arcface-gem-pooling-starter
+  - mainly referred
 - https://www.kaggle.com/code/hiromatu/simple-vanilla-pytorch-train-notebook-gem-pooling/edit
+  - best parameters
+- https://www.kaggle.com/code/hiromatu/pytorch-backfin-convnext-arcface-by-4-channel/edit
+  - pytorch lightning 
+  - Stochastic Weight Averaging
+- https://www.kaggle.com/code/zeta1996/pytorch-lightning-arcface-focal-loss
+  - use focal loss as loss function instead of cross entropy loss
 
 # tech stack
 - tmux 
