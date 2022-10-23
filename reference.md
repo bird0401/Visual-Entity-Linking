@@ -51,6 +51,10 @@
 ## entity linking
 [Entity Linking チュートリアル 前編　ざっくりとした歴史編](https://qiita.com/izuna385/items/9d658620b9b96b0b4ec9)
 
+## Kaggle models
+- https://www.kaggle.com/code/debarshichanda/pytorch-arcface-gem-pooling-starter
+- https://www.kaggle.com/code/hiromatu/simple-vanilla-pytorch-train-notebook-gem-pooling/edit
+
 # tech stack
 - tmux 
 - cron
