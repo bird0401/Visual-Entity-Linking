@@ -1,4 +1,6 @@
 seed: 2022
+debug: True
+enable_amp_half_precision: True
 epochs: 8
 epochs_debug: 2
 img_size: 224
@@ -16,6 +18,7 @@ T_0: 500
 weight_decay: 1.0e-06
 n_fold: 5
 n_accumulate: 1
+
 
 
 # CONFIG = {"seed": 2022,
