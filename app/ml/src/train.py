@@ -2,8 +2,9 @@ from tqdm import tqdm
 import torch
 import gc
 from torch.optim import lr_scheduler
+import torch.amp
 
-def train_one_epoch(model, optimizer, scheduler, dataloader, device, epoch, n_accumulate, criterion):
+def train_one_epoch(model, optimizer, scheduler, dataloader, device, epoch, n_accumulate, criterion, enable_amp_half_precision):
     model.train()
     
     dataset_size = 0
@@ -18,8 +19,14 @@ def train_one_epoch(model, optimizer, scheduler, dataloader, device, epoch, n_ac
         outputs = model(images, labels)
         loss = criterion(outputs, labels)
         loss = loss / n_accumulate
-            
-        loss.backward()
+
+# ADD
+        if enable_amp_half_precision:
+            with amp.scale_loss(loss, optimizer) as scaled_loss:
+                scaled_loss.backward()
+        else:
+            loss.backward()
+# until here
     
         if (step + 1) % n_accumulate == 0:
             optimizer.step()

@@ -1,6 +1,6 @@
 seed: 2022
 debug: True
-enable_amp_half_precision: True
+enable_amp_half_precision: False
 epochs: 8
 epochs_debug: 2
 img_size: 224
