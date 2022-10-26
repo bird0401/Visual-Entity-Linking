@@ -5,7 +5,7 @@
 .DS_Store
 docker-python_python3.simg
 /app/scraping/data/imgs
-
+/app/ml/data/
 
 
 # Byte-compiled / optimized / DLL files
