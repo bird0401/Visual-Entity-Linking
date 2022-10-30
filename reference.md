@@ -61,6 +61,9 @@
   - Stochastic Weight Averaging
 - https://www.kaggle.com/code/zeta1996/pytorch-lightning-arcface-focal-loss
   - use focal loss as loss function instead of cross entropy loss
+- https://www.kaggle.com/code/hiromatu/pytorch-starter/edit
+  - show images
+- 
 
 # tech stack
 - tmux 
