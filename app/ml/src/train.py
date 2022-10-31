@@ -1,4 +1,3 @@
-from tkinter import N
 from tqdm import tqdm
 import torch
 import gc
@@ -11,13 +10,14 @@ from sklearn.metrics import recall_score
 from sklearn.metrics import f1_score
 
 def train_one_epoch(model, optimizer, scheduler, dataloader, device, epoch, n_accumulate, criterion, enable_amp_half_precision):
+  try:
     model.train()
     
     dataset_size = 0
     running_loss = 0.0
-    running_acc = 0.0
-    running_recall = 0.0
-    running_f1 = 0.0
+
+    all_labels = []
+    all_preds = []
     
     bar = tqdm(enumerate(dataloader), total=len(dataloader))
     for step, data in bar:
@@ -45,33 +45,31 @@ def train_one_epoch(model, optimizer, scheduler, dataloader, device, epoch, n_ac
             
         predicted = torch.max(outputs, 1)[1]
         running_loss += (loss.item() * batch_size)
-        labels_n, predicted_n = labels.cpu().detach().numpy().copy(), predicted.cpu().detach().numpy().copy()
-        running_acc += accuracy_score(labels_n, predicted_n)
-        running_recall += recall_score(labels_n, predicted_n)
-        running_f1 += f1_score(labels_n, predicted_n, average='macro')
-        
+        all_labels.extend(labels.cpu().detach().numpy().copy())
+        all_preds.extend(predicted.cpu().detach().numpy().copy())
         dataset_size += batch_size
         epoch_loss = running_loss / dataset_size
-        epoch_acc = running_acc / dataset_size
-        epoch_recall = running_recall / dataset_size
-        epoch_f1 = running_f1 / dataset_size        
         
         # show each values on the progress bar
-        bar.set_postfix(Epoch=epoch, Train_Loss=epoch_loss, Train_Acc=epoch_acc,
-                        LR=optimizer.param_groups[0]['lr'])
+        # bar.set_postfix(Epoch=epoch, Train_Loss=epoch_loss, Train_Acc=epoch_acc,
+        #                 LR=optimizer.param_groups[0]['lr'])
+
     gc.collect()
-    
-    return epoch_loss, epoch_acc, epoch_recall, epoch_f1
+    return epoch_loss, accuracy_score(all_labels, all_preds), precision_score(all_labels, all_preds, average='macro'), recall_score(all_labels, all_preds, average='macro'), f1_score(all_labels, all_preds, average='macro')
+  
+  except:
+    import traceback
+    traceback.print_exc()
 
 @torch.inference_mode()
 def valid_one_epoch(model, dataloader, device, epoch, criterion, optimizer):
+  try:
     model.eval()
     
     dataset_size = 0
     running_loss = 0.0
-    running_acc = 0.0
-    running_recall = 0.0
-    running_f1 = 0.0
+    all_labels = []
+    all_preds = []
     
     bar = tqdm(enumerate(dataloader), total=len(dataloader))
     for step, data in bar:        
@@ -85,23 +83,20 @@ def valid_one_epoch(model, dataloader, device, epoch, criterion, optimizer):
         
         predicted = torch.max(outputs, 1)[1]
         running_loss += (loss.item() * batch_size)
-        labels_n, predicted_n = labels.cpu().detach().numpy().copy(), predicted.cpu().detach().numpy().copy()
-        running_acc += accuracy_score(labels_n, predicted_n)
-        running_recall += recall_score(labels_n, predicted_n)
-        running_f1 += f1_score(labels_n, predicted_n, average='macro')
-
+        all_labels.extend(labels.cpu().detach().numpy().copy())
+        all_preds.extend(predicted.cpu().detach().numpy().copy())
         dataset_size += batch_size
         epoch_loss = running_loss / dataset_size
-        epoch_acc = running_acc / dataset_size
-        epoch_recall = running_recall / dataset_size
-        epoch_f1 = running_f1 / dataset_size 
         
-        bar.set_postfix(Epoch=epoch, Valid_Loss=epoch_loss, Valid_Acc=epoch_acc,
-                        LR=optimizer.param_groups[0]['lr'])   
+        # bar.set_postfix(Epoch=epoch, Valid_Loss=epoch_loss, Valid_Acc=epoch_acc,
+        #                 LR=optimizer.param_groups[0]['lr'])   
     
     gc.collect()
-    
-    return epoch_loss, epoch_acc, epoch_recall, epoch_f1
+    return epoch_loss, accuracy_score(all_labels, all_preds), precision_score(all_labels, all_preds, average='macro'), recall_score(all_labels, all_preds, average='macro'), f1_score(all_labels, all_preds, average='macro')
+  
+  except:
+    import traceback
+    traceback.print_exc()
 
 
 def fetch_scheduler(optimizer, scheduler, T_max, T_0, min_lr):
