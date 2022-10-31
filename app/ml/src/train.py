@@ -1,3 +1,4 @@
+from tkinter import N
 from tqdm import tqdm
 import torch
 import gc
@@ -44,9 +45,10 @@ def train_one_epoch(model, optimizer, scheduler, dataloader, device, epoch, n_ac
             
         predicted = torch.max(outputs, 1)[1]
         running_loss += (loss.item() * batch_size)
-        running_acc += accuracy_score(labels, predicted)
-        running_recall += recall_score(labels, predicted)
-        running_f1 += f1_score(labels, predicted, average='macro')
+        labels_n, predicted_n = labels.cpu().detach().numpy().copy(), predicted.cpu().detach().numpy().copy()
+        running_acc += accuracy_score(labels_n, predicted_n)
+        running_recall += recall_score(labels_n, predicted_n)
+        running_f1 += f1_score(labels_n, predicted_n, average='macro')
         
         dataset_size += batch_size
         epoch_loss = running_loss / dataset_size
@@ -83,9 +85,10 @@ def valid_one_epoch(model, dataloader, device, epoch, criterion, optimizer):
         
         predicted = torch.max(outputs, 1)[1]
         running_loss += (loss.item() * batch_size)
-        running_acc += accuracy_score(labels, predicted)
-        running_recall += recall_score(labels, predicted)
-        running_f1 += f1_score(labels, predicted, average='macro')
+        labels_n, predicted_n = labels.cpu().detach().numpy().copy(), predicted.cpu().detach().numpy().copy()
+        running_acc += accuracy_score(labels_n, predicted_n)
+        running_recall += recall_score(labels_n, predicted_n)
+        running_f1 += f1_score(labels_n, predicted_n, average='macro')
 
         dataset_size += batch_size
         epoch_loss = running_loss / dataset_size
