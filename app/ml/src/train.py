@@ -1,9 +1,7 @@
+import gc
 from tqdm import tqdm
 import torch
-import gc
 from torch.optim import lr_scheduler
-import torch.amp
-
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
@@ -29,12 +27,6 @@ def train_one_epoch(model, optimizer, scheduler, dataloader, device, epoch, n_ac
         outputs = model(images, labels)
         loss = criterion(outputs, labels)
         loss = loss / n_accumulate
-
-        # if enable_amp_half_precision:
-        #     with amp.scale_loss(loss, optimizer) as scaled_loss:
-        #         scaled_loss.backward()
-        # else:
-        
         loss.backward()
 
         if (step + 1) % n_accumulate == 0:
@@ -49,10 +41,6 @@ def train_one_epoch(model, optimizer, scheduler, dataloader, device, epoch, n_ac
         all_preds.extend(predicted.cpu().detach().numpy().copy())
         dataset_size += batch_size
         epoch_loss = running_loss / dataset_size
-        
-        # show each values on the progress bar
-        # bar.set_postfix(Epoch=epoch, Train_Loss=epoch_loss, Train_Acc=epoch_acc,
-        #                 LR=optimizer.param_groups[0]['lr'])
 
     gc.collect()
     return epoch_loss, accuracy_score(all_labels, all_preds), precision_score(all_labels, all_preds, average='macro'), recall_score(all_labels, all_preds, average='macro'), f1_score(all_labels, all_preds, average='macro')
@@ -87,9 +75,6 @@ def valid_one_epoch(model, dataloader, device, epoch, criterion, optimizer):
         all_preds.extend(predicted.cpu().detach().numpy().copy())
         dataset_size += batch_size
         epoch_loss = running_loss / dataset_size
-        
-        # bar.set_postfix(Epoch=epoch, Valid_Loss=epoch_loss, Valid_Acc=epoch_acc,
-        #                 LR=optimizer.param_groups[0]['lr'])   
     
     gc.collect()
     return epoch_loss, accuracy_score(all_labels, all_preds), precision_score(all_labels, all_preds, average='macro'), recall_score(all_labels, all_preds, average='macro'), f1_score(all_labels, all_preds, average='macro')

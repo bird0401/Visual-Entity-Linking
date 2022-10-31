@@ -2,7 +2,7 @@ import cv2
 import torch
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, DataLoader
 import traceback    
 
 def GetTransforms(input_size, color_mean = [0.485, 0.456, 0.406], color_std = [0.229, 0.224, 0.225]):
@@ -55,3 +55,19 @@ class EntityLinkingDataset(Dataset):
         traceback.print_exc()
         return None
 
+def collate_fn(batch):
+    batch = list(filter(lambda x: x is not None, batch))
+    return torch.utils.data.dataloader.default_collate(batch)
+
+def prepare_loaders(my_Dataset, transforms, train_batch_size, valid_batch_size, df, fold):
+    df_train = df[df.kfold != fold].reset_index(drop=True)
+    df_valid = df[df.kfold == fold].reset_index(drop=True)
+    
+    train_dataset = my_Dataset(df_train, transforms=transforms["train"])
+    valid_dataset = my_Dataset(df_valid, transforms=transforms["valid"])
+
+    train_loader = DataLoader(train_dataset, batch_size=train_batch_size, 
+                            num_workers=2, collate_fn = collate_fn, shuffle=True, pin_memory=True, drop_last=True)
+    valid_loader = DataLoader(valid_dataset, batch_size=valid_batch_size, 
+                                num_workers=2, collate_fn = collate_fn, shuffle=False, pin_memory=True)
+    return train_loader, valid_loader
