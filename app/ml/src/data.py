@@ -8,42 +8,22 @@ import traceback
 def GetTransforms(input_size, color_mean = [0.485, 0.456, 0.406], color_std = [0.229, 0.224, 0.225]):
     data_transforms = {
         "train": A.Compose([
+            A.HorizontalFlip(p=0.5),
+            A.ImageCompression(quality_lower=99, quality_upper=100),
+            A.ShiftScaleRotate(shift_limit=0.2, scale_limit=0.2, rotate_limit=10, border_mode=0, p=0.7),
             A.Resize(input_size, input_size),
-            A.ShiftScaleRotate(shift_limit=0.1, 
-                            scale_limit=0.15, 
-                            rotate_limit=60, 
-                            p=0.5),
-            A.HueSaturationValue(
-                    hue_shift_limit=0.2, 
-                    sat_shift_limit=0.2, 
-                    val_shift_limit=0.2, 
-                    p=0.5
-                ),
-            A.RandomBrightnessContrast(
-                    brightness_limit=(-0.1,0.1), 
-                    contrast_limit=(-0.1, 0.1), 
-                    p=0.5
-                ),
-            A.Normalize(
-                    mean=color_mean, 
-                    std=color_std, 
-                    max_pixel_value=255.0, 
-                    p=1.0
-                ),
+            A.Cutout(max_h_size=int(input_size * 0.4), max_w_size=int(input_size * 0.4), num_holes=1, p=0.5),
+            A.Normalize(mean=color_mean, std=color_std, max_pixel_value=255.0, p=1.0),
             ToTensorV2()], p=1.),
         
         "valid": A.Compose([
             A.Resize(input_size, input_size),
-            A.Normalize(
-                    mean=color_mean, 
-                    std=color_std, 
-                    max_pixel_value=255.0, 
-                    p=1.0
-                ),
+            A.Normalize(mean=color_mean, std=color_std, max_pixel_value=255.0, p=1.0),
             ToTensorV2()], p=1.)
     }
     
     return data_transforms
+
 
 class EntityLinkingDataset(Dataset):
     def __init__(self, df, transforms=None):
@@ -74,3 +54,4 @@ class EntityLinkingDataset(Dataset):
         print(f"img_path: {img_path}")
         traceback.print_exc()
         return None
+
