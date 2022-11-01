@@ -1,0 +1,9 @@
+albumentations
+timm
+colorama
+wandb
+optuna
+tqdm==4.64.1
+torch @ https://download.pytorch.org/whl/cu113/torch-1.12.1%2Bcu113-cp37-cp37m-linux_x86_64.whl
+numpy==1.21.6
+pandas==1.3.5
