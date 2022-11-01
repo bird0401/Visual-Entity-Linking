@@ -3,9 +3,9 @@
 .scraping_env/
 .key/
 .DS_Store
-docker-python_python3.simg
+*.simg
 /app/scraping/data/imgs
-/app/ml/data/
+/app/ml/data/imgs
 
 
 # Byte-compiled / optimized / DLL files
