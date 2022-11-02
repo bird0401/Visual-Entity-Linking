@@ -1,0 +1,16 @@
+{
+    "os": "Linux-5.10.0-19-cloud-amd64-x86_64-with-glibc2.31",
+    "python": "3.10.8",
+    "heartbeatAt": "2022-11-01T13:21:34.708967",
+    "startedAt": "2022-11-01T13:21:34.159197",
+    "docker": null,
+    "cpu_count": 2,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "/usr/local/mount_dir/src/main.py",
+    "codePath": "main.py",
+    "host": "ea98ca4cde85",
+    "username": "root",
+    "executable": "/usr/local/bin/python"
+}

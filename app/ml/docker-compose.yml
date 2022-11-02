@@ -6,8 +6,8 @@ services:
     build:
       context: ./customed_python3_10
       dockerfile: Dockerfile
-    image: my_python # specify name image
-    container_name: app3
+    image: python_ml # specify name image
+    container_name: ml
     tty: true
     working_dir: /usr/local/mount_dir
     environment:
