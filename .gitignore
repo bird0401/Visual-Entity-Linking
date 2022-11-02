@@ -8,6 +8,7 @@
 *.simg
 wandb
 *.bin
+*.out
 
 =======
 /app/ml/data/imgs
