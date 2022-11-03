@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -l
 
 #PJM -L rscgrp=debug-a
 #PJM -L node=1
