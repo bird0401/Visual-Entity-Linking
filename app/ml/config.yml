@@ -18,8 +18,3 @@ T_0: 500
 weight_decay: 1.0e-06
 n_fold: 5
 n_accumulate: 1
-
-
-
-
-
