@@ -4,11 +4,13 @@
 .key/
 .DS_Store
 /app/scraping/data/imgs
-/app/ml/data/imgs
+/app/ml/data
 *.simg
+*.sif
 wandb
 *.bin
 *.out
+*.err
 
 =======
 /app/ml/data/imgs
