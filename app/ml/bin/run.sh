@@ -1,8 +1,7 @@
 #!/bin/sh -l
 
-#PJM -L rscgrp=debug-a
+#PJM -L rscgrp=short-a
 #PJM -L node=1
-#PJM -L elapse=0:30:00
 #PJM -L jobenv=singularity
 #PJM -g gk77
 #PJM -j
