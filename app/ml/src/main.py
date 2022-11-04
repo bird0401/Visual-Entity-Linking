@@ -21,7 +21,8 @@ warnings.filterwarnings("ignore")
 os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 from entity_linking.util import *
 from entity_linking.data import *
-from entity_linking.model import *
+# from entity_linking.model import *
+from entity_linking.model_transfer import *
 from entity_linking.train import *
 # wandb
 # %env "WANDB_NOTEBOOK_NAME" "pre_processing"
