@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -l
 
 #PJM -L rscgrp=short-a
 #PJM -L node=1
