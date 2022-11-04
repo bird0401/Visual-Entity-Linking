@@ -1,5 +1,5 @@
 seed: 2022
-debug: False
+debug: True
 enable_amp_half_precision: False
 epochs: 10
 epochs_debug: 5
