@@ -102,7 +102,7 @@ def run_training(train_loader, valid_loader, model, optimizer, scheduler, device
 from omegaconf import DictConfig, OmegaConf
 import hydra
 @hydra.main(config_name="config.yml")
-def main(cfg):
+def main(cfg: DictConfig):
 
   # Seed
   device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
