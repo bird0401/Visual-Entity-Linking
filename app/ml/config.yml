@@ -1,8 +1,8 @@
 seed: 2022
-debug: True
+debug: False
 enable_amp_half_precision: False
-epochs: 8
-epochs_debug: 10
+epochs: 10
+epochs_debug: 5
 img_size: 224
 model_name: efficientnet_b0
 embedding_size: 512
