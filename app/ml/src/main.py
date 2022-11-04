@@ -115,8 +115,8 @@ def main(cfg: DictConfig):
   if cfg.general.debug: train_loader, valid_loader = prepare_loaders(EntityLinkingDataset, data_transforms, cfg.data.train_batch_size_debug, cfg.data.valid_batch_size_debug, df_train, fold=0)
   else: train_loader, valid_loader = prepare_loaders(EntityLinkingDataset, data_transforms, cfg.data.train_batch_size, cfg.data.valid_batch_size, df_train, fold=0)
 
-  cfg.model.num_classees = cfg.model.out_features = len(df_train['label'].unique())
-  model = EntityLinkingModel(cfg.model.model_name, cfg.model.out_features)
+  out_features = len(df_train['label'].unique())
+  model = EntityLinkingModel(cfg.model.model_name, out_features)
   model.to(device)
 
   optimizer = optim.Adam(model.parameters(), lr=cfg.optimizer.learning_rate, weight_decay=cfg.optimizer.weight_decay)
