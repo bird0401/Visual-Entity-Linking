@@ -38,7 +38,7 @@ wandb.login()
 def criterion(outputs, labels):
     return nn.CrossEntropyLoss()(outputs, labels)
 
-def run_training(train_loader, valid_loader, model, optimizer, scheduler, cfg, run):
+def run_training(train_loader, valid_loader, model, optimizer, scheduler, device, cfg, run):
     if cfg.general.debug: num_epochs = cfg.train.epochs_debug
     else: num_epochs = cfg.train.epochs
 
@@ -55,12 +55,12 @@ def run_training(train_loader, valid_loader, model, optimizer, scheduler, cfg, r
     
     for epoch in range(1, num_epochs + 1): 
         gc.collect()
-        train_epoch_loss, train_epoch_acc, train_epoch_precision, train_epoch_recall, train_epoch_f1 = train_one_epoch(model, optimizer, scheduler, 
-                                           dataloader=train_loader, 
-                                           device=cfg.general.device, epoch=epoch, n_accumulate = cfg.train.n_accumulate, criterion = criterion,
-                                           enable_amp_half_precision=cfg.train.enable_amp_half_precision)
-        val_epoch_loss, val_epoch_acc, val_epoch_precision, val_epoch_recall, val_epoch_f1 = valid_one_epoch(model, valid_loader, device=cfg.general.device, 
-                                         epoch=epoch, criterion=criterion, optimizer=optimizer)
+        train_epoch_loss, train_epoch_acc, train_epoch_precision, train_epoch_recall, train_epoch_f1 = \
+          train_one_epoch(model, optimizer, scheduler, dataloader=train_loader, device=device, \
+                          epoch=epoch, n_accumulate = cfg.train.n_accumulate, criterion = criterion, \
+                          enable_amp_half_precision=cfg.train.enable_amp_half_precision)
+        val_epoch_loss, val_epoch_acc, val_epoch_precision, val_epoch_recall, val_epoch_f1 = \
+          valid_one_epoch(model, valid_loader, device=device, epoch=epoch, criterion=criterion, optimizer=optimizer)
         
 
         l_names = ['Train Loss', 'Train Acc', 'Train Precision', 'Train Recall', 'Train F1', 'Valid Loss', 'Valid Acc', 'Valid Precision', 'Valid Recall', 'Valid F1']
@@ -105,7 +105,7 @@ import hydra
 def main(cfg):
 
   # Seed
-  cfg.general.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+  device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
   set_seed(cfg.general.seed)
 
   # Dataset
@@ -117,7 +117,7 @@ def main(cfg):
 
   cfg.model.num_classees = cfg.model.out_features = len(df_train['label'].unique())
   model = EntityLinkingModel(cfg.model.model_name, cfg.model.out_features)
-  model.to(cfg.general.device)
+  model.to(device)
 
   optimizer = optim.Adam(model.parameters(), lr=cfg.optimizer.learning_rate, weight_decay=cfg.optimizer.weight_decay)
   scheduler = fetch_scheduler(optimizer, cfg.optimizer.scheduler, cfg.optimizer.T_max, cfg.optimizer.T_0, cfg.optimizer.min_lr)
@@ -126,7 +126,7 @@ def main(cfg):
 
   # if cfg["debug"]:
     # model, history = run_training(run, model, optimizer, scheduler, device=cfg['device'], num_epochs=cfg['epochs_debug'])
-  model, history = run_training(train_loader, valid_loader, model, optimizer, scheduler, cfg, run)
+  model, history = run_training(train_loader, valid_loader, model, optimizer, scheduler, device, cfg, run)
 
   # else:
   #   model, history = run_training(run, model, optimizer, scheduler, device=cfg['device'], num_epochs=cfg['epochs'])
