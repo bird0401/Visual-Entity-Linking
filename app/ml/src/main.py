@@ -102,8 +102,7 @@ def run_training(train_loader, valid_loader, model, optimizer, scheduler, device
 from omegaconf import DictConfig, OmegaConf
 import hydra
 @hydra.main(config_name="config.yml")
-def main(cfg: DictConfig):
-
+def main(cfg: OmegaConf):
   # Seed
   device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
   set_seed(cfg.general.seed)
@@ -122,7 +121,7 @@ def main(cfg: DictConfig):
   optimizer = optim.Adam(model.parameters(), lr=cfg.optimizer.learning_rate, weight_decay=cfg.optimizer.weight_decay)
   scheduler = fetch_scheduler(optimizer, cfg.optimizer.scheduler, cfg.optimizer.T_max, cfg.optimizer.T_0, cfg.optimizer.min_lr)
 
-  run = wandb.init(project='EntityLinking', config=cfg)
+  run = wandb.init(project='EntityLinking', config=OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True))
 
   # if cfg["debug"]:
     # model, history = run_training(run, model, optimizer, scheduler, device=cfg['device'], num_epochs=cfg['epochs_debug'])
