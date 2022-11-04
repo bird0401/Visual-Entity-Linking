@@ -19,15 +19,14 @@ import warnings
 warnings.filterwarnings("ignore")
 # For descriptive error messages
 os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
-from util import *
-from data import *
-from model import *
-from train import *
+from entity_linking.util import *
+from entity_linking.data import *
+from entity_linking.model import *
+from entity_linking.train import *
 # wandb
 # %env "WANDB_NOTEBOOK_NAME" "pre_processing"
 import wandb
 wandb.login()
-
 
 # Configuration and Seed
 with open("../config.yml", "r") as yml:
@@ -39,14 +38,14 @@ set_seed(CONFIG['seed'])
 if CONFIG["debug"]: df_train = pd.read_csv("../data/csv/train_debug.csv")
 else: df_train = pd.read_csv("../data/csv/train.csv")
 CONFIG["num_classees"] = CONFIG["out_features"] = len(df_train['label'].unique())
-
-# Training
 data_transforms = GetTransforms(CONFIG['img_size'])
+train_loader, valid_loader = prepare_loaders(EntityLinkingDataset, data_transforms, CONFIG['train_batch_size'], CONFIG['valid_batch_size'], df_train, fold=0)
+
 
 def criterion(outputs, labels):
     return nn.CrossEntropyLoss()(outputs, labels)
 
-def run_training(model, optimizer, scheduler, device, num_epochs):
+def run_training(run, model, optimizer, scheduler, device, num_epochs):
     # To automatically log gradients
     wandb.watch(model, log_freq=100)
     
@@ -104,17 +103,18 @@ def run_training(model, optimizer, scheduler, device, num_epochs):
     
     return model, history
 
-model = EntityLinkingModel(CONFIG['model_name'], CONFIG['out_features'])
-model.to(CONFIG['device'])
-optimizer = optim.Adam(model.parameters(), lr=CONFIG['learning_rate'], weight_decay=CONFIG['weight_decay'])
-scheduler = fetch_scheduler(optimizer, CONFIG['scheduler'], CONFIG['T_max'], CONFIG['T_0'], CONFIG['min_lr'])
-train_loader, valid_loader = prepare_loaders(EntityLinkingDataset, data_transforms, CONFIG['train_batch_size'], CONFIG['valid_batch_size'], df_train, fold=0)
 
-run = wandb.init(project='EntityLinking', config=CONFIG)
+if __name__ == '__main__':
+  model = EntityLinkingModel(CONFIG['model_name'], CONFIG['out_features'])
+  model.to(CONFIG['device'])
+  optimizer = optim.Adam(model.parameters(), lr=CONFIG['learning_rate'], weight_decay=CONFIG['weight_decay'])
+  scheduler = fetch_scheduler(optimizer, CONFIG['scheduler'], CONFIG['T_max'], CONFIG['T_0'], CONFIG['min_lr'])
 
-if CONFIG["debug"]:
-  model, history = run_training(model, optimizer, scheduler, device=CONFIG['device'], num_epochs=CONFIG['epochs_debug'])
-else:
-  model, history = run_training(model, optimizer, scheduler, device=CONFIG['device'], num_epochs=CONFIG['epochs'])
+  run = wandb.init(project='EntityLinking', config=CONFIG)
 
-run.finish()
+  if CONFIG["debug"]:
+    model, history = run_training(run, model, optimizer, scheduler, device=CONFIG['device'], num_epochs=CONFIG['epochs_debug'])
+  else:
+    model, history = run_training(run, model, optimizer, scheduler, device=CONFIG['device'], num_epochs=CONFIG['epochs'])
+
+  run.finish()
