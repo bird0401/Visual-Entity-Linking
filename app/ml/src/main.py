@@ -21,8 +21,8 @@ warnings.filterwarnings("ignore")
 os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 from entity_linking.util import *
 from entity_linking.data import *
-# from entity_linking.model import *
-from entity_linking.model_transfer import *
+from entity_linking.model import *
+# from entity_linking.model_transfer import *
 from entity_linking.train import *
 # wandb
 # %env "WANDB_NOTEBOOK_NAME" "pre_processing"
@@ -30,23 +30,18 @@ import wandb
 wandb.login()
 
 # Configuration and Seed
-with open("../config.yml", "r") as yml:
-    CONFIG = yaml.safe_load(yml)
-CONFIG["device"] = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-set_seed(CONFIG['seed'])
-
-# Dataset
-if CONFIG["debug"]: df_train = pd.read_csv("../data/csv/train_debug.csv")
-else: df_train = pd.read_csv("../data/csv/train.csv")
-CONFIG["num_classees"] = CONFIG["out_features"] = len(df_train['label'].unique())
-data_transforms = GetTransforms(CONFIG['img_size'])
-train_loader, valid_loader = prepare_loaders(EntityLinkingDataset, data_transforms, CONFIG['train_batch_size'], CONFIG['valid_batch_size'], df_train, fold=0)
-
+# with open("../config.yml", "r") as yml:
+#     cfg = yaml.safe_load(yml)
+# cfg["device"] = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+# set_seed(cfg['seed'])
 
 def criterion(outputs, labels):
     return nn.CrossEntropyLoss()(outputs, labels)
 
-def run_training(run, model, optimizer, scheduler, device, num_epochs):
+def run_training(train_loader, valid_loader, model, optimizer, scheduler, cfg, run):
+    if cfg.general.debug: num_epochs = cfg.train.epochs_debug
+    else: num_epochs = cfg.train.epochs
+
     # To automatically log gradients
     wandb.watch(model, log_freq=100)
     
@@ -62,9 +57,9 @@ def run_training(run, model, optimizer, scheduler, device, num_epochs):
         gc.collect()
         train_epoch_loss, train_epoch_acc, train_epoch_precision, train_epoch_recall, train_epoch_f1 = train_one_epoch(model, optimizer, scheduler, 
                                            dataloader=train_loader, 
-                                           device=CONFIG['device'], epoch=epoch, n_accumulate = CONFIG['n_accumulate'], criterion = criterion,
-                                           enable_amp_half_precision=CONFIG['enable_amp_half_precision'])
-        val_epoch_loss, val_epoch_acc, val_epoch_precision, val_epoch_recall, val_epoch_f1 = valid_one_epoch(model, valid_loader, device=CONFIG['device'], 
+                                           device=cfg.general.device, epoch=epoch, n_accumulate = cfg.train.n_accumulate, criterion = criterion,
+                                           enable_amp_half_precision=cfg.train.enable_amp_half_precision)
+        val_epoch_loss, val_epoch_acc, val_epoch_precision, val_epoch_recall, val_epoch_f1 = valid_one_epoch(model, valid_loader, device=cfg.general.device, 
                                          epoch=epoch, criterion=criterion, optimizer=optimizer)
         
 
@@ -105,17 +100,37 @@ def run_training(run, model, optimizer, scheduler, device, num_epochs):
     return model, history
 
 
-if __name__ == '__main__':
-  model = EntityLinkingModel(CONFIG['model_name'], CONFIG['out_features'])
-  model.to(CONFIG['device'])
-  optimizer = optim.Adam(model.parameters(), lr=CONFIG['learning_rate'], weight_decay=CONFIG['weight_decay'])
-  scheduler = fetch_scheduler(optimizer, CONFIG['scheduler'], CONFIG['T_max'], CONFIG['T_0'], CONFIG['min_lr'])
+import hydra
+@hydra.main(config_name="../config.yaml")
+def main(cfg):
+  # Seed
+  cfg.general.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+  set_seed(cfg.general.seed)
 
-  run = wandb.init(project='EntityLinking', config=CONFIG)
+  # Dataset
+  if cfg.general.debug: df_train = pd.read_csv("../data/csv/train_debug.csv")
+  else: df_train = pd.read_csv("../data/csv/train.csv")
+  data_transforms = GetTransforms(cfg.data.img_size)
+  if cfg.general.debug: train_loader, valid_loader = prepare_loaders(EntityLinkingDataset, data_transforms, cfg.data.train_batch_size_debug, cfg.data.valid_batch_size_debug, df_train, fold=0)
+  else: train_loader, valid_loader = prepare_loaders(EntityLinkingDataset, data_transforms, cfg.data.train_batch_size, cfg.data.valid_batch_size, df_train, fold=0)
 
-  if CONFIG["debug"]:
-    model, history = run_training(run, model, optimizer, scheduler, device=CONFIG['device'], num_epochs=CONFIG['epochs_debug'])
-  else:
-    model, history = run_training(run, model, optimizer, scheduler, device=CONFIG['device'], num_epochs=CONFIG['epochs'])
+  cfg.model.num_classees = cfg.model.out_features = len(df_train['label'].unique())
+  model = EntityLinkingModel(cfg.model.model_name, cfg.model.out_features)
+  model.to(cfg.general.device)
+
+  optimizer = optim.Adam(model.parameters(), lr=cfg.optimizer.learning_rate, weight_decay=cfg.optimizer.weight_decay)
+  scheduler = fetch_scheduler(optimizer, cfg.optimizer.scheduler, cfg.optimizer.T_max, cfg.optimizer.T_0, cfg.optimizer.min_lr)
+
+  run = wandb.init(project='EntityLinking', config=cfg)
+
+  # if cfg["debug"]:
+    # model, history = run_training(run, model, optimizer, scheduler, device=cfg['device'], num_epochs=cfg['epochs_debug'])
+  model, history = run_training(train_loader, valid_loader, model, optimizer, scheduler, cfg, run)
+
+  # else:
+  #   model, history = run_training(run, model, optimizer, scheduler, device=cfg['device'], num_epochs=cfg['epochs'])
 
   run.finish()
+
+if __name__ == '__main__':
+  main()

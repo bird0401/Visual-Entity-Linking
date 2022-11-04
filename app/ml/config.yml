@@ -1,20 +1,32 @@
-seed: 2022
-debug: True
-enable_amp_half_precision: False
-epochs: 10
-epochs_debug: 20
-img_size: 224
-model_name: efficientnet_b0
-embedding_size: 512
-train_batch_size: 32
-train_batch_size_debug: 32
-valid_batch_size: 64
-valid_batch_size_debug: 64
-learning_rate: 0.0001
-scheduler: CosineAnnealingLR
-min_lr: 1.0e-06
-T_max: 500
-T_0: 500
-weight_decay: 1.0e-06
-n_fold: 5
-n_accumulate: 1
+general:
+  seed: 2022
+  device: ???
+  debug: True
+
+data:
+  img_size: 224
+  train_batch_size: 32
+  train_batch_size_debug: 32
+  valid_batch_size: 64
+  valid_batch_size_debug: 64
+  n_fold: 5
+
+model:
+  model_name: efficientnet_b0
+  num_classees: ???
+  out_features: ???
+  embedding_size: 512
+
+optimizer:
+  learning_rate: 1.0e-04
+  weight_decay: 1.0e-06
+  scheduler: CosineAnnealingLR
+  min_lr: 1.0e-06
+  T_max: 500
+  T_0: 500
+
+train:
+  epochs: 10
+  epochs_debug: 20
+  n_accumulate: 1
+  enable_amp_half_precision: False
