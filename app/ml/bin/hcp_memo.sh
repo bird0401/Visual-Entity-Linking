@@ -24,7 +24,8 @@
 # gsutil -m cp -r gs://entity_dogs_debug .
 # mv entity_dogs_debug/ data/
 
-# singularity shell /$HOME/Instance_level_recognition/app/ml/python_ml_latest.sif 
-# cd Instance_level_recognition/app/ml/src/
+# singularity shell --pwd $HOME/Instance_level_recognition/app/ml/src/ --nv $HOME/Instance_level_recognition/app/ml/python_ml_latest.sif 
 # python main.py
 pjsub run.sh
+
+
