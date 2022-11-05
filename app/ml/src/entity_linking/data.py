@@ -67,8 +67,8 @@ def prepare_loaders(df, transforms, train_batch_size, valid_batch_size, fold):
     df_train = df[df.kfold != fold].reset_index(drop=True)
     df_valid = df[df.kfold == fold].reset_index(drop=True)
 
-    assert df_train
-    assert df_valid
+    assert not df_train.empty
+    assert not df_valid.empty
     
     train_dataset = EntityLinkingDataset(df_train, transforms=transforms["train"])
     valid_dataset = EntityLinkingDataset(df_valid, transforms=transforms["valid"])
