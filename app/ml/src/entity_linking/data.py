@@ -60,8 +60,16 @@ def collate_fn(batch):
     return torch.utils.data.dataloader.default_collate(batch)
 
 def prepare_loaders(my_Dataset, transforms, train_batch_size, valid_batch_size, df, fold):
+    assert isinstance(my_Dataset, EntityLinkingDataset)
+    assert transforms["train"]
+    assert transforms["valid"]
+    assert 0 <= fold <= 4
+    
     df_train = df[df.kfold != fold].reset_index(drop=True)
     df_valid = df[df.kfold == fold].reset_index(drop=True)
+
+    assert df_train
+    assert df_valid
     
     train_dataset = my_Dataset(df_train, transforms=transforms["train"])
     valid_dataset = my_Dataset(df_valid, transforms=transforms["valid"])

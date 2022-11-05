@@ -1,6 +1,5 @@
 import os
 import numpy as np
-import torch
 
 def set_seed(seed=42):
     '''Sets the seed of the entire notebook so results are the same every time we run.

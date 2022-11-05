@@ -56,12 +56,11 @@ def run_training(train_loader, valid_loader, model, optimizer, scheduler, device
     for epoch in range(1, num_epochs + 1): 
         gc.collect()
         train_epoch_loss, train_epoch_acc, train_epoch_precision, train_epoch_recall, train_epoch_f1 = \
-          train_one_epoch(model, optimizer, scheduler, dataloader=train_loader, device=device, \
-                          epoch=epoch, n_accumulate = cfg.train.n_accumulate, criterion = criterion, \
+          train_one_epoch(train_loader, model, criterion, optimizer, scheduler, device, \
+                          n_accumulate = cfg.train.n_accumulate, \
                           enable_amp_half_precision=cfg.train.enable_amp_half_precision)
         val_epoch_loss, val_epoch_acc, val_epoch_precision, val_epoch_recall, val_epoch_f1 = \
-          valid_one_epoch(model, valid_loader, device=device, epoch=epoch, criterion=criterion, optimizer=optimizer)
-        
+          valid_one_epoch(valid_loader, model, criterion, device)
 
         l_names = ['Train Loss', 'Train Acc', 'Train Precision', 'Train Recall', 'Train F1', 'Valid Loss', 'Valid Acc', 'Valid Precision', 'Valid Recall', 'Valid F1']
         l_vals = [train_epoch_loss, train_epoch_acc, train_epoch_precision, train_epoch_recall, train_epoch_f1] + [val_epoch_loss, val_epoch_acc, val_epoch_precision, val_epoch_recall, val_epoch_f1]
@@ -103,6 +102,8 @@ from omegaconf import DictConfig, OmegaConf
 import hydra
 @hydra.main(config_name="config.yml")
 def main(cfg: OmegaConf):
+  assert type(cfg) is OmegaConf
+
   # Seed
   device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
   set_seed(cfg.general.seed)
@@ -122,14 +123,7 @@ def main(cfg: OmegaConf):
   scheduler = fetch_scheduler(optimizer, cfg.optimizer.scheduler, cfg.optimizer.T_max, cfg.optimizer.T_0, cfg.optimizer.min_lr)
 
   run = wandb.init(project='EntityLinking', config=OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True))
-
-  # if cfg["debug"]:
-    # model, history = run_training(run, model, optimizer, scheduler, device=cfg['device'], num_epochs=cfg['epochs_debug'])
   model, history = run_training(train_loader, valid_loader, model, optimizer, scheduler, device, cfg, run)
-
-  # else:
-  #   model, history = run_training(run, model, optimizer, scheduler, device=cfg['device'], num_epochs=cfg['epochs'])
-
   run.finish()
 
 if __name__ == '__main__':

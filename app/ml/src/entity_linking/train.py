@@ -7,7 +7,16 @@ from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
 from sklearn.metrics import f1_score
 
-def train_one_epoch(model, optimizer, scheduler, dataloader, device, epoch, n_accumulate, criterion, enable_amp_half_precision):
+def scores(labels, preds):
+    acc, precision, recall, f1 = accuracy_score(labels, preds), precision_score(labels, preds, average='macro'), recall_score(labels, preds, average='macro'), f1_score(labels, preds, average='macro')
+    assert 0 <= acc <= 1, f"acc is {acc}"
+    assert 0 <= precision <= 1, f"precision is {precision}"
+    assert 0 <= recall <= 1, f"recall is {recall}"
+    assert 0 <= f1 <= 1, f"f1 is {f1}"
+    return acc, precision, recall, f1
+    
+
+def train_one_epoch(dataloader, model, criterion, optimizer, scheduler, device, n_accumulate, enable_amp_half_precision):
   try:
     model.train()
     
@@ -41,16 +50,18 @@ def train_one_epoch(model, optimizer, scheduler, dataloader, device, epoch, n_ac
         all_preds.extend(predicted.cpu().detach().numpy().copy())
         dataset_size += batch_size
         epoch_loss = running_loss / dataset_size
+    
 
+    acc, precision, recall, f1 = scores(all_labels, all_preds)
     gc.collect()
-    return epoch_loss, accuracy_score(all_labels, all_preds), precision_score(all_labels, all_preds, average='macro'), recall_score(all_labels, all_preds, average='macro'), f1_score(all_labels, all_preds, average='macro')
+    return epoch_loss, acc, precision, recall, f1
   
   except:
     import traceback
     traceback.print_exc()
 
 @torch.inference_mode()
-def valid_one_epoch(model, dataloader, device, epoch, criterion, optimizer):
+def valid_one_epoch(dataloader, model, criterion, device):
   try:
     model.eval()
     
@@ -75,9 +86,10 @@ def valid_one_epoch(model, dataloader, device, epoch, criterion, optimizer):
         all_preds.extend(predicted.cpu().detach().numpy().copy())
         dataset_size += batch_size
         epoch_loss = running_loss / dataset_size
-    
+
+    acc, precision, recall, f1 = scores(all_labels, all_preds)
     gc.collect()
-    return epoch_loss, accuracy_score(all_labels, all_preds), precision_score(all_labels, all_preds, average='macro'), recall_score(all_labels, all_preds, average='macro'), f1_score(all_labels, all_preds, average='macro')
+    return epoch_loss, acc, precision, recall, f1
   
   except:
     import traceback
