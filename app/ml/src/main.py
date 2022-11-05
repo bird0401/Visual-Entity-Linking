@@ -102,7 +102,7 @@ from omegaconf import DictConfig, OmegaConf
 import hydra
 @hydra.main(config_name="config.yml")
 def main(cfg: OmegaConf):
-  assert type(cfg) is OmegaConf
+  assert type(cfg) is OmegaConf, f"type(cfg) is {type(cfg)}"
 
   # Seed
   device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
