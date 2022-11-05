@@ -59,8 +59,7 @@ def collate_fn(batch):
     batch = list(filter(lambda x: x is not None, batch))
     return torch.utils.data.dataloader.default_collate(batch)
 
-def prepare_loaders(my_Dataset, transforms, train_batch_size, valid_batch_size, df, fold):
-    assert type(my_Dataset) is EntityLinkingDataset, f"type(my_Dataset) is {type(my_Dataset)}"
+def prepare_loaders(df, transforms, train_batch_size, valid_batch_size, fold):
     assert transforms["train"]
     assert transforms["valid"]
     assert 0 <= fold <= 4
@@ -71,8 +70,8 @@ def prepare_loaders(my_Dataset, transforms, train_batch_size, valid_batch_size, 
     assert df_train
     assert df_valid
     
-    train_dataset = my_Dataset(df_train, transforms=transforms["train"])
-    valid_dataset = my_Dataset(df_valid, transforms=transforms["valid"])
+    train_dataset = EntityLinkingDataset(df_train, transforms=transforms["train"])
+    valid_dataset = EntityLinkingDataset(df_valid, transforms=transforms["valid"])
 
     train_loader = DataLoader(train_dataset, batch_size=train_batch_size, 
                             num_workers=2, collate_fn = collate_fn, shuffle=True, pin_memory=True, drop_last=True)

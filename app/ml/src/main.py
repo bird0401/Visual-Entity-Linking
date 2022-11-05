@@ -110,8 +110,10 @@ def main(cfg: DictConfig):
   if cfg.general.debug: df_train = pd.read_csv("../data/csv/train_debug.csv")
   else: df_train = pd.read_csv("../data/csv/train.csv")
   data_transforms = GetTransforms(cfg.data.img_size)
-  if cfg.general.debug: train_loader, valid_loader = prepare_loaders(EntityLinkingDataset, data_transforms, cfg.data.train_batch_size_debug, cfg.data.valid_batch_size_debug, df_train, fold=0)
-  else: train_loader, valid_loader = prepare_loaders(EntityLinkingDataset, data_transforms, cfg.data.train_batch_size, cfg.data.valid_batch_size, df_train, fold=0)
+  # if cfg.general.debug: train_loader, valid_loader = prepare_loaders(EntityLinkingDataset, data_transforms, cfg.data.train_batch_size_debug, cfg.data.valid_batch_size_debug, df_train, fold=0)
+  # else: train_loader, valid_loader = prepare_loaders(EntityLinkingDataset, data_transforms, cfg.data.train_batch_size, cfg.data.valid_batch_size, df_train, fold=0)
+  if cfg.general.debug: train_loader, valid_loader = prepare_loaders(df_train, data_transforms, cfg.data.train_batch_size_debug, cfg.data.valid_batch_size_debug, fold=0)
+  else: train_loader, valid_loader = prepare_loaders(df_train, data_transforms, cfg.data.train_batch_size, cfg.data.valid_batch_size, fold=0)
 
   out_features = len(df_train['label'].unique())
   model = EntityLinkingModel(cfg.model.model_name, out_features)
