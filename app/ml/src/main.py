@@ -29,6 +29,14 @@ from entity_linking.train import *
 import wandb
 wandb.login()
 
+import logging
+import logging.config
+from yaml import safe_load
+with open('../conf/logging.yml') as f:
+    cfg = safe_load(f)
+logging.config.dictConfig(cfg)
+logger = logging.getLogger('main')
+
 # Configuration and Seed
 # with open("../config.yml", "r") as yml:
 #     cfg = yaml.safe_load(yml)
@@ -55,6 +63,7 @@ def run_training(train_loader, valid_loader, model, optimizer, scheduler, device
     
     for epoch in range(1, num_epochs + 1): 
         gc.collect()
+        logger.info(f'epoch = {epoch}')
         train_epoch_loss, train_epoch_acc, train_epoch_precision, train_epoch_recall, train_epoch_f1 = \
           train_one_epoch(train_loader, model, criterion, optimizer, scheduler, device, \
                           n_accumulate = cfg.train.n_accumulate, \
@@ -100,8 +109,8 @@ def run_training(train_loader, valid_loader, model, optimizer, scheduler, device
 
 from omegaconf import DictConfig, OmegaConf
 import hydra
-@hydra.main(config_name="config.yml")
-def main(cfg: DictConfig):
+@hydra.main(config_path="../conf/", config_name="config.yml")
+def main(cfg: OmegaConf):
   # Seed
   device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
   set_seed(cfg.general.seed)
@@ -116,6 +125,8 @@ def main(cfg: DictConfig):
   else: train_loader, valid_loader = prepare_loaders(df_train, data_transforms, cfg.data.train_batch_size, cfg.data.valid_batch_size, fold=0)
 
   out_features = len(df_train['label'].unique())
+  logger.info(f'out_features = {out_features}')
+
   model = EntityLinkingModel(cfg.model.model_name, out_features)
   model.to(device)
 

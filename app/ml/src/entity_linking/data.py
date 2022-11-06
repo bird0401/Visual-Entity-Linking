@@ -3,7 +3,16 @@ import torch
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 from torch.utils.data import Dataset, DataLoader
-import traceback    
+import traceback   
+
+import logging
+import logging.config
+from yaml import safe_load
+with open('../conf/logging.yml') as f:
+    cfg = safe_load(f)
+logging.config.dictConfig(cfg)
+logger = logging.getLogger('main')
+    
 
 def GetTransforms(input_size, color_mean = [0.485, 0.456, 0.406], color_std = [0.229, 0.224, 0.225]):
     data_transforms = {
@@ -69,6 +78,9 @@ def prepare_loaders(df, transforms, train_batch_size, valid_batch_size, fold):
 
     assert not df_train.empty
     assert not df_valid.empty
+
+    logger.info(f'len(df_train) = {len(df_train)}')
+    logger.info(f'len(df_valid) = {len(df_valid)}')
     
     train_dataset = EntityLinkingDataset(df_train, transforms=transforms["train"])
     valid_dataset = EntityLinkingDataset(df_valid, transforms=transforms["valid"])

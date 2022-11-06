@@ -10,7 +10,7 @@ hydra:
         stream: ext://sys.stdout
     root:
       handlers: [console]
-    disable_existing_loggers: false
+    disable_existing_loggers: False
 
 general:
   seed: 2022

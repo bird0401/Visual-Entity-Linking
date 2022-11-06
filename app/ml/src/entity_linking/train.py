@@ -7,6 +7,14 @@ from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
 from sklearn.metrics import f1_score
 
+import logging
+import logging.config
+from yaml import safe_load
+with open('../conf/logging.yml') as f:
+    cfg = safe_load(f)
+logging.config.dictConfig(cfg)
+logger = logging.getLogger('train')
+
 def scores(labels, preds):
     acc, precision, recall, f1 = accuracy_score(labels, preds), precision_score(labels, preds, average='macro'), recall_score(labels, preds, average='macro'), f1_score(labels, preds, average='macro')
     assert 0 <= acc <= 1, f"acc is {acc}"
@@ -105,5 +113,5 @@ def fetch_scheduler(optimizer, scheduler, T_max, T_0, min_lr):
                                                              eta_min=min_lr)
     elif scheduler == None:
         return None
-        
+    logger.info(f'scheduler = {scheduler}')
     return scheduler
