@@ -64,7 +64,7 @@ def train_one_epoch(dataloader, model, criterion, optimizer, scheduler, device, 
     gc.collect()
     return epoch_loss, acc, precision, recall, f1
   
-  except:
+  except Exception:
     import traceback
     traceback.print_exc()
 
