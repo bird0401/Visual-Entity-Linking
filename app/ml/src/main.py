@@ -90,7 +90,7 @@ def run_training(train_loader, valid_loader, model, optimizer, scheduler, device
             best_epoch_loss = val_epoch_loss
             run.summary["Best Loss"] = best_epoch_loss
             best_model_wts = copy.deepcopy(model.state_dict())
-            PATH = "Loss{:.4f}_epoch{:.0f}.bin".format(best_epoch_loss, epoch)
+            PATH = "../model/Loss{:.4f}_epoch{:.0f}.bin".format(best_epoch_loss, epoch)
             torch.save(model.state_dict(), PATH)
             # Save a model file from the current directory
             print(f"Model Saved{sr_}")

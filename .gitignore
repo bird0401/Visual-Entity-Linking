@@ -3,11 +3,15 @@
 .scraping_env/
 .key/
 .DS_Store
-/app/scraping/data/imgs
-/app/ml/data
+/app/scraping/data/imgs/
+# /app/ml/data/
+# /app/ml/src/wandb
+outputs
+wandb
+entity_dogs/
+.d000*
 *.simg
 *.sif
-wandb
 *.bin
 *.out
 *.err
