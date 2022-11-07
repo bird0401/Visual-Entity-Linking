@@ -111,6 +111,9 @@ def criterion(outputs, labels):
 
 @hydra.main(config_path="../conf/", config_name="config.yml")
 def main(cfg: OmegaConf):
+  # logger.debug(f'cfg.data.batch_size["train"]: {cfg.data.batch_size["train"]}')
+  logger.debug(f'cfg.data.batch_size["train"]: {cfg.data.batch_size.train}')
+  
   # Seed
   device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
   set_seed(cfg.general.seed)
@@ -121,7 +124,7 @@ def main(cfg: OmegaConf):
   data_transforms = GetTransforms(cfg.data.img_size)
   # if cfg.general.debug: train_loader, valid_loader = prepare_loaders(EntityLinkingDataset, data_transforms, cfg.data.train_batch_size_debug, cfg.data.valid_batch_size_debug, df_train, fold=0)
   # else: train_loader, valid_loader = prepare_loaders(EntityLinkingDataset, data_transforms, cfg.data.train_batch_size, cfg.data.valid_batch_size, df_train, fold=0)
-  if cfg.general.debug: dataloaders = prepare_loaders(df_train, data_transforms, cfg.data.batch_size_debug,, fold=0)
+  if cfg.general.debug: dataloaders = prepare_loaders(df_train, data_transforms, cfg.data.batch_size_debug, fold=0)
   else: dataloaders = prepare_loaders(df_train, data_transforms, cfg.data.batch_size, fold=0)
 
   out_features = len(df_train['label'].unique())

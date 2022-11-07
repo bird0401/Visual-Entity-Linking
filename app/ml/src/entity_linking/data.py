@@ -11,7 +11,7 @@ from yaml import safe_load
 with open('../conf/logging.yml') as f:
     cfg = safe_load(f)
 logging.config.dictConfig(cfg)
-logger = logging.getLogger('main')
+logger = logging.getLogger('data')
     
 
 def GetTransforms(input_size, color_mean = [0.485, 0.456, 0.406], color_std = [0.229, 0.224, 0.225]):
