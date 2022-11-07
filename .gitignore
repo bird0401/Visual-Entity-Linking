@@ -9,6 +9,7 @@
 outputs
 wandb
 entity_dogs/
+latest-run
 .d000*
 *.simg
 *.sif
