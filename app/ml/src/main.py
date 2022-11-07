@@ -111,8 +111,8 @@ def criterion(outputs, labels):
 
 @hydra.main(config_path="../conf/", config_name="config.yml")
 def main(cfg: OmegaConf):
-  # logger.debug(f'cfg.data.batch_size["train"]: {cfg.data.batch_size["train"]}')
-  logger.debug(f'cfg.data.batch_size["train"]: {cfg.data.batch_size.train}')
+  logger.debug(f'cfg.data.batch_size["train"]: {cfg.data.batch_size["train"]}')
+  logger.debug(f'cfg.data.batch_size.train: {cfg.data.batch_size.train}')
   
   # Seed
   device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
