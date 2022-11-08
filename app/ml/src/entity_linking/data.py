@@ -77,4 +77,5 @@ def prepare_loaders(df, transforms, train_batch_size, valid_batch_size, fold):
                             num_workers=2, collate_fn = collate_fn, shuffle=True, pin_memory=True, drop_last=True)
     valid_loader = DataLoader(valid_dataset, batch_size=valid_batch_size, 
                                 num_workers=2, collate_fn = collate_fn, shuffle=False, pin_memory=True)
+    
     return train_loader, valid_loader
