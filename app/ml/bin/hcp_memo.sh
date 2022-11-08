@@ -14,7 +14,7 @@
 
 # WISTERIA
 
-# pjsub --interact -g gk77 -L rscgrp=interactive-a,node=1,jobenv=singularity
+# pjsub --interact -j -g gk77 -L rscgrp=interactive-a,node=1,jobenv=singularity
 # module load singularity/3.7.3
 
 # singularity shell gc_cli_latest.sif 
@@ -24,7 +24,8 @@
 # gsutil -m cp -r gs://entity_dogs_debug .
 # mv entity_dogs_debug/ data/
 
-# singularity shell /$HOME/Instance_level_recognition/app/ml/python_ml_latest.sif 
-# cd Instance_level_recognition/app/ml/src/
+# singularity shell --pwd $HOME/Instance_level_recognition/app/ml/src/ --nv $HOME/Instance_level_recognition/app/ml/python_ml_latest.sif 
 # python main.py
-pjsub run.sh
+pjsub ../run.sh
+
+

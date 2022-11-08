@@ -7,12 +7,25 @@ from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
 from sklearn.metrics import f1_score
 
+import logging
+import logging.config
+from yaml import safe_load
+with open('../conf/logging.yml') as f:
+    cfg = safe_load(f)
+logging.config.dictConfig(cfg)
+logger = logging.getLogger('train')
+
 def scores(labels, preds):
-    acc, precision, recall, f1 = accuracy_score(labels, preds), precision_score(labels, preds, average='macro'), recall_score(labels, preds, average='macro'), f1_score(labels, preds, average='macro')
+    acc = accuracy_score(labels, preds)
+    precision = precision_score(labels, preds, average='macro')
+    recall = recall_score(labels, preds, average='macro')
+    f1 = f1_score(labels, preds, average='macro')
+
     assert 0 <= acc <= 1, f"acc is {acc}"
     assert 0 <= precision <= 1, f"precision is {precision}"
     assert 0 <= recall <= 1, f"recall is {recall}"
     assert 0 <= f1 <= 1, f"f1 is {f1}"
+
     return acc, precision, recall, f1
     
 
@@ -56,7 +69,7 @@ def train_one_epoch(dataloader, model, criterion, optimizer, scheduler, device, 
     gc.collect()
     return epoch_loss, acc, precision, recall, f1
   
-  except:
+  except Exception:
     import traceback
     traceback.print_exc()
 
@@ -82,11 +95,13 @@ def valid_one_epoch(dataloader, model, criterion, device):
         
         predicted = torch.max(outputs, 1)[1]
         running_loss += (loss.item() * batch_size)
-        all_labels.extend(labels.cpu().detach().numpy().copy())
-        all_preds.extend(predicted.cpu().detach().numpy().copy())
+        all_labels.extend(labels)
+        all_preds.extend(predicted)
         dataset_size += batch_size
         epoch_loss = running_loss / dataset_size
 
+    all_labels = all_labels.cpu().detach().numpy().copy()
+    all_preds = all_preds.cpu().detach().numpy().copy()
     acc, precision, recall, f1 = scores(all_labels, all_preds)
     gc.collect()
     return epoch_loss, acc, precision, recall, f1
@@ -105,5 +120,5 @@ def fetch_scheduler(optimizer, scheduler, T_max, T_0, min_lr):
                                                              eta_min=min_lr)
     elif scheduler == None:
         return None
-        
+    logger.info(f'scheduler = {scheduler}')
     return scheduler

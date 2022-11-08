@@ -10,7 +10,7 @@ hydra:
         stream: ext://sys.stdout
     root:
       handlers: [console]
-    disable_existing_loggers: false
+    disable_existing_loggers: False
 
 general:
   seed: 2022
@@ -19,10 +19,12 @@ general:
 
 data:
   img_size: 224
-  train_batch_size: 32
-  train_batch_size_debug: 32
-  valid_batch_size: 64
-  valid_batch_size_debug: 64
+  batch_size: 
+    train: 32
+    val: 64
+  batch_size_debug: 
+    train: 32
+    val: 64
   n_fold: 5
 
 model:
