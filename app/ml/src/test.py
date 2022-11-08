@@ -1,12 +1,7 @@
-def a():
-    print(__name__)
-def b():
-    print(__name__)
-def main():
-    print(__name__)
-    a()
-    b()
+import numpy as np
+import matplotlib.pyplot as plt
 
-if __name__ == "__main__":
-    print(__name__)
-    main()
+x = np.arange(-3, 3, 0.1)
+y = np.sin(x)
+plt.plot(x, y)
+plt.show()

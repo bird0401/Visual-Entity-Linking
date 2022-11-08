@@ -59,8 +59,8 @@ class EntityLinkingDataset(Dataset):
             'label': torch.tensor(label, dtype=torch.long)
         }
       except Exception: 
-        print()
-        print(f"img_path: {img_path}")
+        logger.info()
+        logger.info(f"img_path: {img_path}")
         traceback.print_exc()
         return None
 
@@ -92,7 +92,7 @@ def prepare_loaders(df, transforms, batch_size, fold):
     }
 
     dataloaders = {
-        x: DataLoader(datasets[x], batch_size=batch_size[x], num_workers=2, collate_fn = collate_fn, shuffle=(x == "train"), pin_memory=True, drop_last=True)
+        x: DataLoader(datasets[x], batch_size=batch_size[x], num_workers=2, collate_fn = collate_fn, shuffle=True, pin_memory=True, drop_last=True)
         for x in ["train", "val"]
     }
   

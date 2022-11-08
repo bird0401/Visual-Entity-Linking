@@ -6,6 +6,8 @@ optuna
 opencv-python
 joblib
 pyyaml
+omegaconf
+matplotlib
 tqdm==4.64.1
 torch
 numpy==1.21.6

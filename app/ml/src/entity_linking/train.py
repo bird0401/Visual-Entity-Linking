@@ -16,11 +16,16 @@ logging.config.dictConfig(cfg)
 logger = logging.getLogger('train')
 
 def scores(labels, preds):
-    acc, precision, recall, f1 = accuracy_score(labels, preds), precision_score(labels, preds, average='macro'), recall_score(labels, preds, average='macro'), f1_score(labels, preds, average='macro')
+    acc = accuracy_score(labels, preds)
+    precision = precision_score(labels, preds, average='macro')
+    recall = recall_score(labels, preds, average='macro')
+    f1 = f1_score(labels, preds, average='macro')
+
     assert 0 <= acc <= 1, f"acc is {acc}"
     assert 0 <= precision <= 1, f"precision is {precision}"
     assert 0 <= recall <= 1, f"recall is {recall}"
     assert 0 <= f1 <= 1, f"f1 is {f1}"
+
     return acc, precision, recall, f1
     
 
@@ -90,11 +95,13 @@ def valid_one_epoch(dataloader, model, criterion, device):
         
         predicted = torch.max(outputs, 1)[1]
         running_loss += (loss.item() * batch_size)
-        all_labels.extend(labels.cpu().detach().numpy().copy())
-        all_preds.extend(predicted.cpu().detach().numpy().copy())
+        all_labels.extend(labels)
+        all_preds.extend(predicted)
         dataset_size += batch_size
         epoch_loss = running_loss / dataset_size
 
+    all_labels = all_labels.cpu().detach().numpy().copy()
+    all_preds = all_preds.cpu().detach().numpy().copy()
     acc, precision, recall, f1 = scores(all_labels, all_preds)
     gc.collect()
     return epoch_loss, acc, precision, recall, f1

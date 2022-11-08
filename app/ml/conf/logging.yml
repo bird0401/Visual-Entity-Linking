@@ -13,11 +13,15 @@ loggers:
     level: DEBUG
     handlers: [console]
     propagate: no
+  util:
+    level: DEBUG
+    handlers: [console]
+    propagate: no
   data:
     level: DEBUG
     handlers: [console]
     propagate: no
-  prepare_loaders:
+  model:
     level: DEBUG
     handlers: [console]
     propagate: no
