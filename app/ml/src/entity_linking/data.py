@@ -8,7 +8,7 @@ import traceback
 import logging
 import logging.config
 from yaml import safe_load
-with open('../conf/logging.yml') as f:
+with open('../../conf/logging.yml') as f:
     cfg = safe_load(f)
 logging.config.dictConfig(cfg)
 logger = logging.getLogger('data')
@@ -79,10 +79,17 @@ def prepare_loaders(df, transforms, batch_size, fold):
         "train": df[df.kfold != fold].reset_index(drop=True),
         "val": df[df.kfold == fold].reset_index(drop=True)
     }
+<<<<<<< HEAD
 
     assert not df_train_val["train"].empty
     assert not df_train_val["val"].empty
 
+=======
+
+    assert not df_train_val["train"].empty
+    assert not df_train_val["val"].empty
+
+>>>>>>> 6300e5b1a30d1968b84a6f07c332e9376b91cc55
     logger.info(f'len(df_train_val["train"]) = {len(df_train_val["train"])}')
     logger.info(f'len(df_train_val["val"]) = {len(df_train_val["val"])}')
     
@@ -91,9 +98,24 @@ def prepare_loaders(df, transforms, batch_size, fold):
         for x in ["train", "val"]
     }
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+    train_loader = DataLoader(train_dataset, batch_size=train_batch_size, 
+                            num_workers=2, collate_fn = collate_fn, shuffle=True, pin_memory=True, drop_last=True)
+    valid_loader = DataLoader(valid_dataset, batch_size=valid_batch_size, 
+                                num_workers=2, collate_fn = collate_fn, shuffle=False, pin_memory=True)
+    
+    return train_loader, valid_loader
+=======
+=======
+>>>>>>> 6300e5b1a30d1968b84a6f07c332e9376b91cc55
     dataloaders = {
         x: DataLoader(datasets[x], batch_size=batch_size[x], num_workers=2, collate_fn = collate_fn, shuffle=True, pin_memory=True, drop_last=True)
         for x in ["train", "val"]
     }
   
     return dataloaders
+<<<<<<< HEAD
+>>>>>>> 6300e5b1a30d1968b84a6f07c332e9376b91cc55
+=======
+>>>>>>> 6300e5b1a30d1968b84a6f07c332e9376b91cc55

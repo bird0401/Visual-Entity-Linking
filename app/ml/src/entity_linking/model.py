@@ -4,7 +4,7 @@ import timm
 import logging
 import logging.config
 from yaml import safe_load
-with open('../conf/logging.yml') as f:
+with open('../../conf/logging.yml') as f:
     cfg = safe_load(f)
 logging.config.dictConfig(cfg)
 logger = logging.getLogger('model')
