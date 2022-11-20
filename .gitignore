@@ -6,7 +6,7 @@
 /app/scraping/data/imgs/
 /app/ml/model/
 /app/ml/src/entity_linking/memo/
-# /app/ml/data/
+/app/ml/data/
 # /app/ml/src/wandb
 outputs
 wandb
@@ -19,12 +19,6 @@ latest-run
 *.out
 *.err
 *.png
-
-
-=======
-/app/ml/data/imgs
-
->>>>>>> 3cbf5e4684c94eb4ad8c6a797fc3a43c2372eb80
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
