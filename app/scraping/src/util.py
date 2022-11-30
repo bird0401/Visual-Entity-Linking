@@ -22,3 +22,15 @@ def Fetch(url):
     return None
   time.sleep(1) 
   return res
+
+# delete all exif data
+def delete_exif(paths):
+  for path in paths: 
+    try:
+      src = Image.open(path)
+      dst = Image.new(src.mode, src.size)
+      dst.putdata(src.getdata())
+      dst.convert('RGB').save(path)
+    except Exception:
+      print(path)
+      traceback.print_exc()
