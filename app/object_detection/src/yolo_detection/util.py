@@ -1,4 +1,4 @@
-import os, traceback, glob
+import os, traceback, glob, time
 import numpy as np
 import torch
 from PIL import Image, ImageOps
@@ -8,6 +8,14 @@ sr_ = Style.RESET_ALL
 import warnings
 warnings.filterwarnings("ignore")
 os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
+
+import logging
+import logging.config
+from yaml import safe_load
+with open('../conf/logging.yml') as f:
+    cfg = safe_load(f)
+logging.config.dictConfig(cfg)
+logger = logging.getLogger('util')
 
 
 def set_seed(seed=42):
@@ -25,8 +33,9 @@ def set_seed(seed=42):
 
 # delete all exif data
 def delete_exif(img_dir):
-    paths = glob.glob(img_dir)
-    print(paths[:20])
+    paths = glob.glob(f"{img_dir}/*/*")
+    logger.info(f"num images: {len(paths)}")
+    start_time = time.time()
     for path in paths: 
         try:
             src = Image.open(path)
@@ -36,5 +45,8 @@ def delete_exif(img_dir):
         except Exception:
             print(path)
             traceback.print_exc()
+    logger.info("done")
+    logger.info(f"elapsed time: {time.time() - start_time}")
+
 
 
