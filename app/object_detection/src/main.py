@@ -1,4 +1,4 @@
-import os, glob
+import os, glob, pickle
 from yolo_detection.util import *
 import torch
 
@@ -28,11 +28,10 @@ for id in ids:
     logger.info(f"num paths: {len(paths)}") 
     results = model(paths, size=128)
     results.print()
-    results.save(save_dir=f'runs/detect/{os.path.basename(id)}') 
+    save_dir = f'runs/detect/{os.path.basename(id)}'
+    # results.save(save_dir=f'runs/detect/{os.path.basename(id)}') 
+    crops = results.crop(save_dir=save_dir, exist_ok=True)
+    crops = [[crop["box"]] for crop in crops]
+    with open(f"{save_dir}/crops_info.pickle", mode='wb') as f:
+        pickle.dump(crops, f)
     print()
-    
-    # index of names and paths should be linked
-    # names = results.pandas().xyxy
-    # for i in range(len(names)):
-    #     if "dog" not in list(names[i].name): 
-    #         print(i, paths[i]) 
