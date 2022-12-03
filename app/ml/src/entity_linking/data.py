@@ -8,7 +8,7 @@ import traceback
 import logging
 import logging.config
 from yaml import safe_load
-with open('../../conf/logging.yml') as f:
+with open('../conf/logging.yml') as f:
     cfg = safe_load(f)
 logging.config.dictConfig(cfg)
 logger = logging.getLogger('data')
@@ -59,7 +59,6 @@ class EntityLinkingDataset(Dataset):
             'label': torch.tensor(label, dtype=torch.long)
         }
       except Exception: 
-        logger.info()
         logger.info(f"img_path: {img_path}")
         traceback.print_exc()
         return None

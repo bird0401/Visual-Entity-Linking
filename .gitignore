@@ -7,11 +7,16 @@
 /app/ml/model/
 /app/ml/src/entity_linking/memo/
 /app/ml/data/
+/app/object_detection/data/
+/app/object_detection/src/runs/
 # /app/ml/src/wandb
+
 outputs
 wandb
 entity_dogs/
+runs/
 latest-run
+
 .d000*
 *.simg
 *.sif
@@ -19,6 +24,7 @@ latest-run
 *.out
 *.err
 *.png
+*.pt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

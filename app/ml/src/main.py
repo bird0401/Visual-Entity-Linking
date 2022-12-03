@@ -46,6 +46,12 @@ logger = logging.getLogger('main')
 # device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 def run_training(dataloaders, model, optimizer, scheduler, device, cfg, run):
+    # logger.info(f'model: {model}')
+    logger.info(f'scheduler: {scheduler}')
+    logger.info(f'optimizer: {optimizer}')
+    # logger.info(f'device: {device}')
+    # logger.debug(f'len(dataloaders["train"]): {len(dataloaders["train"])}')
+
     if cfg.general.debug: num_epochs = cfg.train.epochs_debug
     else: num_epochs = cfg.train.epochs
 
@@ -59,7 +65,6 @@ def run_training(dataloaders, model, optimizer, scheduler, device, cfg, run):
     best_model_wts = copy.deepcopy(model.state_dict())
     best_epoch_loss = np.inf
     history = defaultdict(list)
-    
     for epoch in range(1, num_epochs + 1): 
         gc.collect()
         logger.info(f'epoch = {epoch}')
@@ -119,11 +124,9 @@ def main(cfg: OmegaConf):
   set_seed(cfg.general.seed)
 
   # Dataset
-  if cfg.general.debug: df_train = pd.read_csv("../data/csv/train_debug.csv")
-  else: df_train = pd.read_csv("../data/csv/train.csv")
+  df_train = pd.read_csv("../data/csv/train.csv")
+
   data_transforms = GetTransforms(cfg.data.img_size)
-  # if cfg.general.debug: train_loader, valid_loader = prepare_loaders(EntityLinkingDataset, data_transforms, cfg.data.train_batch_size_debug, cfg.data.valid_batch_size_debug, df_train, fold=0)
-  # else: train_loader, valid_loader = prepare_loaders(EntityLinkingDataset, data_transforms, cfg.data.train_batch_size, cfg.data.valid_batch_size, df_train, fold=0)
   if cfg.general.debug: dataloaders = prepare_loaders(df_train, data_transforms, cfg.data.batch_size_debug, fold=0)
   else: dataloaders = prepare_loaders(df_train, data_transforms, cfg.data.batch_size, fold=0)
 

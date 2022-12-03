@@ -10,7 +10,7 @@ from sklearn.metrics import f1_score
 import logging
 import logging.config
 from yaml import safe_load
-with open('../../conf/logging.yml') as f:
+with open('../conf/logging.yml') as f:
     cfg = safe_load(f)
 logging.config.dictConfig(cfg)
 logger = logging.getLogger('train')
@@ -43,6 +43,9 @@ def train_one_epoch(dataloader, model, criterion, optimizer, scheduler, device, 
     for step, data in bar:
         images = data['image'].to(device, dtype=torch.float)
         labels = data['label'].to(device, dtype=torch.long)
+
+        logger.debug(f'type(images): {type(images)}')
+        logger.debug(f'type(labels): {type(labels)}')
         
         batch_size = images.size(0)
         
@@ -59,8 +62,8 @@ def train_one_epoch(dataloader, model, criterion, optimizer, scheduler, device, 
             
         predicted = torch.max(outputs, 1)[1]
         running_loss += (loss.item() * batch_size)
-        all_labels.extend(labels.cpu().detach().numpy().copy())
-        all_preds.extend(predicted.cpu().detach().numpy().copy())
+        all_labels.extend(labels.to('cpu').detach().numpy().copy())
+        all_preds.extend(predicted.to('cpu').detach().numpy().copy())
         dataset_size += batch_size
         epoch_loss = running_loss / dataset_size
     
@@ -95,13 +98,11 @@ def valid_one_epoch(dataloader, model, criterion, device):
         
         predicted = torch.max(outputs, 1)[1]
         running_loss += (loss.item() * batch_size)
-        all_labels.extend(labels)
-        all_preds.extend(predicted)
+        all_labels.extend(labels.to('cpu').detach().numpy().copy())
+        all_preds.extend(predicted.to('cpu').detach().numpy().copy())
         dataset_size += batch_size
         epoch_loss = running_loss / dataset_size
 
-    all_labels = all_labels.cpu().detach().numpy().copy()
-    all_preds = all_preds.cpu().detach().numpy().copy()
     acc, precision, recall, f1 = scores(all_labels, all_preds)
     gc.collect()
     return epoch_loss, acc, precision, recall, f1
