@@ -42,9 +42,9 @@ def visualize_model(dataloaders, model, device, num_images=50, was_training=Fals
     images_so_far = 0
     plt.figure(figsize=(20, 15))
     
-    res_dir = "./results"
+    res_dir = "../results"
     res_path = res_dir + "/preds.png"
-    os.makedirs(res_dir, exist_ok=False)
+    os.makedirs(res_dir, exist_ok=True)
 
     with torch.no_grad():
         for i, data in enumerate(dataloaders['val']):

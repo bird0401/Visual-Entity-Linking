@@ -144,7 +144,7 @@ def main(cfg: OmegaConf):
   # run.finish()
 
   # For visualizing results
-  model.load_state_dict(torch.load("../model/Loss0.4580_epoch10.bin"))
+  model.load_state_dict(torch.load("../model/Loss0.2107_epoch10.bin"))
   model.eval()
   visualize_model(dataloaders, model, device)
 
