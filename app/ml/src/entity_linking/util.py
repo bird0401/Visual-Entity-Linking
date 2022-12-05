@@ -2,7 +2,7 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
-from yolov5.utils.plots import Annotator
+from entity_linking.yolov5.utils.plots import Annotator
 
 import logging
 import logging.config

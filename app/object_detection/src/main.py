@@ -14,9 +14,10 @@ logger = logging.getLogger('main')
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 set_seed(2022) 
 
+# TODO: create module to define it
 model = torch.hub.load('ultralytics/yolov5', 'yolov5l', pretrained=True)
 model.classes = [16] # predict only dog
-model.conf = 0.2
+model.conf = 0.2 
 model.to(device)
 
 img_dir = "../data/imgs"
