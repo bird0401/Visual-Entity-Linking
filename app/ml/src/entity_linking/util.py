@@ -2,6 +2,7 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
+from yolov5.utils.plots import Annotator
 
 import logging
 import logging.config
@@ -30,6 +31,18 @@ def tensor2np(inp):
     inp = std * inp + mean
     inp = np.clip(inp, 0, 1)
     return inp
+
+def annotate_save(img_path, label = "0", labels = True, save_dir = "/content/save_dir"):
+  id, img_name = img_path.split("/")[-2:]  
+  boxes = crops_info[img_name] 
+  if boxes: 
+    im = np.array(Image.open(img_path))
+    annotator = Annotator(im, example="dog")
+    for box in boxes:
+      annotator.box_label(box, label if labels else '', color = (0, 255, 0))
+    im = annotator.im
+    pil_img = Image.fromarray(im)
+    pil_img.save(f'{save_dir}/{id}/{img_name}')
 
 def imshow(inp, ax):
     inp = tensor2np(inp)

@@ -21,17 +21,16 @@ model.to(device)
 
 img_dir = "../data/imgs"
 ids = glob.glob(img_dir + '/*')
-logger.info(f"num ids: {len(ids)}")
+print(f"num ids: {len(ids)}")
 
 for id in ids:
     paths = glob.glob(f"{id}/*")
-    logger.info(f"num paths: {len(paths)}") 
+    print(f"num paths: {len(paths)}") 
     results = model(paths, size=128)
     results.print()
     save_dir = f'runs/detect/{os.path.basename(id)}'
-    # results.save(save_dir=f'runs/detect/{os.path.basename(id)}')
-    crops = results.crop(save_dir=save_dir, exist_ok=True)
-    crops = [crop["box"] for crop in crops]
+    results.crop(save_dir=save_dir, exist_ok=True)
+    crops = fetch_crops(results)
     with open(f"{save_dir}/crops_info.pickle", mode='wb') as f:
         pickle.dump(crops, f)
     print()

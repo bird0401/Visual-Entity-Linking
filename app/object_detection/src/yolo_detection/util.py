@@ -1,4 +1,5 @@
 import os, traceback, glob, time
+from collections import defaultdict
 import numpy as np
 import torch
 from PIL import Image, ImageOps
@@ -48,5 +49,11 @@ def delete_exif(img_dir):
     logger.info("done")
     logger.info(f"elapsed time: {time.time() - start_time}")
 
-
-
+# fetch hashtable from file name to their bounding boxes
+def fetch_crops(results):
+    crops = defaultdict(list)
+    for i, (im, pred) in enumerate(zip(results.ims, results.pred)):
+        if pred.shape[0]:
+            for *box, conf, cls in reversed(pred):  # xyxy, confidence, class
+              crops[results.files[i]].append(box)
+    return crops
