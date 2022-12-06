@@ -21,6 +21,7 @@ singularity shell --pwd $HOME/Instance_level_recognition/app/object_detection/sr
 python main.py
 
 singularity shell --pwd $HOME/Instance_level_recognition/app/ml/src/ --nv $HOME/Instance_level_recognition/app/ml/python_ml_latest.sif 
+python create_df.py 
 python main.py
 
 singularity shell --pwd /$HOME/Instance_level_recognition/app/ml $HOME/Instance_level_recognition/app/ml/gc_cli_latest.sif

@@ -1,3 +1,6 @@
+import sys, os
+sys.path.append(os.path.join(os.path.dirname(__file__), 'entity_linking/yolov5'))
+
 import os, gc, math, copy, time, random, joblib, yaml, traceback
 # For data manipulation
 import numpy as np
@@ -27,6 +30,7 @@ from entity_linking.train import *
 # %env "WANDB_NOTEBOOK_NAME" "pre_processing"
 import wandb
 wandb.login()
+
 
 from omegaconf import DictConfig, OmegaConf
 import hydra
@@ -139,14 +143,14 @@ def main(cfg: OmegaConf):
   optimizer = optim.Adam(model.parameters(), lr=cfg.optimizer.learning_rate, weight_decay=cfg.optimizer.weight_decay)
   scheduler = fetch_scheduler(optimizer, cfg.optimizer.scheduler, cfg.optimizer.T_max, cfg.optimizer.T_0, cfg.optimizer.min_lr)
 
-  # run = wandb.init(project='EntityLinking', config=OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True))
-  # model, history = run_training(dataloaders, model, optimizer, scheduler, device, cfg, run)
-  # run.finish()
+  run = wandb.init(project='EntityLinking', config=OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True))
+  model, history = run_training(dataloaders, model, optimizer, scheduler, device, cfg, run)
+  run.finish()
 
   # For visualizing results
-  model.load_state_dict(torch.load("../model/Loss0.2107_epoch10.bin"))
-  model.eval()
-  visualize_model(dataloaders, model, device)
+  # model.load_state_dict(torch.load("../model/Loss0.2107_epoch10.bin"))
+  # model.eval()
+  # visualize_model(dataloaders, model, device)
 
 if __name__ == '__main__':
   main()
