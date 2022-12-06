@@ -13,7 +13,13 @@ logging.config.dictConfig(cfg)
 logger = logging.getLogger('main')
 
 def GetWikidataId(path):
-  return path.split("/")[-4]
+  return path.split("/")[3]
+
+def GetRelativePath(path):
+  return os.path.join("../data/", path[5:])
+
+def GetFileName(path):
+  return path.split("/")[-1]
 
 def Encoding(df, save_file):
   encoder = LabelEncoder()
@@ -43,13 +49,17 @@ def Split_Kfold(df, n_fold):
   return df_train, df_test
 
 
-mount_dir = "../data"
+mount_dir = "runs"
 
 # get file paths
 l = glob.glob(f'{mount_dir}/detect/**/crops/dog/*')
-
 df = pd.DataFrame(l, columns=["path"])
+df['path'] = df['path'].apply(GetRelativePath)
+logger.debug(f"df['path'][0] : {df['path'][0]}")
 df['wikidata_id'] = df['path'].apply(GetWikidataId)
+logger.debug(f"df['wikidata_id'][0] : {df['wikidata_id'][0]}")
+df['file_name'] = df['path'].apply(GetFileName)
+logger.debug(f"df['file_name'][0] : {df['file_name'][0]}")
 df = DeleteSmallLabels(df)
 df = Encoding(df, "crop")
 logger.info(f"len(df['label'].unique()) = {len(df['label'].unique())}")

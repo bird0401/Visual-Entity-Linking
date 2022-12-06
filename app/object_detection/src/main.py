@@ -24,6 +24,11 @@ img_dir = "../data/imgs"
 ids = glob.glob(img_dir + '/*')
 print(f"num ids: {len(ids)}")
 
+# from collections import defaultdict
+# nested_dict = lambda: defaultdict(nested_dict)
+# crops = nested_dict()
+crops = {}
+
 for id in ids:
     paths = glob.glob(f"{id}/*")
     print(f"num paths: {len(paths)}") 
@@ -31,7 +36,8 @@ for id in ids:
     results.print()
     save_dir = f'runs/detect/{os.path.basename(id)}'
     results.crop(save_dir=save_dir, exist_ok=True)
-    crops = fetch_crops(results)
-    with open(f"{save_dir}/crops_info.pickle", mode='wb') as f:
-        pickle.dump(crops, f)
+    crops[id] = fetch_crops(results)
     print()
+
+with open(f"runs/detect/crops_info.pickle", mode='wb') as f:
+    pickle.dump(crops, f)

@@ -37,7 +37,9 @@ def GetTransforms(input_size, color_mean = [0.485, 0.456, 0.406], color_std = [0
 class EntityLinkingDataset(Dataset):
     def __init__(self, df, transforms=None):
         self.df = df
-        self.file_names = df['path'].values
+        self.file_paths = df['path'].values
+        self.file_names = df['file_name'].values
+        self.ids = df['wikidata_id'].values
         self.labels = df['label'].values
         self.transforms = transforms
         
@@ -46,21 +48,26 @@ class EntityLinkingDataset(Dataset):
     
     def __getitem__(self, index):
       try:
-        img_path = self.file_names[index]
-        img = cv2.imread(img_path)
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        file_path = self.file_paths[index]
         label = self.labels[index]
+        file_name = self.file_names[index]
+        wikidata_id = self.ids[index]
+
+        img = cv2.imread(file_path)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         
         if self.transforms:
             img = self.transforms(image=img)["image"]
             
         return {
             'image': img,
+            'file_path': file_path,
             'label': torch.tensor(label, dtype=torch.long),
-            'img_path': img_path
+            'file_name': file_name,
+            'wikidata_id': wikidata_id,
         }
       except Exception: 
-        logger.info(f"img_path: {img_path}")
+        logger.info(f"file_path: {file_path}")
         traceback.print_exc()
         return None
 
