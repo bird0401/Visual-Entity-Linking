@@ -38,6 +38,7 @@ class EntityLinkingDataset(Dataset):
     def __init__(self, df, transforms=None):
         self.df = df
         self.file_paths = df['path'].values
+        self.file_noncrop_paths = df['path_noncrop'].values
         self.file_names = df['file_name'].values
         self.ids = df['wikidata_id'].values
         self.labels = df['label'].values
@@ -49,6 +50,7 @@ class EntityLinkingDataset(Dataset):
     def __getitem__(self, index):
       try:
         file_path = self.file_paths[index]
+        file_noncrop_path = self.file_noncrop_paths[index]
         label = self.labels[index]
         file_name = self.file_names[index]
         wikidata_id = self.ids[index]
@@ -62,6 +64,7 @@ class EntityLinkingDataset(Dataset):
         return {
             'image': img,
             'file_path': file_path,
+            'file_noncrop_path': file_noncrop_path,
             'label': torch.tensor(label, dtype=torch.long),
             'file_name': file_name,
             'wikidata_id': wikidata_id,

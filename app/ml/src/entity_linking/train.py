@@ -43,9 +43,6 @@ def train_one_epoch(dataloader, model, criterion, optimizer, scheduler, device, 
     for step, data in bar:
         images = data['image'].to(device, dtype=torch.float)
         labels = data['label'].to(device, dtype=torch.long)
-
-        logger.debug(f'type(images): {type(images)}')
-        logger.debug(f'type(labels): {type(labels)}')
         
         batch_size = images.size(0)
         

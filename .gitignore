@@ -15,7 +15,10 @@ outputs
 wandb
 entity_dogs/
 runs/
+playground/
+save_dir/
 latest-run
+
 
 .d000*
 *.simg

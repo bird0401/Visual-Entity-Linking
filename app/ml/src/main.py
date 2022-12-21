@@ -42,11 +42,6 @@ with open('../conf/logging.yml') as f:
 logging.config.dictConfig(cfg)
 logger = logging.getLogger('main')
 
-# # Configuration
-# with open("../conf/config.yml", "r") as yml:
-#     cfg = yaml.safe_load(yml)
-# cfg = OmegaConf.create(cfg)
-# device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 def run_training(dataloaders, model, optimizer, scheduler, device, cfg, run):
     # logger.info(f'model: {model}')
@@ -141,15 +136,16 @@ def main(cfg: OmegaConf):
 
   optimizer = optim.Adam(model.parameters(), lr=cfg.optimizer.learning_rate, weight_decay=cfg.optimizer.weight_decay)
   scheduler = fetch_scheduler(optimizer, cfg.optimizer.scheduler, cfg.optimizer.T_max, cfg.optimizer.T_0, cfg.optimizer.min_lr)
-
-  run = wandb.init(project='EntityLinking', config=OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True))
-  model, history = run_training(dataloaders, model, optimizer, scheduler, device, cfg, run)
-  run.finish()
+  
+  # For training
+  # run = wandb.init(project='EntityLinking', config=OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True))
+  # model, history = run_training(dataloaders, model, optimizer, scheduler, device, cfg, run)
+  # run.finish()
 
   # For visualizing results
-  # model.load_state_dict(torch.load("../model/Loss0.2107_epoch10.bin"))
-  # model.eval()
-  # visualize_model(dataloaders, model, device)
+  model.load_state_dict(torch.load("../model/Loss0.0488_epoch10.bin"))
+  model.eval()
+  visualize_model(dataloaders, model, device)
 
 if __name__ == '__main__':
   main()

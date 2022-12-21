@@ -17,10 +17,8 @@
 pjsub --interact -j -g gk77 -L rscgrp=interactive-a,node=1,jobenv=singularity
 module load singularity/3.7.3
 
-singularity shell --pwd $HOME/Instance_level_recognition/app/object_detection/src/ --nv $HOME/Instance_level_recognition/app/object_detection/object_detection_latest.sif
-python main.py
-
 singularity shell --pwd $HOME/Instance_level_recognition/app/object_detection/src/ --nv $HOME/Instance_level_recognition/app/ml/python_ml_latest.sif 
+python main.py
 python create_df.py 
 
 singularity shell --pwd $HOME/Instance_level_recognition/app/ml/src/ --nv $HOME/Instance_level_recognition/app/ml/python_ml_latest.sif 
@@ -30,6 +28,9 @@ singularity shell --pwd /$HOME/Instance_level_recognition/app/ml/src $HOME/Insta
 singularity shell --pwd /$HOME/Instance_level_recognition/app/object_detection/src $HOME/Instance_level_recognition/app/ml/gc_cli_latest.sif
 gsutil -m cp -r gs://entity_dogs_debug_crop/ ./
 gsutil -m cp -r ./ gs://entity_dogs_debug_crop/
+
+singularity shell --pwd $HOME/Instance_level_recognition/app/object_detection/src/ --nv $HOME/Instance_level_recognition/app/object_detection/object_detection_latest.sif
+python main.py
 
 singularity shell --pwd /$HOME/Instance_level_recognition/app/ml/src --nv $HOME/Instance_level_recognition/app/ml/python_ml_latest.sif
 

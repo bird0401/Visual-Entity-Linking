@@ -18,6 +18,17 @@ def GetWikidataId(path):
 def GetRelativePath(path):
   return os.path.join("../data/", path[5:])
 
+def GetNonCropPath(path):
+  path_split = path.split("/")
+  basename_split = path_split[-1].split(".")
+  basename = basename_split[0][:10] + "." + basename_split[1]
+  parents_split = path_split[:-3]
+  path_noncrop = ""
+  for s in parents_split:
+    path_noncrop += (s + "/")
+  path_noncrop += basename
+  return path_noncrop
+
 def GetFileName(path):
   return path.split("/")[-1]
 
@@ -56,6 +67,8 @@ l = glob.glob(f'{mount_dir}/detect/**/crops/dog/*')
 df = pd.DataFrame(l, columns=["path"])
 df['path'] = df['path'].apply(GetRelativePath)
 logger.debug(f"df['path'][0] : {df['path'][0]}")
+df['path_noncrop'] = df['path'].apply(GetNonCropPath)
+logger.debug(f"df['path_noncrop'][0] : {df['path_noncrop'][0]}")
 df['wikidata_id'] = df['path'].apply(GetWikidataId)
 logger.debug(f"df['wikidata_id'][0] : {df['wikidata_id'][0]}")
 df['file_name'] = df['path'].apply(GetFileName)

@@ -1,6 +1,0 @@
-SELECT ?enlabel 
-WHERE
-{
-  ?dog wdt:P31 wd:Q39367.
-  ?dog rdfs:label ?enlabel filter (lang(?enlabel) = "en") .
-}

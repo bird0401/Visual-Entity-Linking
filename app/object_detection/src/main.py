@@ -21,23 +21,24 @@ model.conf = 0.2
 model.to(device)
 
 img_dir = "../data/imgs"
-ids = glob.glob(img_dir + '/*')
-print(f"num ids: {len(ids)}")
+ids_paths = glob.glob(img_dir + '/*')
+logger.info(f"num ids: {len(ids_paths)}")
 
-# from collections import defaultdict
-# nested_dict = lambda: defaultdict(nested_dict)
-# crops = nested_dict()
 crops = {}
-
-for id in ids:
-    paths = glob.glob(f"{id}/*")
-    print(f"num paths: {len(paths)}") 
+for ids_path in ids_paths:
+    paths = glob.glob(f"{ids_path}/*")
+    logger.info(f"num paths: {len(paths)}") 
     results = model(paths, size=128)
     results.print()
-    save_dir = f'runs/detect/{os.path.basename(id)}'
+    save_dir = f'runs/detect/{os.path.basename(ids_path)}'
     results.crop(save_dir=save_dir, exist_ok=True)
-    crops[id] = fetch_crops(results)
+    wikidata_id = ids_path.split("/")[-1]
+    logger.debug(f"wikidata_id : {wikidata_id}")
+    crops[wikidata_id] = fetch_crops(results)
     print()
 
+wikidata_id = ids_paths[0].split("/")[-1]
+logger.debug(f'wikidata_id : {wikidata_id}')
+logger.debug(f'crops[wikidata_id] : {crops[wikidata_id]}')
 with open(f"runs/detect/crops_info.pickle", mode='wb') as f:
     pickle.dump(crops, f)
