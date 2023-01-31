@@ -18,6 +18,7 @@ pjsub --interact -j -g gk77 -L rscgrp=interactive-a,node=1,jobenv=singularity
 module load singularity/3.7.3
 
 singularity shell --pwd $HOME/Instance_level_recognition/app/object_detection/src/ --nv $HOME/Instance_level_recognition/app/ml/python_ml_latest.sif 
+python preprocess.py
 python main.py
 python create_df.py 
 
@@ -41,6 +42,7 @@ singularity shell --pwd /$HOME/Instance_level_recognition/app/ml/src --nv $HOME/
 # gsutil -m cp -r gs://entity_dogs_debug .
 # mv entity_dogs_debug/ data/
 
-pjsub ../run.sh
+pjsub /$HOME/Instance_level_recognition/app/ml/job/run.sh
+pjsub /$HOME/Instance_level_recognition/app/object_detection/job/preprocess.sh
 
 

@@ -2,7 +2,8 @@ import os, traceback, glob, time
 from collections import defaultdict
 import numpy as np
 import torch
-from PIL import Image, ImageOps
+from PIL import Image, ImageOps, ImageFile, UnidentifiedImageError
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 from colorama import Fore, Back, Style
 b_ = Fore.BLUE
 sr_ = Style.RESET_ALL
@@ -31,23 +32,19 @@ def set_seed(seed=42):
     # Set a fixed value for the hash seed
     os.environ['PYTHONHASHSEED'] = str(seed)
 
-
 # delete all exif data
-def delete_exif(img_dir):
-    paths = glob.glob(f"{img_dir}/*/*")
-    logger.info(f"num images: {len(paths)}")
-    start_time = time.time()
-    for path in paths: 
-        try:
-            src = Image.open(path)
-            dst = Image.new(src.mode, src.size)
-            dst.putdata(src.getdata())
-            dst.convert('RGB').save(path)
-        except Exception:
-            print(path)
-            traceback.print_exc()
-    logger.info("done")
-    logger.info(f"elapsed time: {time.time() - start_time}")
+def delete_exif(path):
+    try:
+        src = Image.open(path)
+        dst = Image.new(src.mode, src.size)
+        dst.putdata(src.getdata())
+        dst.convert('RGB').save(path)
+    except UnidentifiedImageError:
+        print(f"remove {path}")
+        os.remove(path)
+    except Exception:
+        print(path)
+        traceback.print_exc()
 
 # fetch hashtable from file name to their bounding boxes
 def fetch_crops(results):
