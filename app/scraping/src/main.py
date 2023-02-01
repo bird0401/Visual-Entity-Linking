@@ -8,6 +8,15 @@ import mysql.connector
 import sys
 from util import *
 
+import logging
+import logging.config
+from yaml import safe_load
+with open('../conf/logging.yml') as f:
+    cfg = safe_load(f)
+logging.config.dictConfig(cfg)
+logger = logging.getLogger('main')
+
+
 mysql_user = os.environ['MYSQL_USER']
 mysql_password = os.environ['MYSQL_PASS']
 host = os.environ['DB_HOST']
@@ -94,11 +103,15 @@ def ExtractImageURLs(entity_img_list_page_url):
   Image Page is the page which contains an image, description, bottons, etc.
   after extract Image Page URL, extract image url from this Page 
   """
+  first_page = True
   while entity_img_list_page_url:
     res = Fetch(entity_img_list_page_url)
     soup = BeautifulSoup(res.text, "html.parser")
     try:
       image_classes=soup.find_all(class_="galleryfilename galleryfilename-truncate")
+      if first_page and len(image_classes) < 5:
+        logger.info(f"{entity_img_list_page_url} has only {len(image_classes)} images")
+        return
       for image_class in image_classes:
         img_page_url=ToAbsURL(related_url = image_class.attrs['href'])
         img_url = ExtractImageURL(img_page_url)
@@ -107,6 +120,7 @@ def ExtractImageURLs(entity_img_list_page_url):
     except Exception:
       traceback.print_exc()
     entity_img_list_page_url=ExtractNextPageURL(entity_img_list_page_url)
+    first_page = False
 
 def DownloadImage(url, file_path, wikidata_id):
   res=Fetch(url)
