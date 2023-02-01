@@ -8,7 +8,7 @@ from fake_useragent import UserAgent
 def ToAbsURL(base_url = 'https://commons.wikimedia.org', related_url = '/wiki/Category'):
   return base_url+related_url
 
-ua = UserAgent()
+ua = UserAgent(use_cache_server=False)
 header = {'user-agent':ua.chrome}
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1))
 def Fetch(url):
