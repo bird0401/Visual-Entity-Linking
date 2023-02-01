@@ -167,8 +167,8 @@ def DownloadImages(entity_name, entity_url):
     img_file_path = os.path.join(img_dir_path, filename)
     DownloadImage(url=img_url, file_path=img_file_path, wikidata_id = wikidata_id)
 
+entity_names_urls = ExtractEntityURLs(category='People_by_name')
 # entity_names_urls = ExtractEntityURLs(category='Dog_breeds_by_name')
-entity_names_urls = ExtractEntityURLs(category='Dog_breeds_by_name')
 for entity_name, entity_url in entity_names_urls:
   DownloadImages(entity_name, entity_url)
 connection.close() 
