@@ -1,3 +1,3 @@
 #!/bin/sh
 
-mysql -p < create_database_tables_user.sql
+mysql -p < create_db_tables_user.sql
