@@ -1,6 +1,8 @@
-CREATE DATABASE scraping_dog_breeds_by_name CHARACTER SET utf8;
+-- CREATE DATABASE scraping_dog_breeds_by_name CHARACTER SET utf8;
+-- USE scraping_dog_breeds_by_name;
 
-USE scraping_dog_breeds_by_name;
+CREATE DATABASE scraping_People_by_name CHARACTER SET utf8;
+USE scraping_People_by_name;
 
 CREATE TABLE names(
     wikidata_id CHAR(20) NOT NULL PRIMARY KEY,

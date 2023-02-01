@@ -20,7 +20,8 @@ logger = logging.getLogger('main')
 mysql_user = os.environ['MYSQL_USER']
 mysql_password = os.environ['MYSQL_PASS']
 host = os.environ['DB_HOST']
-database = os.environ['DATABASE']
+database = "scraping_scraping_People_by_name"
+# database = os.environ['DATABASE']
 
 connection = mysql.connector.connect(
     user=mysql_user,
