@@ -34,6 +34,3 @@ CREATE TABLE img_path (
         REFERENCES img_urls(img_id)
         ON UPDATE CASCADE ON DELETE CASCADE
 );
-
-CREATE USER 'scraper' IDENTIFIED BY "$MYSQL_ROOT_PASSWORD";
-GRANT ALL ON *.* TO 'scraper';
