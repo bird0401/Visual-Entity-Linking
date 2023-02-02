@@ -20,7 +20,8 @@ logger = logging.getLogger('main')
 mysql_user = os.environ['MYSQL_USER']
 mysql_password = os.environ['MYSQL_PASS']
 host = os.environ['DB_HOST']
-database = "scraping_People_by_name"
+category = "Automobiles_by_brand_by_model"
+database = "scraping_" + category
 # database = os.environ['DATABASE']
 
 connection = mysql.connector.connect(
@@ -152,6 +153,7 @@ def DownloadImage(url, file_path, wikidata_id):
 def DownloadImages(entity_name, entity_url):
   wikidata_id = ExtractEntityID(entity_url)
   if not wikidata_id: return 
+  logger.info(f"{entity_name}, {entity_url}")
   insert_new_name = (
     "INSERT INTO names (wikidata_id, name) "
     "VALUES (%s, %s)")
@@ -168,8 +170,49 @@ def DownloadImages(entity_name, entity_url):
     img_file_path = os.path.join(img_dir_path, filename)
     DownloadImage(url=img_url, file_path=img_file_path, wikidata_id = wikidata_id)
 
-entity_names_urls = ExtractEntityURLs(category='People_by_name')
-# entity_names_urls = ExtractEntityURLs(category='Dog_breeds_by_name')
-for entity_name, entity_url in entity_names_urls:
-  DownloadImages(entity_name, entity_url)
+def ExtractEntityURLs(category):
+  entity_list_page_url=ToAbsURL(related_url = f'/wiki/Category:{category}')
+
+  while entity_list_page_url:
+    res = Fetch(entity_list_page_url)
+    soup = BeautifulSoup(res.text, "html.parser")
+    
+    try:
+      elems=soup.find_all(class_="CategoryTreeItem")
+      for elem in elems:
+        entity_name = elem.find('a').text
+        entity_url = ToAbsURL(related_url = elem.find('a').attrs['href'])
+        if entity_name and entity_url: yield entity_name, entity_url
+        else: continue
+    except Exception:
+      traceback.print_exc()
+
+    entity_list_page_url=ExtractNextPageURL(entity_list_page_url)
+
+def extract_categories(category):
+  category_list_page_url=ToAbsURL(related_url = f'/wiki/Category:{category}')
+
+  while category_list_page_url:
+    res = Fetch(category_list_page_url)
+    soup = BeautifulSoup(res.text, "html.parser")
+    
+    try:
+      elems=soup.find_all(class_="CategoryTreeItem")
+      for elem in elems:
+        category_name = elem.find('a').text
+        category_url = ToAbsURL(related_url = elem.find('a').attrs['href'])
+        if category_name and category_url: yield category_name, category_url
+        else: continue
+    except Exception:
+      traceback.print_exc()
+
+    category_list_page_url=ExtractNextPageURL(category_list_page_url)
+
+categories = extract_categories(category) # If there is subcategories, execute it
+for category, _ in categories:
+  entity_names_urls = ExtractEntityURLs(category=category)
+  # entity_names_urls = ExtractEntityURLs(category='People_by_name')
+  # entity_names_urls = ExtractEntityURLs(category='Dog_breeds_by_name')
+  for entity_name, entity_url in entity_names_urls:
+    DownloadImages(entity_name, entity_url)
 connection.close() 
