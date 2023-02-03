@@ -6,6 +6,9 @@ ENV TERM xterm
 # install python external modules
 COPY requirements.txt /usr/src
 WORKDIR /usr/src
-RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir --upgrade setuptools \
-    && pip install --no-cache-dir -r requirements.txt 
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y vim && \
+    apt-get install -y tmux  && \
+    pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir --upgrade setuptools && \
+    pip install --no-cache-dir -r requirements.txt 
