@@ -114,7 +114,8 @@ def ExtractImageURLs(entity_img_list_page_url):
     res = Fetch(entity_img_list_page_url)
     soup = BeautifulSoup(res.text, "html.parser")
     try:
-      image_classes=soup.find_all(class_="galleryfilename galleryfilename-truncate")
+      image_classes=soup.find_all(class_="image") 
+      # image_classes=soup.find_all(class_="galleryfilename galleryfilename-truncate")
       if first_page and len(image_classes) < 5:
         logger.info(f"{entity_img_list_page_url} has only {len(image_classes)} images")
         return
@@ -167,6 +168,7 @@ def DownloadImages(entity_name, entity_url):
 
   img_dir_path = MakeEntityImgDir(wikidata_id)
   for i, img_url in enumerate(ExtractImageURLs(entity_url)):
+    # print(img_url)
     if (wikidata_id, img_url) in img_urls_in_db: 
       print(f"still exists: ({wikidata_id}, {img_url})")
       continue
@@ -188,6 +190,27 @@ def ExtractEntityURLs(category):
         entity_url = ToAbsURL(related_url = elem.find('a').attrs['href'])
         if entity_name and entity_url: yield entity_name, entity_url
         else: continue
+    except Exception:
+      traceback.print_exc()
+
+    entity_list_page_url=ExtractNextPageURL(entity_list_page_url)
+
+def extract_entity_urls_for_gallery(category):
+  entity_list_page_url=ToAbsURL(related_url = f'/wiki/Category:{category}')
+
+  while entity_list_page_url:
+    res = Fetch(entity_list_page_url)
+    soup = BeautifulSoup(res.text, "html.parser")
+    
+    try:
+      groups = soup.find_all(class_="mw-category-group")
+      for group in groups:
+        elems = group.find_all('li')
+        for elem in elems:
+          entity_name = elem.find('a').text
+          entity_url = ToAbsURL(related_url = elem.find('a').attrs['href'])
+          if entity_name and entity_url: yield entity_name, entity_url
+          else: continue
     except Exception:
       traceback.print_exc()
 
@@ -215,15 +238,16 @@ def extract_categories(category):
 category = database
 
 # If there are subcategories, execute following
-categories = extract_categories(category) 
-for category, _ in categories:
-  entity_names_urls = ExtractEntityURLs(category=category)
-  for entity_name, entity_url in entity_names_urls:
-    DownloadImages(entity_name, entity_url)
+# categories = extract_categories(category) 
+# for category, _ in categories:
+#   entity_names_urls = ExtractEntityURLs(category=category)
+#   for entity_name, entity_url in entity_names_urls:
+#     DownloadImages(entity_name, entity_url)
 
 # If there are no subcategories, execute following
-# entity_names_urls = ExtractEntityURLs(category=category)
-# for entity_name, entity_url in entity_names_urls:
-#   DownloadImages(entity_name, entity_url)
+entity_names_urls = extract_entity_urls_for_gallery(category=category)
+for entity_name, entity_url in entity_names_urls:
+  # print(entity_name, entity_url)
+  DownloadImages(entity_name, entity_url)
 
 connection.close() 

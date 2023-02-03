@@ -1,11 +1,34 @@
+-- command to execute this file
+-- mysql -p < create_db_tables.sql
+
+
 -- CREATE DATABASE scraping_dog_breeds_by_name CHARACTER SET utf8;
 -- USE scraping_dog_breeds_by_name;
 
 -- CREATE DATABASE scraping_People_by_name CHARACTER SET utf8;
 -- USE scraping_People_by_name;
 
-CREATE DATABASE Automobiles_by_brand_by_model CHARACTER SET utf8;
-USE Automobiles_by_brand_by_model;
+-- CREATE DATABASE Automobiles_by_brand_by_model CHARACTER SET utf8;
+-- USE Automobiles_by_brand_by_model;
+
+-- CREATE DATABASE Aircraft_by_popular_name CHARACTER SET utf8;
+-- USE Aircraft_by_popular_name;
+
+-- CREATE DATABASE Breads_by_name CHARACTER SET utf8;
+-- USE Breads_by_name;
+
+-- CREATE DATABASE Gallery_pages_of_birds CHARACTER SET utf8;
+-- USE Gallery_pages_of_birds;
+
+-- CREATE DATABASE Politicians_of_the_United_States_by_name CHARACTER SET utf8;
+-- USE Politicians_of_the_United_States_by_name;
+
+-- CREATE DATABASE Sportspeople_by_name CHARACTER SET utf8;
+-- USE Sportspeople_by_name;
+
+CREATE DATABASE Film_directors_by_name CHARACTER SET utf8;
+USE Film_directors_by_name;
+
 
 CREATE TABLE names(
     wikidata_id CHAR(20) NOT NULL PRIMARY KEY,
