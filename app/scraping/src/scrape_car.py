@@ -16,10 +16,6 @@ with open('../conf/logging.yml') as f:
 logging.config.dictConfig(cfg)
 logger = logging.getLogger('main')
 
-# points to change to scrape certain category
-# - database
-# - img_path
-# - whether there are subcategories
 
 mysql_user = os.environ['MYSQL_USER']
 mysql_password = os.environ['MYSQL_PASS']
@@ -215,15 +211,15 @@ def extract_categories(category):
 category = database
 
 # If there are subcategories, execute following
-# categories = extract_categories(category) 
-# for category, _ in categories:
-#   entity_names_urls = ExtractEntityURLs(category=category)
-#   for entity_name, entity_url in entity_names_urls:
-#     DownloadImages(entity_name, entity_url)
+categories = extract_categories(category) 
+for category, _ in categories:
+  entity_names_urls = ExtractEntityURLs(category=category)
+  for entity_name, entity_url in entity_names_urls:
+    DownloadImages(entity_name, entity_url)
 
-If there are no subcategories, execute following
-entity_names_urls = ExtractEntityURLs(category=category)
-for entity_name, entity_url in entity_names_urls:
-  DownloadImages(entity_name, entity_url)
+# If there are no subcategories, execute following
+# entity_names_urls = ExtractEntityURLs(category=category)
+# for entity_name, entity_url in entity_names_urls:
+#   DownloadImages(entity_name, entity_url)
 
 connection.close() 

@@ -24,7 +24,7 @@ logger = logging.getLogger('main')
 mysql_user = os.environ['MYSQL_USER']
 mysql_password = os.environ['MYSQL_PASS']
 host = os.environ['DB_HOST']
-database = "Automobiles_by_brand_by_model"
+database = "Film_directors_by_name"
 # database = os.environ['DATABASE']
 
 connection = mysql.connector.connect(
@@ -85,7 +85,7 @@ def ExtractEntityID(entity_url):
     return None
 
 def MakeEntityImgDir(id):
-  img_path = "../data_car/imgs/" + id
+  img_path = "../data_director/imgs/" + id
   # img_path = "../data/imgs/" + id
   if not os.path.isdir(img_path): os.makedirs(img_path)
   return img_path
@@ -215,15 +215,15 @@ def extract_categories(category):
 category = database
 
 # If there are subcategories, execute following
-# categories = extract_categories(category) 
-# for category, _ in categories:
-#   entity_names_urls = ExtractEntityURLs(category=category)
-#   for entity_name, entity_url in entity_names_urls:
-#     DownloadImages(entity_name, entity_url)
+categories = extract_categories(category) 
+for category, _ in categories:
+  entity_names_urls = ExtractEntityURLs(category=category)
+  for entity_name, entity_url in entity_names_urls:
+    DownloadImages(entity_name, entity_url)
 
-If there are no subcategories, execute following
-entity_names_urls = ExtractEntityURLs(category=category)
-for entity_name, entity_url in entity_names_urls:
-  DownloadImages(entity_name, entity_url)
+# If there are no subcategories, execute following
+# entity_names_urls = ExtractEntityURLs(category=category)
+# for entity_name, entity_url in entity_names_urls:
+#   DownloadImages(entity_name, entity_url)
 
 connection.close() 

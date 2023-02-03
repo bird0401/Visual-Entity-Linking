@@ -16,16 +16,11 @@ with open('../conf/logging.yml') as f:
 logging.config.dictConfig(cfg)
 logger = logging.getLogger('main')
 
-# points to change to scrape certain category
-# - database
-# - img_path
-# - whether there are subcategories
 
 mysql_user = os.environ['MYSQL_USER']
 mysql_password = os.environ['MYSQL_PASS']
 host = os.environ['DB_HOST']
-database = "Automobiles_by_brand_by_model"
-# database = os.environ['DATABASE']
+database = "Aircraft_by_popular_name"
 
 connection = mysql.connector.connect(
     user=mysql_user,
@@ -85,8 +80,7 @@ def ExtractEntityID(entity_url):
     return None
 
 def MakeEntityImgDir(id):
-  img_path = "../data_car/imgs/" + id
-  # img_path = "../data/imgs/" + id
+  img_path = "../data_aircraft/imgs/" + id
   if not os.path.isdir(img_path): os.makedirs(img_path)
   return img_path
 
@@ -221,9 +215,9 @@ category = database
 #   for entity_name, entity_url in entity_names_urls:
 #     DownloadImages(entity_name, entity_url)
 
-If there are no subcategories, execute following
+# If there are no subcategories, execute following
 entity_names_urls = ExtractEntityURLs(category=category)
 for entity_name, entity_url in entity_names_urls:
   DownloadImages(entity_name, entity_url)
 
-connection.close() 
+connection.close()
