@@ -10,6 +10,10 @@ with open('../conf/logging.yml') as f:
 logging.config.dictConfig(cfg)
 logger = logging.getLogger('main')
 
+# change by each category
+# - model.classes
+# - img_dir
+# - save_dir
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 set_seed(2022) 

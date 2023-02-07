@@ -11,6 +11,7 @@ with open('../conf/logging.yml') as f:
 logging.config.dictConfig(cfg)
 logger = logging.getLogger('main')
 
+# Change img_dir by each category
 
 if __name__=="__main__":
     img_dir = "../data/imgs"
@@ -20,6 +21,7 @@ if __name__=="__main__":
 
     start_time = time.time()
 
+    # mutil-processing
     with Pool() as p:
         imap = p.imap(delete_exif, paths)
         results = list(tqdm(imap, total=len(paths)))
