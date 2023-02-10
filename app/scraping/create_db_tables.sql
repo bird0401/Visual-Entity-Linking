@@ -55,7 +55,7 @@ CREATE TABLE img_wikidata_id (
 
 CREATE TABLE img_path (
     img_id MEDIUMINT NOT NULL PRIMARY KEY,
-    path VARCHAR(50) NOT NULL,
+    path VARCHAR(100) NOT NULL,
     FOREIGN KEY(img_id) 
         REFERENCES img_urls(img_id)
         ON UPDATE CASCADE ON DELETE CASCADE

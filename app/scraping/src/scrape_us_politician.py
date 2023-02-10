@@ -131,6 +131,7 @@ def ExtractImageURLs(entity_img_list_page_url):
 def DownloadImage(url, file_path, wikidata_id):
   res=Fetch(url)
   if res: 
+    logger.info(file_path)
     with open(file_path, "wb") as f: f.write(res.content)
 
     insert_new_img_url = (
@@ -144,7 +145,6 @@ def DownloadImage(url, file_path, wikidata_id):
       "VALUES (%s, %s)")
     
     try:
-      print(file_path)
       cur.execute(insert_new_img_url, (wikidata_id, url))
       img_urls_in_db.add((wikidata_id, url))
       img_id = cur.lastrowid

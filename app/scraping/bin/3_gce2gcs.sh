@@ -8,8 +8,10 @@
 # data_bread
 # data_car
 # data_dog
+# data_athlete
+# data_director
+# data_us_politician
 data_dir=$1
-# data_dir="data_bread"
 
 # for data directory (images and csv)
 gsutil mb -b on -l asia-northeast1 gs://${data_dir}
