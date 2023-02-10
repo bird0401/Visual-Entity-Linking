@@ -28,6 +28,7 @@ python main.py
 singularity shell --pwd /$HOME/Instance_level_recognition/app/ml/src $HOME/Instance_level_recognition/app/ml/gc_cli_latest.sif
 singularity shell --pwd /$HOME/Instance_level_recognition/app/object_detection/src $HOME/Instance_level_recognition/app/ml/gc_cli_latest.sif
 gsutil -m cp -r gs://entity_dogs_debug_crop/ ./
+gsutil -m cp -r gs://entity_dogs/ ./
 gsutil -m cp -r ./ gs://entity_dogs_debug_crop/
 
 singularity shell --pwd $HOME/Instance_level_recognition/app/object_detection/src/ --nv $HOME/Instance_level_recognition/app/object_detection/object_detection_latest.sif
@@ -44,5 +45,6 @@ singularity shell --pwd /$HOME/Instance_level_recognition/app/ml/src --nv $HOME/
 
 pjsub /$HOME/Instance_level_recognition/app/ml/job/run.sh
 pjsub /$HOME/Instance_level_recognition/app/object_detection/job/preprocess.sh
+pjsub /$HOME/Instance_level_recognition/app/object_detection/job/data_download.sh
 
 
