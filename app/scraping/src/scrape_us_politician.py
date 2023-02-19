@@ -164,7 +164,10 @@ def DownloadImages(entity_name, entity_url):
   if wikidata_id not in wikidata_ids_in_db: 
     cur.execute(insert_new_name, (wikidata_id, entity_name))
     wikidata_ids_in_db.add(wikidata_id)
-
+  else: # For scraping from the middle
+    logger.info(f"Still exists {entity_name}, {entity_url}")
+    return
+    
   img_dir_path = MakeEntityImgDir(wikidata_id)
   for i, img_url in enumerate(ExtractImageURLs(entity_url)):
     if (wikidata_id, img_url) in img_urls_in_db: 
