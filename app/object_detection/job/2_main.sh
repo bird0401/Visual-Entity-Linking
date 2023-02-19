@@ -10,4 +10,4 @@ module load singularity/3.7.3
 singularity exec \
     --pwd /$HOME/Instance_level_recognition/app/object_detection/src/ \
     --nv /$HOME/Instance_level_recognition/app/object_detection/object_detection_latest.sif \
-    python ./main.py
+    python ./2_main.py

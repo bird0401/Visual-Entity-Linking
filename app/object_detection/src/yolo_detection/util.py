@@ -3,6 +3,7 @@ from collections import defaultdict
 import numpy as np
 import torch
 from PIL import Image, ImageOps, ImageFile, UnidentifiedImageError
+Image.MAX_IMAGE_PIXELS = None # Enable to read large size images
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 from colorama import Fore, Back, Style
 b_ = Fore.BLUE
@@ -32,7 +33,7 @@ def set_seed(seed=42):
     # Set a fixed value for the hash seed
     os.environ['PYTHONHASHSEED'] = str(seed)
 
-# delete all exif data
+# Delete all exif data
 def delete_exif(path):
     try:
         src = Image.open(path)
@@ -46,7 +47,7 @@ def delete_exif(path):
         print(path)
         traceback.print_exc()
 
-# fetch hashtable from file name to their bounding boxes
+# Fetch hashtable from file name to their bounding boxes
 def fetch_crops(results):
     crops = defaultdict(list)
     for i, (im, pred) in enumerate(zip(results.ims, results.pred)):

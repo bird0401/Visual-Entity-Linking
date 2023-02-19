@@ -1,4 +1,4 @@
-import glob, joblib, os
+import sys, glob, joblib, os
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import StratifiedKFold
@@ -43,10 +43,16 @@ def Split_Kfold(df, n_fold):
   return df_train, df_test
 
 
-mount_dir = "../data"
+# change demands on the situation
+# - is_debug
+# - category 
+
+is_debug = True
+category = sys.argv[1]
+mount_dir = f"../detect_{category}_debug" if is_debug else f"../detect_{category}"
 
 # get file paths
-l = glob.glob(f'{mount_dir}/detect/**/crops/dog/*')
+l = glob.glob(f'{mount_dir}/detect/**/crops/{category}/*')
 
 df = pd.DataFrame(l, columns=["path"])
 df['wikidata_id'] = df['path'].apply(GetWikidataId)
