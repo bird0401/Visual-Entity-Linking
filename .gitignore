@@ -19,6 +19,7 @@ runs_debug/
 playground/
 save_dir/
 data*/
+data/
 data_debug/
 data_buckup/
 detect*/
