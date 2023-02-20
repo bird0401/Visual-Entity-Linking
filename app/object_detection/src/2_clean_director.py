@@ -32,7 +32,7 @@ def main():
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     set_seed(2022) 
 
-    category = "bird"
+    category = "director"
     is_debug = False
 
     map_category_to_num = {

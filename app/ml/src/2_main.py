@@ -112,6 +112,10 @@ def run_training(dataloaders, model, optimizer, scheduler, device, cfg, run):
 def criterion(outputs, labels):
     return nn.CrossEntropyLoss()(outputs, labels)
 
+# change demands on category
+# - category
+# - is_debug
+# - src_dir
 @hydra.main(config_path="../conf/", config_name="config.yml")
 def main(cfg: OmegaConf):
   logger.debug(f'cfg.data.batch_size["train"]: {cfg.data.batch_size["train"]}')
@@ -122,7 +126,10 @@ def main(cfg: OmegaConf):
   set_seed(cfg.general.seed)
 
   # Dataset
-  df_train = pd.read_csv("../data/csv/train.csv")
+  category = "bird"
+  is_debug = False
+  src_dir = f"../detect_{category}_debug" if is_debug else f"../detect_{category}"
+  df_train = pd.read_csv(f"{src_dir}/csv/train.csv")
 
   data_transforms = GetTransforms(cfg.data.img_size)
   if cfg.general.debug: dataloaders = prepare_loaders(df_train, data_transforms, cfg.data.batch_size_debug, fold=0)
@@ -138,14 +145,14 @@ def main(cfg: OmegaConf):
   scheduler = fetch_scheduler(optimizer, cfg.optimizer.scheduler, cfg.optimizer.T_max, cfg.optimizer.T_0, cfg.optimizer.min_lr)
   
   # For training
-  # run = wandb.init(project='EntityLinking', config=OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True))
-  # model, history = run_training(dataloaders, model, optimizer, scheduler, device, cfg, run)
-  # run.finish()
+  run = wandb.init(project='EntityLinking', config=OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True))
+  model, history = run_training(dataloaders, model, optimizer, scheduler, device, cfg, run)
+  run.finish()
 
   # For visualizing results
-  model.load_state_dict(torch.load("../model/Loss0.0488_epoch10.bin"))
-  model.eval()
-  visualize_model(dataloaders, model, device)
+  # model.load_state_dict(torch.load("../model/Loss0.0488_epoch10.bin"))
+  # model.eval()
+  # visualize_model(dataloaders, model, device)
 
 if __name__ == '__main__':
   main()

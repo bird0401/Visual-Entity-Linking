@@ -18,7 +18,7 @@
 # - us_politician_second
 # - us_politician_third
 
-category=us_politician
+category=us_politician_second
 module load singularity/3.7.3
 singularity exec \
     --pwd /$HOME/Instance_level_recognition/app/object_detection \
