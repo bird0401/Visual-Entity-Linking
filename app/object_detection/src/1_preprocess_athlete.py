@@ -25,7 +25,7 @@ logger = logging.getLogger('main')
 # - dogs
 # - us_politician
 def main():
-    category = "us_politician" 
+    category = "athlete" 
     is_debug = False
     img_dir = f"../data_{category}_debug/imgs" if is_debug else f"../data_{category}/imgs" # for debug
     paths = glob.glob(f"{img_dir}/*/*")
