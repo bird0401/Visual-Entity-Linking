@@ -39,7 +39,7 @@ def main():
         "aircraft": [4],
         "athlete": [0],
         "bird": [14],
-        "bread": [45, 48, 52, 53, 54, 55],
+        "bread": [48, 52, 53, 54, 55],
         "car": [2],
         "director": [0],
         "dog": [16],
@@ -49,7 +49,8 @@ def main():
     # TODO: create module to define it
     model = torch.hub.load('ultralytics/yolov5', 'yolov5l', pretrained=True)
     model.classes = map_category_to_num[category] # Category to predict
-    model.conf = 0.2 
+    model.conf = 0.4
+    model.max_det = 2
     model.to(device)
 
     img_dir = f"../data_{category}_debug/imgs" if is_debug else f"../data_{category}/imgs" 

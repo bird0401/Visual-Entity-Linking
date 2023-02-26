@@ -1,19 +1,17 @@
 import sys, os
 sys.path.append(os.path.join(os.path.dirname(__file__), 'entity_linking/yolov5'))
 
-import os, gc, math, copy, time, random, joblib, yaml, traceback
+import os, gc, copy, time
 # For data manipulation
 import numpy as np
 import pandas as pd
-import cv2
 # Pytorch Imports
 import torch
 import torch.nn as nn
 import torch.optim as optim
 # Utils
-from tqdm import tqdm
 from collections import defaultdict
-from pathlib import Path
+
 # For colored terminal text
 from colorama import Fore, Back, Style
 b_ = Fore.BLUE
@@ -22,6 +20,7 @@ import warnings
 warnings.filterwarnings("ignore")
 # For descriptive error messages
 os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
+
 from entity_linking.util import *
 from entity_linking.data import *
 from entity_linking.model import *
@@ -31,7 +30,7 @@ from entity_linking.train import *
 import wandb
 wandb.login()
 
-from omegaconf import DictConfig, OmegaConf
+from omegaconf import OmegaConf
 import hydra
 
 import logging
@@ -43,14 +42,14 @@ logging.config.dictConfig(cfg)
 logger = logging.getLogger('main')
 
 
-def run_training(dataloaders, model, optimizer, scheduler, device, cfg, run):
+def run_training(dataloaders, model, optimizer, scheduler, device, cfg, run, save_dir):
     # logger.info(f'model: {model}')
     logger.info(f'scheduler: {scheduler}')
     logger.info(f'optimizer: {optimizer}')
     # logger.info(f'device: {device}')
     # logger.debug(f'len(dataloaders["train"]): {len(dataloaders["train"])}')
 
-    if cfg.general.debug: num_epochs = cfg.train.epochs_debug
+    if cfg.general.is_debug: num_epochs = cfg.train.epochs_debug
     else: num_epochs = cfg.train.epochs
 
     # To automatically log gradients
@@ -66,10 +65,12 @@ def run_training(dataloaders, model, optimizer, scheduler, device, cfg, run):
     for epoch in range(1, num_epochs + 1): 
         gc.collect()
         logger.info(f'epoch = {epoch}')
+        logger.info(f'train step')
         train_epoch_loss, train_epoch_acc, train_epoch_precision, train_epoch_recall, train_epoch_f1 = \
           train_one_epoch(dataloaders["train"], model, criterion, optimizer, scheduler, device, \
                           n_accumulate = cfg.train.n_accumulate, \
                           enable_amp_half_precision=cfg.train.enable_amp_half_precision)
+        logger.info(f'valid step')
         val_epoch_loss, val_epoch_acc, val_epoch_precision, val_epoch_recall, val_epoch_f1 = \
           valid_one_epoch(dataloaders["val"], model, criterion, device)
 
@@ -92,7 +93,9 @@ def run_training(dataloaders, model, optimizer, scheduler, device, cfg, run):
             best_epoch_loss = val_epoch_loss
             run.summary["Best Loss"] = best_epoch_loss
             best_model_wts = copy.deepcopy(model.state_dict())
-            PATH = "../model/Loss{:.4f}_epoch{:.0f}.bin".format(best_epoch_loss, epoch)
+            save_dir = f"../model/{cfg.data.category}"
+            os.makedirs(save_dir, exist_ok=True)
+            PATH = f"{save_dir}/Loss{best_epoch_loss:.4f}_epoch{epoch:.0f}.bin"
             torch.save(model.state_dict(), PATH)
             # Save a model file from the current directory
             print(f"Model Saved{sr_}")
@@ -101,8 +104,8 @@ def run_training(dataloaders, model, optimizer, scheduler, device, cfg, run):
     
     end = time.time()
     time_elapsed = end - start
-    print('Training complete in {:.0f}h {:.0f}m {:.0f}s'.format(time_elapsed // 3600, (time_elapsed % 3600) // 60, (time_elapsed % 3600) % 60))
-    print("Best Loss: {:.4f}".format(best_epoch_loss))
+    logger.info('Training complete in {:.0f}h {:.0f}m {:.0f}s'.format(time_elapsed // 3600, (time_elapsed % 3600) // 60, (time_elapsed % 3600) % 60))
+    logger.info("Best Loss: {:.4f}".format(best_epoch_loss))
     
     # load best model weights
     model.load_state_dict(best_model_wts)
@@ -112,11 +115,11 @@ def run_training(dataloaders, model, optimizer, scheduler, device, cfg, run):
 def criterion(outputs, labels):
     return nn.CrossEntropyLoss()(outputs, labels)
 
-# change demands on category
+# Change
 # - category
 # - is_debug
-# - src_dir
-@hydra.main(config_path="../conf/", config_name="config.yml")
+# @hydra.main(config_path="../conf/", config_name="config_athlete.yml")
+@hydra.main(config_path="../conf/", config_name="config_bread.yml")
 def main(cfg: OmegaConf):
   logger.debug(f'cfg.data.batch_size["train"]: {cfg.data.batch_size["train"]}')
   logger.debug(f'cfg.data.batch_size.train: {cfg.data.batch_size.train}')
@@ -126,14 +129,13 @@ def main(cfg: OmegaConf):
   set_seed(cfg.general.seed)
 
   # Dataset
-  category = "bird"
-  is_debug = False
-  src_dir = f"../detect_{category}_debug" if is_debug else f"../detect_{category}"
+  category = cfg.data.category
+  src_dir = f"../detect_{category}"
+  # src_dir = f"../detect_{category}_debug" if is_debug else f"../detect_{category}"
   df_train = pd.read_csv(f"{src_dir}/csv/train.csv")
 
   data_transforms = GetTransforms(cfg.data.img_size)
-  if cfg.general.debug: dataloaders = prepare_loaders(df_train, data_transforms, cfg.data.batch_size_debug, fold=0)
-  else: dataloaders = prepare_loaders(df_train, data_transforms, cfg.data.batch_size, fold=0)
+  dataloaders = prepare_loaders(df_train, data_transforms, cfg.data.batch_size, fold=0)
 
   out_features = len(df_train['label'].unique())
   logger.info(f'out_features = {out_features}')
@@ -146,7 +148,7 @@ def main(cfg: OmegaConf):
   
   # For training
   run = wandb.init(project='EntityLinking', config=OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True))
-  model, history = run_training(dataloaders, model, optimizer, scheduler, device, cfg, run)
+  model, history = run_training(dataloaders, model, optimizer, scheduler, device, cfg, run, category)
   run.finish()
 
   # For visualizing results

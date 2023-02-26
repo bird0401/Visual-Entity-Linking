@@ -20,14 +20,15 @@ playground/
 save_dir/
 data*/
 data/
-data_debug/
-data_buckup/
 detect*/
 sample*/
 latest-run
 
 
 .d000*
+*.tar
+*.jpg
+*.jpeg
 *.simg
 *.sif
 *.bin

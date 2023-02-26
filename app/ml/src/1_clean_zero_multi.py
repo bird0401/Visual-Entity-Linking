@@ -11,7 +11,7 @@ logger = logging.getLogger('main')
 # CAUTION: MUST NOT EXECUTE TWICE IN THE SAME CATEGORY
 def main():
     # categories = ["athlete", "director", "dog"]
-    categories = ["athlete"]
+    # categories = ["athlete"]
     # categories = ["us_politician"]
     for category in categories:
 
@@ -39,7 +39,7 @@ def main():
         paths = glob.glob(f"../detect_{category}/detect/Q*/crops/*/*.jpg")
         for path in paths:
             dst = "/".join(path.split("/")[:-3])
-            logger.info(f"src => dst: {path} => {dst}")
+            logger.info(f"{path} => {dst}")
             shutil.move(path, dst)
 
 if __name__=="__main__":
