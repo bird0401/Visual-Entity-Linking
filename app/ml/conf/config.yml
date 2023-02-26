@@ -12,22 +12,17 @@ hydra:
       handlers: [console]
     disable_existing_loggers: False
 
-# Change
-# - category
-# - batch_size
-# - epochs
-
 general:
   seed: 2022
   is_debug: False
   use_optuna: False
 
 data:
-  category: 
+  category: ???
   img_size: 224
   batch_size: 
-    train: 128
-    val: 256
+    train: ???
+    val: ???
   # n_fold: 5
 
 model:
@@ -35,15 +30,13 @@ model:
   embedding_size: 512
 
 optimizer:
-  learning_rate: 1.0e-04
+  learning_rate: ???
   weight_decay: 1.0e-06
   scheduler: CosineAnnealingLR
-  min_lr: 1.0e-06
-  T_max: 500
-  T_0: 500
+  T_max: 10
 
 train:
-  epochs: 20
+  epochs: 30
   epochs_debug: 2
   n_accumulate: 1
   enable_amp_half_precision: False

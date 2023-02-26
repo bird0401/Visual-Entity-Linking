@@ -64,7 +64,7 @@ def run_training(dataloaders, model, optimizer, scheduler, device, cfg, run, sav
     history = defaultdict(list)
     for epoch in range(1, num_epochs + 1): 
         gc.collect()
-        logger.info(f'epoch: {epoch}/{num_epochs}') # CHANGE
+        logger.info(f'epoch: {epoch}/{num_epochs}')
         logger.info(f'train step')
         train_epoch_loss, train_epoch_acc, train_epoch_precision_macro, train_epoch_precision_micro, train_epoch_recall_macro, train_epoch_recall_micro, train_epoch_f1_macro, train_epoch_f1_micro = \
           train_one_epoch(dataloaders["train"], model, criterion, optimizer, scheduler, device, \
@@ -93,16 +93,14 @@ def run_training(dataloaders, model, optimizer, scheduler, device, cfg, run, sav
             best_epoch_loss = val_epoch_loss
             run.summary["Best Loss"] = best_epoch_loss
             best_model_wts = copy.deepcopy(model.state_dict())
-            # save_dir = f"../model/{cfg.data.category}/lr05"
-            save_dir = f"../model/{cfg.data.category}" # CHANGE
-            num_dirs = len(f"{glob.glob(save_dir)}/")
-            save_dir = os.path.join(save_dir, num_dirs)
-            print(f"save_dir: {save_dir}")
-            # os.makedirs(save_dir, exist_ok=True)
-            # PATH = f"{save_dir}/Loss{best_epoch_loss:.4f}_epoch{epoch:.0f}.bin"
-            # torch.save(model.state_dict(), PATH)
-            # # Save a model file from the current directory
-            # print(f"Model Saved{sr_}")
+            save_category_dir = f"../model/{cfg.data.category}" # CHANGE
+            num_dirs = len(glob.glob(f"{save_category_dir}/*/"))
+            save_dir = f"{save_category_dir}/trial{num_dirs}"
+            os.makedirs(save_dir, exist_ok=True)
+            PATH = f"{save_dir}/Loss{best_epoch_loss:.4f}_epoch{epoch:.0f}.bin"
+            torch.save(model.state_dict(), PATH)
+            # Save a model file from the current directory
+            print(f"Model Saved{sr_}")
             
         print()
     

@@ -14,11 +14,11 @@ logger = logging.getLogger('main')
 
 def main():
     categories = ["us_politician", "director", "athlete", "dog", "bird", "bread", "car", "aircraft"]
+    sum_entites, sum_images = 0, 0
     for category in categories:
         logger.info(f"category: {category}")
-        sum_entites, sum_images = 0, 0
-        # wikidata_id_dirs = glob.glob(f"../detect_{category}/detect/*/") # for cleaned data
-        wikidata_id_dirs = glob.glob(f"../../object_detection/data_{category}/imgs/*/") # for original data
+        wikidata_id_dirs = glob.glob(f"../detect_{category}/detect/*/") # for cleaned data
+        # wikidata_id_dirs = glob.glob(f"../../object_detection/data_{category}/imgs/*/") # for original data
         logger.info(f"num entites: {len(wikidata_id_dirs)}")
         sum_entites += len(wikidata_id_dirs)
         num_imgs = defaultdict(int)

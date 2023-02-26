@@ -1,7 +1,6 @@
-import sys, os
+import sys, os, glob, gc, copy, time, datetime
 sys.path.append(os.path.join(os.path.dirname(__file__), 'entity_linking/yolov5'))
 
-import os, gc, copy, time
 # For data manipulation
 import numpy as np
 import pandas as pd
@@ -41,13 +40,10 @@ with open('../conf/logging.yml') as f:
 logging.config.dictConfig(cfg)
 logger = logging.getLogger('main')
 
-
+# python 4_ml.py data.category=aircraft data.batch_size.train=128 data.batch_size.val=256 optimizer.learning_rate=1e-4
 def run_training(dataloaders, model, optimizer, scheduler, device, cfg, run, save_dir):
-    # logger.info(f'model: {model}')
     logger.info(f'scheduler: {scheduler}')
     logger.info(f'optimizer: {optimizer}')
-    # logger.info(f'device: {device}')
-    # logger.debug(f'len(dataloaders["train"]): {len(dataloaders["train"])}')
 
     if cfg.general.is_debug: num_epochs = cfg.train.epochs_debug
     else: num_epochs = cfg.train.epochs
@@ -58,13 +54,18 @@ def run_training(dataloaders, model, optimizer, scheduler, device, cfg, run, sav
     if torch.cuda.is_available():
         print("[INFO] Using GPU: {}\n".format(torch.cuda.get_device_name()))
     
+    dt_now = datetime.datetime.now()
+    save_dir = f"../model/{cfg.data.category}/{str(dt_now.month)}{str(dt_now.day)}-{str(dt_now.hour)}{str(dt_now.minute)}{str(dt_now.second)}"
+    os.makedirs(save_dir, exist_ok=True)
+    logger.info(f"save_dir: {save_dir}")
+
     start = time.time()
     best_model_wts = copy.deepcopy(model.state_dict())
     best_epoch_loss = np.inf
     history = defaultdict(list)
     for epoch in range(1, num_epochs + 1): 
         gc.collect()
-        logger.info(f'epoch = {epoch}')
+        logger.info(f'epoch: {epoch}/{num_epochs}')
         logger.info(f'train step')
         train_epoch_loss, train_epoch_acc, train_epoch_precision_macro, train_epoch_precision_micro, train_epoch_recall_macro, train_epoch_recall_micro, train_epoch_f1_macro, train_epoch_f1_micro = \
           train_one_epoch(dataloaders["train"], model, criterion, optimizer, scheduler, device, \
@@ -73,17 +74,13 @@ def run_training(dataloaders, model, optimizer, scheduler, device, cfg, run, sav
         logger.info(f'valid step')
         val_epoch_loss, val_epoch_acc, val_epoch_precision_macro, val_epoch_precision_micro, val_epoch_recall_macro, val_epoch_recall_micro, val_epoch_f1_macro, val_epoch_f1_micro = \
           valid_one_epoch(dataloaders["val"], model, criterion, device)
-
         l_names = ['Train Loss', 'Train Acc', 'Train Macro Precision', 'Train Micro Precision', 'Train Macro Recall', 'Train Micro Recall', 'Train Macro F1', 'Train Micro F1', 'Valid Loss', 'Valid Acc', 'Valid Macro Precision', 'Valid Micro Precision', 'Valid Macro Recall', 'Valid Micro Recall', 'Valid Macro F1', 'Valid Micro F1']
         l_vals = [train_epoch_loss, train_epoch_acc, train_epoch_precision_macro, train_epoch_precision_micro, train_epoch_recall_macro, train_epoch_recall_micro, train_epoch_f1_macro, train_epoch_f1_micro] + [val_epoch_loss, val_epoch_acc, val_epoch_precision_macro, val_epoch_precision_micro, val_epoch_recall_macro, val_epoch_recall_micro, val_epoch_f1_macro, val_epoch_f1_micro]
-
         for name, val in zip(l_names, l_vals):
-          history[name].append(val)
-        
+          history[name].append(val)   
         # Log the metrics
         wandb.log({"Epoch": epoch})
         wandb.log({"LR": optimizer.param_groups[0]['lr']})
-
         for name, val in zip(l_names, l_vals):
           wandb.log({name: val})
         
@@ -93,8 +90,6 @@ def run_training(dataloaders, model, optimizer, scheduler, device, cfg, run, sav
             best_epoch_loss = val_epoch_loss
             run.summary["Best Loss"] = best_epoch_loss
             best_model_wts = copy.deepcopy(model.state_dict())
-            save_dir = f"../model/{cfg.data.category}/lr05"
-            os.makedirs(save_dir, exist_ok=True)
             PATH = f"{save_dir}/Loss{best_epoch_loss:.4f}_epoch{epoch:.0f}.bin"
             torch.save(model.state_dict(), PATH)
             # Save a model file from the current directory
@@ -115,15 +110,11 @@ def run_training(dataloaders, model, optimizer, scheduler, device, cfg, run, sav
 def criterion(outputs, labels):
     return nn.CrossEntropyLoss()(outputs, labels)
 
-# Change
-# - category
-# - is_debug
-# - save_dir
-@hydra.main(config_path="../conf/", config_name="config_aircraft.yml")
+@hydra.main(config_path="../conf/", config_name=f"config.yml")
 def main(cfg: OmegaConf):
   logger.debug(f'cfg.data.batch_size["train"]: {cfg.data.batch_size["train"]}')
   logger.debug(f'cfg.data.batch_size.train: {cfg.data.batch_size.train}')
-  
+
   # Seed
   device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
   set_seed(cfg.general.seed)
@@ -145,7 +136,7 @@ def main(cfg: OmegaConf):
   model.to(device)
 
   optimizer = optim.Adam(model.parameters(), lr=cfg.optimizer.learning_rate, weight_decay=cfg.optimizer.weight_decay)
-  scheduler = fetch_scheduler(optimizer, cfg.optimizer.scheduler, cfg.optimizer.T_max, cfg.optimizer.T_0, cfg.optimizer.min_lr)
+  scheduler = fetch_scheduler(optimizer, cfg.optimizer.scheduler, cfg.optimizer.T_max, cfg.optimizer.learning_rate*0.1)
   
   # For training
   run = wandb.init(project='EntityLinking', config=OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True))

@@ -23,10 +23,10 @@ general:
   use_optuna: False
 
 data:
-  category: aircraft
+  category: aircraft # Change
   img_size: 224
   batch_size: 
-    train: 128
+    train: 128 #Change
     val: 256
   # n_fold: 5
 
@@ -35,7 +35,7 @@ model:
   embedding_size: 512
 
 optimizer:
-  learning_rate: 1.0e-05
+  learning_rate: 1.0e-05 # Change
   weight_decay: 1.0e-06
   scheduler: CosineAnnealingLR
   T_max: 10

@@ -64,7 +64,7 @@ def run_training(dataloaders, model, optimizer, scheduler, device, cfg, run, sav
     history = defaultdict(list)
     for epoch in range(1, num_epochs + 1): 
         gc.collect()
-        logger.info(f'epoch = {epoch}')
+        logger.info(f'epoch: {epoch}/{num_epochs}')
         logger.info(f'train step')
         train_epoch_loss, train_epoch_acc, train_epoch_precision_macro, train_epoch_precision_micro, train_epoch_recall_macro, train_epoch_recall_micro, train_epoch_f1_macro, train_epoch_f1_micro = \
           train_one_epoch(dataloaders["train"], model, criterion, optimizer, scheduler, device, \
