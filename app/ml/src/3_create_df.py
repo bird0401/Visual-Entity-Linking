@@ -69,8 +69,9 @@ def split_train_val_test(df):
 # - category 
 # - whether sampling df
 def main():
-  categories = ["aircraft", "car", "dog", "us_politician"]
-  # categories = ["aircraft", "athlete", "bread", "bird", "car", "director", "dog", "us_politician"]
+  # categories = ["aircraft", "car", "dog", "us_politician"]
+  # categories = ["athlete", "bread", "bird", "director"]
+  categories = ["aircraft", "athlete", "bread", "bird", "car", "director", "dog", "us_politician"]
   for category in categories:
     logger.info(f"category: {category}")
     # Fetch file paths
@@ -90,7 +91,7 @@ def main():
     df['file_name'] = df['path'].apply(os.path.basename)
     logger.debug(f"df['file_name'][0] : {df['file_name'][0]}")
 
-    df = df.sample(frac=0.3) # execute if creating sample dataframe
+    # df = df.sample(frac=0.3) # execute if creating sample dataframe
 
     df = DeleteSmallLabels(df)
     df = Encoding(df, "crop")
