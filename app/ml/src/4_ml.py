@@ -55,7 +55,7 @@ def run_training(dataloaders, model, optimizer, scheduler, device, cfg, run, sav
         print("[INFO] Using GPU: {}\n".format(torch.cuda.get_device_name()))
     
     dt_now = datetime.datetime.now()
-    save_dir = f"../model/{cfg.data.category}/{str(dt_now.month)}{str(dt_now.day)}-{str(dt_now.hour)}{str(dt_now.minute)}{str(dt_now.second)}"
+    save_dir = f"../model/{cfg.data.category}/{str(dt_now.month).zfill(2)}{str(dt_now.day).zfill(2)}-{str(dt_now.hour).zfill(2)}{str(dt_now.minute).zfill(2)}{str(dt_now.second).zfill(2)}"
     os.makedirs(save_dir, exist_ok=True)
     logger.info(f"save_dir: {save_dir}")
 

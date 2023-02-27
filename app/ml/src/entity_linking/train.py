@@ -113,6 +113,41 @@ def valid_one_epoch(dataloader, model, criterion, device):
     import traceback
     traceback.print_exc()
 
+@torch.inference_mode()
+def test_one_epoch(dataloader, model, device):
+  logger.info("test_one_epoch")
+  assert len(dataloader) > 0, f"len(dataloader): {len(dataloader)}"
+  try:
+    model.eval()
+    dataset_size = 0
+    # running_loss = 0.0
+    all_labels = []
+    all_preds = []
+    
+    bar = tqdm(enumerate(dataloader), total=len(dataloader))
+    for step, data in bar:        
+        images = data['image'].to(device, dtype=torch.float)
+        labels = data['label'].to(device, dtype=torch.long)
+
+        batch_size = images.size(0)
+        outputs = model(images, labels)
+        # loss = criterion(outputs, labels)
+        
+        predicted = torch.max(outputs, 1)[1]
+        # running_loss += (loss.item() * batch_size)
+        all_labels.extend(labels.to('cpu').detach().numpy().copy())
+        all_preds.extend(predicted.to('cpu').detach().numpy().copy())
+        dataset_size += batch_size
+        # epoch_loss = running_loss / dataset_size
+
+    acc, precision_macro, precision_micro, recall_macro, recall_micro, f1_macro, f1_micro = scores(all_labels, all_preds)
+    gc.collect()
+    return acc, precision_macro, precision_micro, recall_macro, recall_micro, f1_macro, f1_micro
+  
+  except:
+    import traceback
+    traceback.print_exc()
+
 
 def fetch_scheduler(optimizer, scheduler, T_max, min_lr, T_0=None):
     if scheduler == 'CosineAnnealingLR':

@@ -55,7 +55,7 @@ def run_training(dataloaders, model, optimizer, scheduler, device, cfg, run, sav
         print("[INFO] Using GPU: {}\n".format(torch.cuda.get_device_name()))
     
     dt_now = datetime.datetime.now()
-    save_dir = f"../model/{cfg.data.category}/{str(dt_now.month)}{str(dt_now.day)}-{str(dt_now.hour)}{str(dt_now.minute)}{str(dt_now.second)}"
+    save_dir = f"../model/{cfg.data.category}/{str(dt_now.month).zfill(2)}{str(dt_now.day).zfill(2)}-{str(dt_now.hour).zfill(2)}{str(dt_now.minute).zfill(2)}{str(dt_now.second).zfill(2)}"
     os.makedirs(save_dir, exist_ok=True)
     logger.info(f"save_dir: {save_dir}")
 
@@ -121,19 +121,15 @@ def main(cfg: OmegaConf):
 
   # Dataset
   category = cfg.data.category
-  src_dir = f"../detect_{category}" # for cleaned data
-  # src_dir = f"../../object_detection/data_{category}" # for original data
+  # src_dir = f"../detect_{category}" # for cleaned data
+  src_dir = f"../../object_detection/data_{category}" # for original data
   # src_dir = f"../detect_{category}_debug" if is_debug else f"../detect_{category}"
-  
-  # df_train = pd.read_csv(f"{src_dir}/csv/train.csv")
-  df = pd.read_csv(f"{src_dir}/csv/test.csv")
+  df_train = pd.read_csv(f"{src_dir}/csv/train.csv")
 
   data_transforms = GetTransforms(cfg.data.img_size)
-  dataloaders = prepare_test_loader(df, data_transforms, cfg.data.batch_size)
-  # dataloaders = prepare_loaders(df_train, data_transforms, cfg.data.batch_size, fold=0)
+  dataloaders = prepare_loaders(df_train, data_transforms, cfg.data.batch_size, fold=0)
 
-  out_features = len(df['label'].unique())
-  # out_features = len(df_train['label'].unique())
+  out_features = len(df_train['label'].unique())
   logger.info(f'out_features = {out_features}')
 
   model = EntityLinkingModel(cfg.model.model_name, out_features)
@@ -142,22 +138,14 @@ def main(cfg: OmegaConf):
   optimizer = optim.Adam(model.parameters(), lr=cfg.optimizer.learning_rate, weight_decay=cfg.optimizer.weight_decay)
   scheduler = fetch_scheduler(optimizer, cfg.optimizer.scheduler, cfg.optimizer.T_max, cfg.optimizer.learning_rate*0.1)
   
-  # # For training
-  # run = wandb.init(project='EntityLinking', config=OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True))
-  # model, history = run_training(dataloaders, model, optimizer, scheduler, device, cfg, run, category)
-  # run.finish()
+  # For training
+  run = wandb.init(project='EntityLinking', config=OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True))
+  model, history = run_training(dataloaders, model, optimizer, scheduler, device, cfg, run, category)
+  run.finish()
 
   # For visualizing results
-  model.load_state_dict(torch.load(f"../model/{cfg.data.category}/{cfg.model.weight_file}"))
   # model.load_state_dict(torch.load("../model/Loss0.0488_epoch10.bin"))
-  model.eval()
-  logger.info(f'test step')
-  acc, precision_macro, precision_micro, recall_macro, recall_micro, f1_macro, f1_micro = test_one_epoch(dataloaders["val"], model, device)
-  l_names = ['Acc', 'Macro Precision', 'Micro Precision', 'Macro Recall', 'Micro Recall', 'Macro F1', 'Micro F1']
-  l_vals = [acc, precision_macro, precision_micro, recall_macro, recall_micro, f1_macro, f1_micro]
-  for name, val in zip(l_names, l_vals):
-     logger.info(f"{name}: {val}")
-    # history[name].append(val)    
+  # model.eval()
   # visualize_model(dataloaders, model, device)
 
 if __name__ == '__main__':

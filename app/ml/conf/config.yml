@@ -28,6 +28,7 @@ data:
 model:
   model_name: efficientnet_b0
   embedding_size: 512
+  # weight_file: ???
 
 optimizer:
   learning_rate: ???
