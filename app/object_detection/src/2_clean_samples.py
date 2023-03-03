@@ -16,6 +16,7 @@ logger = logging.getLogger('main')
 # Change demands on the situation
 # - category
 # - debug
+# - model.conf
 
 # List of categories
 # - aircraft
@@ -31,39 +32,39 @@ def main():
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     set_seed(2022) 
 
-    category = "aircraft"
-
+    categories = ["aircraft", "athlete", "bird", "bread", "car", "dog", "director", "us_politician"]
     map_category_to_num = {
         "aircraft": [4],
         "athlete": [0],
         "bird": [14],
-        "bread": [45, 48, 52, 53, 54, 55],
+        "bread": [48, 52, 53, 54, 55],
         "car": [2],
         "director": [0],
         "dog": [16],
         "us_politician": [0]
     }
 
-    # TODO: create module to define it
-    model = torch.hub.load('ultralytics/yolov5', 'yolov5l', pretrained=True)
-    model.classes = map_category_to_num[category] # Category to predict
-    model.conf = 0.2 # change
-    model.to(device)
+    for category in categories:
+        # TODO: create module to define it
+        model = torch.hub.load('ultralytics/yolov5', 'yolov5l', pretrained=True)
+        model.classes = map_category_to_num[category] # Category to predict
+        model.conf = 0.4 # change
+        model.to(device)
 
-    img_dir = f"../sample_{category}" 
-    paths = glob.glob(f"{img_dir}/*")
-    logger.info(f"num paths: {len(paths)}")
+        img_dir = f"../sample_{category}" 
+        paths = glob.glob(f"{img_dir}/*")
+        logger.info(f"num paths: {len(paths)}")
 
-    save_dir = f"../clean_samples/{category}"
-    logger.info(f"save_dir: {save_dir}")
+        save_dir = f"../clean_samples_{str(model.conf)}/{category}"
+        logger.info(f"save_dir: {save_dir}")
 
-    try:
-        results = model(paths, size=640) # change size
-        results.print()
-        results.save(save_dir=save_dir, exist_ok=True)
-    except Exception: 
-        logger.info(f"ids_path: {ids_path}")
-        traceback.print_exc()
+        try:
+            results = model(paths, size=640) # change size
+            results.print()
+            results.save(save_dir=save_dir, exist_ok=True)
+        except Exception: 
+            logger.info(f"paths: {paths}")
+            traceback.print_exc()
 
 if __name__=="__main__":
     main()

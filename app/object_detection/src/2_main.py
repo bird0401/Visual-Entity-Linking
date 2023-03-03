@@ -13,7 +13,7 @@ with open('../conf/logging.yml') as f:
 logging.config.dictConfig(cfg)
 logger = logging.getLogger('main')
 
-
+import inspect
 # Change demands on the situation
 # - category
 # - debug
@@ -49,7 +49,7 @@ def main():
     # TODO: create module to define it
     model = torch.hub.load('ultralytics/yolov5', 'yolov5l', pretrained=True)
     model.classes = map_category_to_num[category] # Category to predict
-    model.conf = 0.2 
+    model.conf = 0.4
     model.to(device)
 
     img_dir = f"../data_{category}_debug/imgs" if is_debug else f"../data_{category}/imgs" 
@@ -64,6 +64,7 @@ def main():
             paths = glob.glob(f"{ids_path}/*")
             logger.info(f"num paths: {len(paths)}") 
             results = model(paths, size=128)
+            # print(inspect.getsource(results.print()))
             results.print()
             results.crop(save_dir=f"{save_dir}/{os.path.basename(ids_path)}", exist_ok=True)
             wikidata_id = ids_path.split("/")[-1]
@@ -73,12 +74,12 @@ def main():
             logger.info(f"ids_path: {ids_path}")
             traceback.print_exc()
 
-    wikidata_id = ids_paths[0].split("/")[-1]
-    logger.debug(f'wikidata_id : {wikidata_id}')
-    logger.debug(f'crops[wikidata_id] : {crops[wikidata_id]}')
+    # wikidata_id = ids_paths[0].split("/")[-1]
+    # logger.debug(f'wikidata_id : {wikidata_id}')
+    # logger.debug(f'crops[wikidata_id] : {crops[wikidata_id]}')
 
-    with open(f"{save_dir}/crops_info.pickle", mode='wb') as f:
-        pickle.dump(crops, f)
+    # with open(f"{save_dir}/crops_info.pickle", mode='wb') as f:
+    #     pickle.dump(crops, f)
 
 if __name__=="__main__":
     main()
