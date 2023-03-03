@@ -71,7 +71,8 @@ def split_train_val_test(df):
 def main():
   # categories = ["aircraft", "car", "dog", "us_politician"]
   # categories = ["athlete", "bread", "bird", "director"]
-  categories = ["director"]
+  categories = ["dog"]
+  # categories = ["director"]
   # categories = ["aircraft", "athlete", "bread", "bird", "car", "director", "dog", "us_politician"]
   for category in categories:
     logger.info(f"category: {category}")

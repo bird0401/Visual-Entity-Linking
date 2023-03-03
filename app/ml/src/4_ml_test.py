@@ -121,8 +121,8 @@ def main(cfg: OmegaConf):
 
   # Dataset
   category = cfg.data.category
-  src_dir = f"../detect_{category}" # for cleaned data
-  # src_dir = f"../../object_detection/data_{category}" # for original data
+  # src_dir = f"../detect_{category}" # for cleaned data
+  src_dir = f"../../object_detection/data_{category}" # for original data
   # src_dir = f"../detect_{category}_debug" if is_debug else f"../detect_{category}"
   
   # df_train = pd.read_csv(f"{src_dir}/csv/train.csv")
