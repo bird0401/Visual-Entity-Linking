@@ -215,15 +215,15 @@ def extract_categories(category):
 category = database
 
 # If there are subcategories, execute following
-categories = extract_categories(category) 
-for category, _ in categories:
-  entity_names_urls = ExtractEntityURLs(category=category)
-  for entity_name, entity_url in entity_names_urls:
-    DownloadImages(entity_name, entity_url)
+# categories = extract_categories(category) 
+# for category, _ in categories:
+#   entity_names_urls = ExtractEntityURLs(category=category)
+#   for entity_name, entity_url in entity_names_urls:
+#     DownloadImages(entity_name, entity_url)
 
-# If there are no subcategories, execute following
-# entity_names_urls = ExtractEntityURLs(category=category)
-# for entity_name, entity_url in entity_names_urls:
-#   DownloadImages(entity_name, entity_url)
+# If there are entities, execute following
+entity_names_urls = ExtractEntityURLs(category=category)
+for entity_name, entity_url in entity_names_urls:
+  DownloadImages(entity_name, entity_url)
 
-connection.close() 
+connection.close()
