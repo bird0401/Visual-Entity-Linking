@@ -25,5 +25,4 @@ singularity exec \
     --nv /$HOME/Instance_level_recognition/app/object_detection/gc_cli_latest.sif \
     gsutil -m cp -r gs://entity_dogs/ .
 
-
 # gsutil -m cp -r gs://data_${category}/ .

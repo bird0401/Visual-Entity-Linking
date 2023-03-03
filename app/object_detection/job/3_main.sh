@@ -10,4 +10,4 @@ module load singularity/3.7.3
 singularity exec \
     --pwd /$HOME/Instance_level_recognition/app/object_detection/src/ \
     --nv /$HOME/Instance_level_recognition/app/object_detection/object_detection_latest.sif \
-    python ./1_preprocess_car.py
+    python ./3_main.py

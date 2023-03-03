@@ -23,7 +23,7 @@ data/
 detect*/
 sample*/
 latest-run
-
+images/
 
 .d000*
 *.tar
