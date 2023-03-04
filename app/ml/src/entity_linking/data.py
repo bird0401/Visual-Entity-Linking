@@ -78,45 +78,58 @@ def collate_fn(batch):
     batch = list(filter(lambda x: x is not None, batch))
     return torch.utils.data.dataloader.default_collate(batch)
 
-def prepare_loaders(df, transforms, batch_size, fold):
+def prepare_loaders(df, transforms, batch_size, is_train=True, fold=0):
+    assert not df.empty
+    logger.info(f'len(df) = {len(df)}')
     assert transforms["train"]
     assert transforms["val"]
     assert batch_size["train"]
     assert batch_size["val"]
     assert 0 <= fold <= 4
     
-    df_train_val = {
-        "train": df[df.kfold != fold].reset_index(drop=True),
-        "val": df[df.kfold == fold].reset_index(drop=True)
-    }
+    if is_train:
+        df_train_val = {
+            "train": df[df.kfold != fold].reset_index(drop=True),
+            "val": df[df.kfold == fold].reset_index(drop=True)
+        }
 
-    assert not df_train_val["train"].empty
-    assert not df_train_val["val"].empty
+        assert not df_train_val["train"].empty
+        assert not df_train_val["val"].empty
 
-    logger.info(f'len(df_train_val["train"]) = {len(df_train_val["train"])}')
-    logger.info(f'len(df_train_val["val"]) = {len(df_train_val["val"])}')
-    
-    datasets = {
-        x: EntityLinkingDataset(df_train_val[x], transforms=transforms[x])
-        for x in ["train", "val"]
-    }
-
-    dataloaders = {
-        x: DataLoader(datasets[x], batch_size=batch_size[x], num_workers=2, collate_fn = collate_fn, shuffle=True, pin_memory=True, drop_last=True)
-        for x in ["train", "val"]
-    }
-    assert len(dataloaders['train']) > 0, f"len(dataloaders['train']: {len(dataloaders['train'])}"
-    assert len(dataloaders['val']) > 0, f"len(dataloaders['val']: {len(dataloaders['val'])}"
-    logger.info(f"len(dataloaders['train']): {len(dataloaders['train'])}")
-    logger.info(f"len(dataloaders['val']): {len(dataloaders['val'])}")
+        logger.info(f'len(df_train_val["train"]) = {len(df_train_val["train"])}')
+        logger.info(f'len(df_train_val["val"]) = {len(df_train_val["val"])}')
+        
+        datasets = {
+            x: EntityLinkingDataset(df_train_val[x], transforms=transforms[x])
+            for x in ["train", "val"]
+        }
+        dataloaders = {
+            x: DataLoader(datasets[x], batch_size=batch_size[x], num_workers=2, collate_fn = collate_fn, shuffle=True, pin_memory=True, drop_last=True)
+            for x in ["train", "val"]
+        }
+        assert len(dataloaders['train']) > 0, f"len(dataloaders['train']: {len(dataloaders['train'])}"
+        assert len(dataloaders['val']) > 0, f"len(dataloaders['val']: {len(dataloaders['val'])}"
+        logger.info(f"len(dataloaders['train']): {len(dataloaders['train'])}")
+        logger.info(f"len(dataloaders['val']): {len(dataloaders['val'])}")
+    else:
+        datasets = {
+            x: EntityLinkingDataset(df, transforms=transforms[x])
+            for x in ["val"]
+        }
+        dataloaders = {
+            x: DataLoader(datasets[x], batch_size=batch_size[x], num_workers=2, collate_fn = collate_fn, shuffle=True, pin_memory=True, drop_last=True)
+            for x in ["val"]
+        }
+        assert len(dataloaders['val']) > 0, f"len(dataloaders['val']: {len(dataloaders['val'])}"
+        logger.info(f"len(dataloaders['val']): {len(dataloaders['val'])}")
   
     return dataloaders
 
-def prepare_test_loader(df, transforms, batch_size):
-    assert transforms["train"]
-    assert transforms["val"]
-    assert batch_size["train"]
-    assert batch_size["val"]
+# def prepare_test_loader(df, transforms, batch_size):
+#     assert transforms["train"]
+#     assert transforms["val"]
+#     assert batch_size["train"]
+#     assert batch_size["val"]
     
     # df_train_val = {
     #     "train": df[df.kfold != fold].reset_index(drop=True),
@@ -129,18 +142,6 @@ def prepare_test_loader(df, transforms, batch_size):
     # logger.info(f'len(df_train_val["train"]) = {len(df_train_val["train"])}')
     # logger.info(f'len(df_train_val["val"]) = {len(df_train_val["val"])}')
     
-    datasets = {
-        x: EntityLinkingDataset(df, transforms=transforms[x])
-        for x in ["val"]
-    }
 
-    dataloaders = {
-        x: DataLoader(datasets[x], batch_size=batch_size[x], num_workers=2, collate_fn = collate_fn, shuffle=True, pin_memory=True, drop_last=True)
-        for x in ["val"]
-    }
-    # assert len(dataloaders['train']) > 0, f"len(dataloaders['train']: {len(dataloaders['train'])}"
-    assert len(dataloaders['val']) > 0, f"len(dataloaders['val']: {len(dataloaders['val'])}"
-    # logger.info(f"len(dataloaders['train']): {len(dataloaders['train'])}")
-    logger.info(f"len(dataloaders['val']): {len(dataloaders['val'])}")
   
-    return dataloaders
+    # return dataloaders

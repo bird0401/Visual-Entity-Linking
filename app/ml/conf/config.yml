@@ -16,6 +16,7 @@ general:
   seed: 2022
   is_debug: False
   use_optuna: False
+  is_train: True
 
 data:
   category: ???
@@ -23,6 +24,7 @@ data:
   batch_size: 
     train: ???
     val: ???
+  data_dir: ???
   # n_fold: 5
 
 model:

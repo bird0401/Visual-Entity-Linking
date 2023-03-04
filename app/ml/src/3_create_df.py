@@ -69,20 +69,20 @@ def split_train_val_test(df):
 # - category 
 # - whether sampling df
 def main():
-  # categories = ["aircraft", "car", "dog", "us_politician"]
-  # categories = ["athlete", "bread", "bird", "director"]
-  categories = ["dog"]
-  # categories = ["director"]
+  categories = ["athlete"]
   # categories = ["aircraft", "athlete", "bread", "bird", "car", "director", "dog", "us_politician"]
   for category in categories:
     logger.info(f"category: {category}")
+
     # Fetch file paths
+
     # For cleaned data
-    # category_dir = f"../detect_{category}" 
-    # paths = glob.glob(f'{category_dir}/detect/*/*.jpg')
+    # category_dir = f"../data_clean/{category}" 
+
     # For original data
-    category_dir = f"../../object_detection/data_{category}" 
-    paths = glob.glob(f'{category_dir}/imgs/*/*.jpg')
+    category_dir = f"../../object_detection/data/{category}" 
+    # paths = glob.glob(f'{category_dir}/imgs/*/*.jpg')
+    paths = glob.glob(f'{category_dir}/*/*/*.jpg')
 
     df = pd.DataFrame(paths, columns=["path"])
     logger.debug(f"df['path'][0] : {df['path'][0]}")

@@ -120,16 +120,16 @@ def main(cfg: OmegaConf):
   set_seed(cfg.general.seed)
 
   # Dataset
-  category = cfg.data.category
-  src_dir = f"../detect_{category}" # for cleaned data
-  # src_dir = f"../../object_detection/data_{category}" # for original data
-  # src_dir = f"../detect_{category}_debug" if is_debug else f"../detect_{category}"
-  df_train = pd.read_csv(f"{src_dir}/csv/train.csv")
+  src_dir = f"{cfg.data.data_dir}/{cfg.data.category}"
+  if cfg.general.is_train:
+    df = pd.read_csv(f"{src_dir}/csv/train.csv")
+  else:
+    df = pd.read_csv(f"{src_dir}/csv/test.csv")
 
   data_transforms = GetTransforms(cfg.data.img_size)
-  dataloaders = prepare_loaders(df_train, data_transforms, cfg.data.batch_size, fold=0)
+  dataloaders = prepare_loaders(df, data_transforms, cfg.data.batch_size, is_train=cfg.general.is_train ,fold=0)
 
-  out_features = len(df_train['label'].unique())
+  out_features = len(df['label'].unique())
   logger.info(f'out_features = {out_features}')
 
   model = EntityLinkingModel(cfg.model.model_name, out_features)
@@ -138,14 +138,19 @@ def main(cfg: OmegaConf):
   optimizer = optim.Adam(model.parameters(), lr=cfg.optimizer.learning_rate, weight_decay=cfg.optimizer.weight_decay)
   scheduler = fetch_scheduler(optimizer, cfg.optimizer.scheduler, cfg.optimizer.T_max, cfg.optimizer.learning_rate*0.1)
   
-  # For training
-  run = wandb.init(project='EntityLinking', config=OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True))
-  model, history = run_training(dataloaders, model, optimizer, scheduler, device, cfg, run, category)
-  run.finish()
-
-  # For visualizing results
-  # model.load_state_dict(torch.load("../model/Loss0.0488_epoch10.bin"))
-  # model.eval()
+  if cfg.general.is_train:
+    run = wandb.init(project='EntityLinking', config=OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True))
+    model, history = run_training(dataloaders, model, optimizer, scheduler, device, cfg, run, cfg.data.category)
+    run.finish()
+  else:
+    model.load_state_dict(torch.load(f"../model/{cfg.data.category}/{cfg.model.weight_file}"))
+    model.eval()
+    logger.info(f'test step')
+    acc, precision_macro, precision_micro, recall_macro, recall_micro, f1_macro, f1_micro = test_one_epoch(dataloaders["val"], model, device)
+    l_names = ['Acc', 'Macro Precision', 'Micro Precision', 'Macro Recall', 'Micro Recall', 'Macro F1', 'Micro F1']
+    l_vals = [acc, precision_macro, precision_micro, recall_macro, recall_micro, f1_macro, f1_micro]
+    for name, val in zip(l_names, l_vals):
+      logger.info(f"{name}: {val}")
   # visualize_model(dataloaders, model, device)
 
 if __name__ == '__main__':
