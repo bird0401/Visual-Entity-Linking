@@ -9,9 +9,9 @@ logging.config.dictConfig(cfg)
 logger = logging.getLogger('main')
 
 def main():
-    path_ids = glob.glob("../data_bird/imgs/*") # change directory name by category
+    path_ids = glob.glob("../data/athlete/imgs/Q*") # change directory name by category
     path_ids_sample = random.sample(path_ids, 10)
-    dst_dir = "../data_bird_debug/imgs"
+    dst_dir = "../data/athlete_debug/imgs"
     try:
         os.makedirs(dst_dir, exist_ok=True)
     except FileExistsError:

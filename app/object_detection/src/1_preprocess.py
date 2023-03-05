@@ -26,8 +26,8 @@ logger = logging.getLogger('main')
 # - us_politician
 def main():
     category = sys.argv[1]
-    is_debug = False
-    img_dir = f"../data_{category}_debug/imgs" if is_debug else f"../data_{category}/imgs" # for debug
+    is_debug = True
+    img_dir = f"../data/{category}_debug/imgs" if is_debug else f"../data/{category}/imgs" # for debug
     paths = glob.glob(f"{img_dir}/*/*")
     logger.info(f"img_dir: {img_dir}")
     logger.info(f"num images: {len(paths)}")

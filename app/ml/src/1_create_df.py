@@ -1,4 +1,4 @@
-import sys, glob, joblib, os
+import glob, joblib, os
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import StratifiedKFold
@@ -68,21 +68,18 @@ def split_train_val_test(df):
 # Change demands on the situation
 # - category 
 # - whether sampling df
+# - to_origin
 def main():
-  categories = ["athlete"]
-  # categories = ["aircraft", "athlete", "bread", "bird", "car", "director", "dog", "us_politician"]
+  # categories = ["athlete"]
+  categories = ["aircraft", "athlete", "bread", "bird", "car", "director", "dog", "us_politician"]
+  is_debug = False
+  to_origin = False
   for category in categories:
     logger.info(f"category: {category}")
 
-    # Fetch file paths
-
-    # For cleaned data
-    # category_dir = f"../data_clean/{category}" 
-
-    # For original data
-    category_dir = f"../../object_detection/data/{category}" 
-    # paths = glob.glob(f'{category_dir}/imgs/*/*.jpg')
-    paths = glob.glob(f'{category_dir}/*/*/*.jpg')
+    data_dir = f"../../../data/origin" if to_origin else f"../../../data/clean" 
+    category_dir = f"{data_dir}/{category}_debug" if is_debug else f"{data_dir}/{category}"
+    paths = glob.glob(f'{category_dir}/imgs/*/*.jpg')
 
     df = pd.DataFrame(paths, columns=["path"])
     logger.debug(f"df['path'][0] : {df['path'][0]}")

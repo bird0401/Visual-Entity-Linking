@@ -48,14 +48,12 @@ def run_training(dataloaders, model, optimizer, scheduler, device, cfg, run, sav
     if cfg.general.is_debug: num_epochs = cfg.train.epochs_debug
     else: num_epochs = cfg.train.epochs
 
-    # To automatically log gradients
+    # To log gradients automatically
     wandb.watch(model, log_freq=100)
     
     if torch.cuda.is_available():
         print("[INFO] Using GPU: {}\n".format(torch.cuda.get_device_name()))
     
-    dt_now = datetime.datetime.now()
-    save_dir = f"../model/{cfg.data.category}/{str(dt_now.month).zfill(2)}{str(dt_now.day).zfill(2)}-{str(dt_now.hour).zfill(2)}{str(dt_now.minute).zfill(2)}{str(dt_now.second).zfill(2)}"
     os.makedirs(save_dir, exist_ok=True)
     logger.info(f"save_dir: {save_dir}")
 
@@ -66,45 +64,40 @@ def run_training(dataloaders, model, optimizer, scheduler, device, cfg, run, sav
     for epoch in range(1, num_epochs + 1): 
         gc.collect()
         logger.info(f'epoch: {epoch}/{num_epochs}')
-        logger.info(f'train step')
-        train_epoch_loss, train_epoch_acc, train_epoch_precision_macro, train_epoch_precision_micro, train_epoch_recall_macro, train_epoch_recall_micro, train_epoch_f1_macro, train_epoch_f1_micro = \
-          train_one_epoch(dataloaders["train"], model, criterion, optimizer, scheduler, device, \
-                          n_accumulate = cfg.train.n_accumulate, \
-                          enable_amp_half_precision=cfg.train.enable_amp_half_precision)
-        logger.info(f'valid step')
-        val_epoch_loss, val_epoch_acc, val_epoch_precision_macro, val_epoch_precision_micro, val_epoch_recall_macro, val_epoch_recall_micro, val_epoch_f1_macro, val_epoch_f1_micro = \
-          valid_one_epoch(dataloaders["val"], model, criterion, device)
-        l_names = ['Train Loss', 'Train Acc', 'Train Macro Precision', 'Train Micro Precision', 'Train Macro Recall', 'Train Micro Recall', 'Train Macro F1', 'Train Micro F1', 'Valid Loss', 'Valid Acc', 'Valid Macro Precision', 'Valid Micro Precision', 'Valid Macro Recall', 'Valid Micro Recall', 'Valid Macro F1', 'Valid Micro F1']
-        l_vals = [train_epoch_loss, train_epoch_acc, train_epoch_precision_macro, train_epoch_precision_micro, train_epoch_recall_macro, train_epoch_recall_micro, train_epoch_f1_macro, train_epoch_f1_micro] + [val_epoch_loss, val_epoch_acc, val_epoch_precision_macro, val_epoch_precision_micro, val_epoch_recall_macro, val_epoch_recall_micro, val_epoch_f1_macro, val_epoch_f1_micro]
-        for name, val in zip(l_names, l_vals):
-          history[name].append(val)   
-        # Log the metrics
-        wandb.log({"Epoch": epoch})
-        wandb.log({"LR": optimizer.param_groups[0]['lr']})
-        for name, val in zip(l_names, l_vals):
-          wandb.log({name: val})
         
-        # deep copy the model
-        if val_epoch_loss <= best_epoch_loss:
-            print(f"{b_}Validation Loss Improved ({best_epoch_loss} ---> {val_epoch_loss})")
-            best_epoch_loss = val_epoch_loss
+        logger.info(f'train step')
+        train_loss, train_acc, train_precision_macro, train_precision_micro, train_recall_macro, train_recall_micro, train_f1_macro, train_f1_micro = \
+          train_one_epoch(dataloaders["train"], model, criterion, optimizer, scheduler, device, n_accumulate = cfg.train.n_accumulate, \
+                          enable_amp_half_precision=cfg.train.enable_amp_half_precision)
+        
+        logger.info(f'valid step')
+        val_loss, val_acc, val_precision_macro, val_precision_micro, val_recall_macro, val_recall_micro, val_f1_macro, val_f1_micro = \
+          valid_one_epoch(dataloaders["val"], model, criterion, device)
+        
+        history = {'Epoch': epoch, 'LR': optimizer.param_groups[0]['lr'], 'Train Loss': train_loss, 'Train Acc': train_acc, 'Train Macro Precision': train_precision_macro, \
+                    'Train Micro Precision': train_precision_micro, 'Train Macro Recall': train_recall_macro, 'Train Micro Recall': train_recall_micro, \
+                    'Train Macro F1': train_f1_macro, 'Train Micro F1': train_f1_micro, \
+                    'Valid Loss': val_loss, 'Valid Acc': val_acc, 'Valid Macro Precision': val_precision_macro, 'Valid Micro Precision': val_precision_micro, \
+                    'Valid Macro Recall': val_recall_macro, 'Valid Micro Recall': val_recall_micro, 'Valid Macro F1': val_f1_macro, 'Valid Micro F1': val_f1_micro}
+        wandb.log(history, step=epoch)
+        
+        # Save model weight
+        if val_loss <= best_epoch_loss:
+            print(f"{b_}Validation Loss Improved ({best_epoch_loss} ---> {val_loss})")
+            best_epoch_loss = val_loss
             run.summary["Best Loss"] = best_epoch_loss
             best_model_wts = copy.deepcopy(model.state_dict())
             PATH = f"{save_dir}/Loss{best_epoch_loss:.4f}_epoch{epoch:.0f}.bin"
             torch.save(model.state_dict(), PATH)
             # Save a model file from the current directory
             print(f"Model Saved{sr_}")
-            
         print()
     
     end = time.time()
     time_elapsed = end - start
     logger.info('Training complete in {:.0f}h {:.0f}m {:.0f}s'.format(time_elapsed // 3600, (time_elapsed % 3600) // 60, (time_elapsed % 3600) % 60))
     logger.info("Best Loss: {:.4f}".format(best_epoch_loss))
-    
-    # load best model weights
-    model.load_state_dict(best_model_wts)
-    
+    model.load_state_dict(best_model_wts)  
     return model, history
 
 def criterion(outputs, labels):
@@ -120,7 +113,7 @@ def main(cfg: OmegaConf):
   set_seed(cfg.general.seed)
 
   # Dataset
-  src_dir = f"{cfg.data.data_dir}/{cfg.data.category}"
+  src_dir = f"{cfg.data.data_dir}/{cfg.data.category}_debug" if cfg.general.is_debug else f"{cfg.data.data_dir}/{cfg.data.category}"
   if cfg.general.is_train:
     df = pd.read_csv(f"{src_dir}/csv/train.csv")
   else:
@@ -137,13 +130,17 @@ def main(cfg: OmegaConf):
 
   optimizer = optim.Adam(model.parameters(), lr=cfg.optimizer.learning_rate, weight_decay=cfg.optimizer.weight_decay)
   scheduler = fetch_scheduler(optimizer, cfg.optimizer.scheduler, cfg.optimizer.T_max, cfg.optimizer.learning_rate*0.1)
+
+  dt_now = datetime.datetime.now()
+  now = f"{str(dt_now.month).zfill(2)}{str(dt_now.day).zfill(2)}-{str(dt_now.hour).zfill(2)}{str(dt_now.minute).zfill(2)}{str(dt_now.second).zfill(2)}"
+  save_dir = f"../weights/{cfg.data.category}/{now}"
   
   if cfg.general.is_train:
-    run = wandb.init(project='EntityLinking', config=OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True))
-    model, history = run_training(dataloaders, model, optimizer, scheduler, device, cfg, run, cfg.data.category)
+    run = wandb.init(project='VEL', name=f"{cfg.data.category}_{now}", config=OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True))
+    model, history = run_training(dataloaders, model, optimizer, scheduler, device, cfg, run, save_dir)
     run.finish()
   else:
-    model.load_state_dict(torch.load(f"../model/{cfg.data.category}/{cfg.model.weight_file}"))
+    model.load_state_dict(torch.load(f"../weights/{cfg.data.category}/{cfg.model.weight_file}"))
     model.eval()
     logger.info(f'test step')
     acc, precision_macro, precision_micro, recall_macro, recall_micro, f1_macro, f1_micro = test_one_epoch(dataloaders["val"], model, device)
