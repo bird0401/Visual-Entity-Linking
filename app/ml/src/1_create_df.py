@@ -74,6 +74,9 @@ def main():
   categories = ["aircraft", "athlete", "bread", "bird", "car", "director", "dog", "us_politician"]
   is_debug = False
   to_origin = False
+  logger.info(f"debug mode") if is_debug else logger.info(f"production mode")
+  logger.info(f"to_origin mode") if to_origin else logger.info(f"to_clean mode")
+
   for category in categories:
     logger.info(f"category: {category}")
 
