@@ -19,6 +19,7 @@ singularity shell --pwd $HOME/Instance_level_recognition/app/object_detection/sr
 singularity shell --pwd $HOME/Instance_level_recognition/app/ml/src/ --nv $HOME/Instance_level_recognition/app/ml/python_ml_latest.sif 
 
 # For train
+python ./2_ml.py data.category=athlete data.batch_size.train=4 data.batch_size.val=8 optimizer.learning_rate=1e-4 data.data_dir=../../../data/clean
 python ./2_ml.py data.category=athlete data.batch_size.train=4 data.batch_size.val=8 optimizer.learning_rate=1e-4 data.data_dir=../../../data/clean general.is_debug=True
 python ./2_ml.py data.category=athlete data.batch_size.train=4 data.batch_size.val=8 optimizer.learning_rate=1e-4 data.data_dir=../../object_detection/data # For origin
 # For test
