@@ -46,9 +46,6 @@ def run_training(dataloaders, model, optimizer, scheduler, device, cfg, run, sav
     logger.info(f'scheduler: {scheduler}')
     logger.info(f'optimizer: {optimizer}')
 
-    if cfg.general.is_debug: num_epochs = cfg.train.epochs_debug
-    else: num_epochs = cfg.train.epochs
-
     # To log gradients automatically
     wandb.watch(model, log_freq=100)
     
@@ -62,9 +59,9 @@ def run_training(dataloaders, model, optimizer, scheduler, device, cfg, run, sav
     best_model_wts = copy.deepcopy(model.state_dict())
     best_epoch_loss = np.inf
     history = defaultdict(list)
-    for epoch in range(1, num_epochs + 1): 
+    for epoch in range(1, cfg.train.epochs + 1): 
         gc.collect()
-        logger.info(f'epoch: {epoch}/{num_epochs}')
+        logger.info(f'epoch: {epoch}/{cfg.train.epochs}')
         
         logger.info(f'train step')
         train_loss, train_acc, train_precision_macro, train_precision_micro, train_recall_macro, train_recall_micro, train_f1_macro, train_f1_micro = \
@@ -106,16 +103,17 @@ def criterion(outputs, labels):
 
 @hydra.main(config_path="../conf/", config_name=f"config.yml")
 def main(cfg: OmegaConf):
-  logger.debug(f'cfg.data.batch_size["train"]: {cfg.data.batch_size["train"]}')
-  logger.debug(f'cfg.data.batch_size.train: {cfg.data.batch_size.train}')
+  logger.info(f'cfg.data.batch_size.train: {cfg.data.batch_size.train}')
+  logger.info(f'cfg.data.batch_size.val: {cfg.data.batch_size.val}')
 
   # Seed
   device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
   set_seed(cfg.general.seed)
 
   # Dataset
-  src_dir = f"{cfg.data.data_dir}/athlete_debug"
-  path_h5 = {"train": f"{src_dir}/train.h5", "val": f"{src_dir}/val.h5", "test": f"{src_dir}/test.h5"}
+  path_h5 = {"train": f"{cfg.data.data_dir}/train.h5", 
+             "val": f"{cfg.data.data_dir}/val.h5", 
+             "test": f"{cfg.data.data_dir}/test.h5"}
   data_transforms = GetTransforms(cfg.data.img_size)
   dataloaders = prepare_loaders(path_h5, data_transforms, cfg.data.batch_size, is_train=cfg.general.is_train ,fold=0)
 

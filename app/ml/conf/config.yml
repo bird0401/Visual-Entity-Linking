@@ -40,6 +40,5 @@ optimizer:
 
 train:
   epochs: 30
-  epochs_debug: 2
   n_accumulate: 1
   enable_amp_half_precision: False

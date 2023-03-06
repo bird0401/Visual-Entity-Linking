@@ -5,6 +5,7 @@ from albumentations.pytorch import ToTensorV2
 from torch.utils.data import Dataset, DataLoader
 import traceback   
 import h5py
+import numpy as np
 
 import logging
 import logging.config
@@ -60,7 +61,7 @@ class EntityLinkingDataset(Dataset):
         return {
             'image': img,
             'path': path,
-            'label': torch.tensor(label, dtype=torch.long),
+            'label': torch.tensor(label, dtype=torch.long)
         }
       except Exception: 
         traceback.print_exc()
@@ -72,8 +73,6 @@ def collate_fn(batch):
     return torch.utils.data.dataloader.default_collate(batch)
 
 def prepare_loaders(path_h5, transforms, batch_size, is_train=True, fold=0):
-    # assert not df.empty
-    # logger.info(f'len(df) = {len(df)}')
     assert transforms["train"]
     assert transforms["val"]
     assert batch_size["train"]
@@ -99,92 +98,3 @@ def prepare_loaders(path_h5, transforms, batch_size, is_train=True, fold=0):
         assert len(dataloader) > 0, f"len(dataloader: {len(dataloader)}"
         logger.info(f"len(dataloader): {len(dataloader)}")
         return dataloader
-  
-    
-
-# def prepare_loaders(df, transforms, batch_size, is_train=True, fold=0):
-#     assert not df.empty
-#     logger.info(f'len(df) = {len(df)}')
-#     assert transforms["train"]
-#     assert transforms["val"]
-#     assert batch_size["train"]
-#     assert batch_size["val"]
-#     assert 0 <= fold <= 4
-    
-#     if is_train:
-#         df_train_val = {
-#             "train": df[df.kfold != fold].reset_index(drop=True),
-#             "val": df[df.kfold == fold].reset_index(drop=True)
-#         }
-
-#         assert not df_train_val["train"].empty
-#         assert not df_train_val["val"].empty
-
-#         logger.info(f'len(df_train_val["train"]) = {len(df_train_val["train"])}')
-#         logger.info(f'len(df_train_val["val"]) = {len(df_train_val["val"])}')
-        
-#         datasets = {
-#             x: EntityLinkingDataset(df_train_val[x], transforms=transforms[x])
-#             for x in ["train", "val"]
-#         }
-#         dataloaders = {
-#             x: DataLoader(datasets[x], batch_size=batch_size[x], num_workers=2, collate_fn = collate_fn, shuffle=True, pin_memory=True, drop_last=True)
-#             for x in ["train", "val"]
-#         }
-#         assert len(dataloaders['train']) > 0, f"len(dataloaders['train']: {len(dataloaders['train'])}"
-#         assert len(dataloaders['val']) > 0, f"len(dataloaders['val']: {len(dataloaders['val'])}"
-#         logger.info(f"len(dataloaders['train']): {len(dataloaders['train'])}")
-#         logger.info(f"len(dataloaders['val']): {len(dataloaders['val'])}")
-#     else:
-#         datasets = {
-#             x: EntityLinkingDataset(df, transforms=transforms[x])
-#             for x in ["val"]
-#         }
-#         dataloaders = {
-#             x: DataLoader(datasets[x], batch_size=batch_size[x], num_workers=2, collate_fn = collate_fn, shuffle=True, pin_memory=True, drop_last=True)
-#             for x in ["val"]
-#         }
-#         assert len(dataloaders['val']) > 0, f"len(dataloaders['val']: {len(dataloaders['val'])}"
-#         logger.info(f"len(dataloaders['val']): {len(dataloaders['val'])}")
-  
-#     return dataloaders
-
-# class EntityLinkingDataset(Dataset):
-#     def __init__(self, df, transforms=None):
-#         self.df = df
-#         self.file_paths = df['path'].values
-#         # self.file_noncrop_paths = df['path_noncrop'].values
-#         self.file_names = df['file_name'].values
-#         self.ids = df['wikidata_id'].values
-#         self.labels = df['label'].values
-#         self.transforms = transforms
-        
-#     def __len__(self):
-#         return len(self.df)
-    
-#     def __getitem__(self, index):
-#       try:
-#         file_path = self.file_paths[index]
-#         # file_noncrop_path = self.file_noncrop_paths[index]
-#         label = self.labels[index]
-#         file_name = self.file_names[index]
-#         wikidata_id = self.ids[index]
-
-#         img = cv2.imread(file_path)
-#         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        
-#         if self.transforms:
-#             img = self.transforms(image=img)["image"]
-            
-#         return {
-#             'image': img,
-#             'file_path': file_path,
-#             # 'file_noncrop_path': file_noncrop_path,
-#             'label': torch.tensor(label, dtype=torch.long),
-#             'file_name': file_name,
-#             'wikidata_id': wikidata_id,
-#         }
-#       except Exception: 
-#         logger.info(f"file_path: {file_path}")
-#         traceback.print_exc()
-#         return None
