@@ -31,6 +31,7 @@ wandb.login()
 
 from omegaconf import OmegaConf
 import hydra
+import h5py
 
 import logging
 import logging.config
@@ -113,18 +114,14 @@ def main(cfg: OmegaConf):
   set_seed(cfg.general.seed)
 
   # Dataset
-  src_dir = f"{cfg.data.data_dir}/{cfg.data.category}_debug" if cfg.general.is_debug else f"{cfg.data.data_dir}/{cfg.data.category}"
-  if cfg.general.is_train:
-    df = pd.read_csv(f"{src_dir}/csv/train.csv")
-  else:
-    df = pd.read_csv(f"{src_dir}/csv/test.csv")
-
+  src_dir = f"{cfg.data.data_dir}/athlete_debug"
+  path_h5 = {"train": f"{src_dir}/train.h5", "val": f"{src_dir}/val.h5", "test": f"{src_dir}/test.h5"}
   data_transforms = GetTransforms(cfg.data.img_size)
-  dataloaders = prepare_loaders(df, data_transforms, cfg.data.batch_size, is_train=cfg.general.is_train ,fold=0)
+  dataloaders = prepare_loaders(path_h5, data_transforms, cfg.data.batch_size, is_train=cfg.general.is_train ,fold=0)
 
-  out_features = len(df['label'].unique())
+  with h5py.File(path_h5["train"], 'r') as f:
+    out_features = f["out_features"][0]
   logger.info(f'out_features = {out_features}')
-
   model = EntityLinkingModel(cfg.model.model_name, out_features)
   model.to(device)
 
