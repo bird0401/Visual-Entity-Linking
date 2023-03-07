@@ -7,13 +7,16 @@ from sklearn.preprocessing import LabelEncoder
 import logging
 import logging.config
 from yaml import safe_load
-with open('../conf/logging.yml') as f:
+
+with open("../conf/logging.yml") as f:
     cfg = safe_load(f)
 logging.config.dictConfig(cfg)
-logger = logging.getLogger('main')
+logger = logging.getLogger("main")
+
 
 def GetWikidataId(path):
-  return path.split("/")[-2]
+    return path.split("/")[-2]
+
 
 # def GetNonCropPath(path):
 #   path_split = path.split("/")
@@ -26,20 +29,23 @@ def GetWikidataId(path):
 #   path_noncrop += basename
 #   return path_noncrop
 
-def Encoding(df, save_file):
-  encoder = LabelEncoder()
-  df['label'] = encoder.fit_transform(df['wikidata_id'])
-  with open(f"{save_file}.pkl", "wb") as fp:
-      joblib.dump(encoder, fp)
-  return df
 
-# Extract images with more than or equal to 3 images
+def Encoding(df, save_file):
+    encoder = LabelEncoder()
+    df["label"] = encoder.fit_transform(df["wikidata_id"])
+    with open(f"{save_file}.pkl", "wb") as fp:
+        joblib.dump(encoder, fp)
+    return df
+
+
+# Extract images with more than or equal to 5 images
 def DeleteSmallLabels(df):
-    vc = df['wikidata_id'].value_counts()
+    vc = df["wikidata_id"].value_counts()
     used_wikidata_id = vc[vc >= 5].index
     df = df[df["wikidata_id"].isin(used_wikidata_id)]
-    df = df.reset_index(drop = True)
+    df = df.reset_index(drop=True)
     return df
+
 
 # def Split_Kfold(df, n_fold):
 #   train_val_indices, test_indices = train_test_split(list(range(len(df.label))), test_size=0.2, stratify=df.label)
@@ -53,63 +59,84 @@ def DeleteSmallLabels(df):
 #         df_train.loc[val_ , "kfold"] = fold
 #   return df_train, df_test
 
-def split_train_val_test(df):
-  train_val_indices, test_indices = train_test_split(list(range(len(df.label))), test_size=0.2, stratify=df.label)
-  df.loc[train_val_indices, "is_train_val"] = 1
-  df.loc[test_indices, "is_train_val"] = 0
-  df_train, df_test = df[df["is_train_val"] == 1].reset_index(drop = True), df[df["is_train_val"] == 0].reset_index(drop = True)
-  logger.debug(f'len(df_train): {len(df_train)}, len(df_test): {len(df_test)}')
 
-  train_indices, val_indices = train_test_split(list(range(len(df_train.label))), test_size=0.2, stratify=df_train.label)
-  df_train.loc[train_indices, "kfold"] = 1
-  df_train.loc[val_indices, "kfold"] = 0
-  return df_train, df_test
+def split_train_val_test(df):
+    train_val_indices, test_indices = train_test_split(
+        list(range(len(df.label))), test_size=0.2, stratify=df.label
+    )
+    df.loc[train_val_indices, "is_train_val"] = 1
+    df.loc[test_indices, "is_train_val"] = 0
+    df_train, df_test = (
+        df[df["is_train_val"] == 1].reset_index(drop=True),
+        df[df["is_train_val"] == 0].reset_index(drop=True),
+    )
+    logger.debug(f"len(df_train): {len(df_train)}, len(df_test): {len(df_test)}")
+
+    train_indices, val_indices = train_test_split(
+        list(range(len(df_train.label))), test_size=0.2, stratify=df_train.label
+    )
+    df_train.loc[train_indices, "kfold"] = 1
+    df_train.loc[val_indices, "kfold"] = 0
+    return df_train, df_test
+
 
 # Change demands on the situation
-# - category 
+# - category
 # - whether sampling df
 # - to_origin
 def main():
-  # categories = ["athlete"]
-  categories = ["aircraft", "athlete", "bread", "bird", "car", "director", "dog", "us_politician"]
-  is_debug = False
-  to_origin = False
-  logger.info(f"debug mode") if is_debug else logger.info(f"production mode")
-  logger.info(f"to_origin mode") if to_origin else logger.info(f"to_clean mode")
+    # categories = ["athlete"]
+    categories = [
+        "aircraft",
+        "athlete",
+        "bread",
+        "bird",
+        "car",
+        "director",
+        "dog",
+        "us_politician",
+    ]
+    is_debug = False
+    to_origin = False
+    logger.info(f"debug mode") if is_debug else logger.info(f"production mode")
+    logger.info(f"to_origin mode") if to_origin else logger.info(f"to_clean mode")
 
-  for category in categories:
-    logger.info(f"category: {category}")
+    for category in categories:
+        logger.info(f"category: {category}")
 
-    data_dir = f"../../../data/origin" if to_origin else f"../../../data/clean" 
-    category_dir = f"{data_dir}/{category}_debug" if is_debug else f"{data_dir}/{category}"
-    paths = glob.glob(f'{category_dir}/imgs/*/*.jpg')
+        data_dir = f"../../../data/origin" if to_origin else f"../../../data/clean"
+        category_dir = (
+            f"{data_dir}/{category}_debug" if is_debug else f"{data_dir}/{category}"
+        )
+        paths = glob.glob(f"{category_dir}/imgs/*/*.jpg")
 
-    df = pd.DataFrame(paths, columns=["path"])
-    logger.debug(f"df['path'][0] : {df['path'][0]}")
-    # df['path_noncrop'] = df['path'].apply(GetNonCropPath)
-    # logger.debug(f"df['path_noncrop'][0] : {df['path_noncrop'][0]}")
-    df['wikidata_id'] = df['path'].apply(GetWikidataId)
-    logger.debug(f"df['wikidata_id'][0] : {df['wikidata_id'][0]}")
-    df['file_name'] = df['path'].apply(os.path.basename)
-    logger.debug(f"df['file_name'][0] : {df['file_name'][0]}")
+        df = pd.DataFrame(paths, columns=["path"])
+        logger.debug(f"df['path'][0] : {df['path'][0]}")
+        # df['path_noncrop'] = df['path'].apply(GetNonCropPath)
+        # logger.debug(f"df['path_noncrop'][0] : {df['path_noncrop'][0]}")
+        df["wikidata_id"] = df["path"].apply(GetWikidataId)
+        logger.debug(f"df['wikidata_id'][0] : {df['wikidata_id'][0]}")
+        df["file_name"] = df["path"].apply(os.path.basename)
+        logger.debug(f"df['file_name'][0] : {df['file_name'][0]}")
 
-    # df = df.sample(frac=0.3) # execute if creating sample dataframe
+        # df = df.sample(frac=0.3) # execute if creating sample dataframe
 
-    df = DeleteSmallLabels(df)
-    df = Encoding(df, "crop")
-    logger.info(f"len(df['label'].unique()) = {len(df['label'].unique())}")
-    logger.info(f'len(df) = {len(df)}')
-    os.makedirs(f"{category_dir}/csv", exist_ok=True)
-    df.to_csv(f"{category_dir}/csv/origin.csv", index=False)
+        df = DeleteSmallLabels(df)
+        df = Encoding(df, "crop")
+        logger.info(f"len(df['label'].unique()) = {len(df['label'].unique())}")
+        logger.info(f"len(df) = {len(df)}")
+        os.makedirs(f"{category_dir}/csv", exist_ok=True)
+        df.to_csv(f"{category_dir}/csv/origin.csv", index=False)
 
-    # csv for train and test 
-    df_train, df_test = split_train_val_test(df)
-    # df_train, df_test = Split_Kfold(df, 3)
-    logger.info(f'len(df_train) = {len(df_train)}')
-    logger.info(f'len(df_test) = {len(df_test)}')
-    df_train.to_csv(f"{category_dir}/csv/train.csv", index=False)
-    df_test.to_csv(f"{category_dir}/csv/test.csv", index=False)
-    print()
+        # csv for train and test
+        df_train, df_test = split_train_val_test(df)
+        # df_train, df_test = Split_Kfold(df, 3)
+        logger.info(f"len(df_train) = {len(df_train)}")
+        logger.info(f"len(df_test) = {len(df_test)}")
+        df_train.to_csv(f"{category_dir}/csv/train.csv", index=False)
+        df_test.to_csv(f"{category_dir}/csv/test.csv", index=False)
+        print()
 
-if __name__ == '__main__':
-  main()
+
+if __name__ == "__main__":
+    main()

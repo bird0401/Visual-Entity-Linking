@@ -14,5 +14,5 @@ services:
       TZ: Asia/Tokyo
     volumes:
       - type: bind
-        source: ./
+        source: ../../
         target: /usr/local/mount_dir

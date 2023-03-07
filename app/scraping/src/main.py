@@ -175,7 +175,7 @@ def DownloadImages(entity_name, entity_url):
       continue
     filename = 'image_' + str(i).zfill(4) + '.jpg'
     img_file_path = os.path.join(img_dir_path, filename)
-    DownloadImage(url=img_url, file_path=img_file_path, wikidata_id = wikidata_id)
+    # DownloadImage(url=img_url, file_path=img_file_path, wikidata_id = wikidata_id)
 
 def ExtractEntityURLs(category):
   entity_list_page_url=ToAbsURL(related_url = f'/wiki/Category:{category}')

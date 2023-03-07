@@ -1,5 +1,6 @@
 .api_key
 .env
+.vscode
 .scraping_env/
 .key/
 .DS_Store

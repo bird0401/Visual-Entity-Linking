@@ -13,3 +13,6 @@ torch
 numpy==1.21.6
 pandas==1.3.5
 h5py
+Sphinx
+flake8
+black
