@@ -24,7 +24,7 @@ logger = logging.getLogger('main')
 mysql_user = os.environ['MYSQL_USER']
 mysql_password = os.environ['MYSQL_PASS']
 host = os.environ['DB_HOST']
-database = "Automobiles_by_brand_by_model"
+database = "Gallery_pages_of_birds"
 # database = os.environ['DATABASE']
 
 connection = mysql.connector.connect(
@@ -85,7 +85,7 @@ def ExtractEntityID(entity_url):
     return None
 
 def MakeEntityImgDir(id):
-  img_path = "../data_car/imgs/" + id
+  img_path = "../data_bird/imgs/" + id
   # img_path = "../data/imgs/" + id
   if not os.path.isdir(img_path): os.makedirs(img_path)
   return img_path
@@ -114,7 +114,8 @@ def ExtractImageURLs(entity_img_list_page_url):
     res = Fetch(entity_img_list_page_url)
     soup = BeautifulSoup(res.text, "html.parser")
     try:
-      image_classes=soup.find_all(class_="galleryfilename galleryfilename-truncate")
+      image_classes=soup.find_all(class_="image") 
+      # image_classes=soup.find_all(class_="galleryfilename galleryfilename-truncate")
       if first_page and len(image_classes) < 5:
         logger.info(f"{entity_img_list_page_url} has only {len(image_classes)} images")
         return
@@ -164,18 +165,16 @@ def DownloadImages(entity_name, entity_url):
   if wikidata_id not in wikidata_ids_in_db: 
     cur.execute(insert_new_name, (wikidata_id, entity_name))
     wikidata_ids_in_db.add(wikidata_id)
-  else: # For scraping from the middle
-    logger.info(f"Still exists {entity_name}, {entity_url}")
-    return
 
   img_dir_path = MakeEntityImgDir(wikidata_id)
   for i, img_url in enumerate(ExtractImageURLs(entity_url)):
+    # print(img_url)
     if (wikidata_id, img_url) in img_urls_in_db: 
       print(f"still exists: ({wikidata_id}, {img_url})")
       continue
     filename = 'image_' + str(i).zfill(4) + '.jpg'
     img_file_path = os.path.join(img_dir_path, filename)
-    # DownloadImage(url=img_url, file_path=img_file_path, wikidata_id = wikidata_id)
+    DownloadImage(url=img_url, file_path=img_file_path, wikidata_id = wikidata_id)
 
 def ExtractEntityURLs(category):
   entity_list_page_url=ToAbsURL(related_url = f'/wiki/Category:{category}')
@@ -191,6 +190,27 @@ def ExtractEntityURLs(category):
         entity_url = ToAbsURL(related_url = elem.find('a').attrs['href'])
         if entity_name and entity_url: yield entity_name, entity_url
         else: continue
+    except Exception:
+      traceback.print_exc()
+
+    entity_list_page_url=ExtractNextPageURL(entity_list_page_url)
+
+def extract_entity_urls_for_gallery(category):
+  entity_list_page_url=ToAbsURL(related_url = f'/wiki/Category:{category}')
+
+  while entity_list_page_url:
+    res = Fetch(entity_list_page_url)
+    soup = BeautifulSoup(res.text, "html.parser")
+    
+    try:
+      groups = soup.find_all(class_="mw-category-group")
+      for group in groups:
+        elems = group.find_all('li')
+        for elem in elems:
+          entity_name = elem.find('a').text
+          entity_url = ToAbsURL(related_url = elem.find('a').attrs['href'])
+          if entity_name and entity_url: yield entity_name, entity_url
+          else: continue
     except Exception:
       traceback.print_exc()
 
@@ -225,8 +245,9 @@ category = database
 #     DownloadImages(entity_name, entity_url)
 
 # If there are no subcategories, execute following
-entity_names_urls = ExtractEntityURLs(category=category)
+entity_names_urls = extract_entity_urls_for_gallery(category=category)
 for entity_name, entity_url in entity_names_urls:
+  # print(entity_name, entity_url)
   DownloadImages(entity_name, entity_url)
 
 connection.close() 

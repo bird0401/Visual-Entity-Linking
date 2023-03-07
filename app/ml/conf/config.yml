@@ -14,33 +14,31 @@ hydra:
 
 general:
   seed: 2022
-  debug: True
+  is_debug: False
   use_optuna: False
+  is_train: True
 
 data:
+  category: ???
   img_size: 224
   batch_size: 
-    train: 32
-    val: 64
-  batch_size_debug: 
-    train: 32
-    val: 64
-  n_fold: 5
+    train: ???
+    val: ???
+  data_dir: ???
+  # n_fold: 5
 
 model:
   model_name: efficientnet_b0
   embedding_size: 512
+  # weight_file: ???
 
 optimizer:
-  learning_rate: 1.0e-04
+  learning_rate: ???
   weight_decay: 1.0e-06
   scheduler: CosineAnnealingLR
-  min_lr: 1.0e-06
-  T_max: 500
-  T_0: 500
+  T_max: 10
 
 train:
-  epochs: 10
-  epochs_debug: 10
+  epochs: 30
   n_accumulate: 1
   enable_amp_half_precision: False

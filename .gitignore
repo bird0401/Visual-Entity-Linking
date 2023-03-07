@@ -4,12 +4,8 @@
 .key/
 .DS_Store
 /app/scraping/data/imgs/
-/app/ml/model/
+/app/ml/weights/
 /app/ml/src/entity_linking/memo/
-/app/ml/data/
-/app/object_detection/data/
-/app/object_detection/src/runs/
-# /app/ml/src/wandb
 
 outputs
 wandb
@@ -17,14 +13,14 @@ entity_dogs/
 runs/
 runs_debug/
 playground/
-save_dir/
-data/
-data_debug/
-data_buckup/
+data*/
 latest-run
-
+images/
 
 .d000*
+*.tar
+*.jpg
+*.jpeg
 *.simg
 *.sif
 *.bin
@@ -33,6 +29,8 @@ latest-run
 *.png
 *.pt
 *.pkl
+*.h5
+*.hdf5
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

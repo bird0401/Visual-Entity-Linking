@@ -24,7 +24,7 @@ logger = logging.getLogger('main')
 mysql_user = os.environ['MYSQL_USER']
 mysql_password = os.environ['MYSQL_PASS']
 host = os.environ['DB_HOST']
-database = "Automobiles_by_brand_by_model"
+database = "Politicians_of_the_United_States_by_name"
 # database = os.environ['DATABASE']
 
 connection = mysql.connector.connect(
@@ -85,7 +85,7 @@ def ExtractEntityID(entity_url):
     return None
 
 def MakeEntityImgDir(id):
-  img_path = "../data_car/imgs/" + id
+  img_path = "../data_us_politician/imgs/" + id
   # img_path = "../data/imgs/" + id
   if not os.path.isdir(img_path): os.makedirs(img_path)
   return img_path
@@ -131,6 +131,7 @@ def ExtractImageURLs(entity_img_list_page_url):
 def DownloadImage(url, file_path, wikidata_id):
   res=Fetch(url)
   if res: 
+    logger.info(file_path)
     with open(file_path, "wb") as f: f.write(res.content)
 
     insert_new_img_url = (
@@ -144,7 +145,6 @@ def DownloadImage(url, file_path, wikidata_id):
       "VALUES (%s, %s)")
     
     try:
-      print(file_path)
       cur.execute(insert_new_img_url, (wikidata_id, url))
       img_urls_in_db.add((wikidata_id, url))
       img_id = cur.lastrowid
@@ -167,7 +167,7 @@ def DownloadImages(entity_name, entity_url):
   else: # For scraping from the middle
     logger.info(f"Still exists {entity_name}, {entity_url}")
     return
-
+    
   img_dir_path = MakeEntityImgDir(wikidata_id)
   for i, img_url in enumerate(ExtractImageURLs(entity_url)):
     if (wikidata_id, img_url) in img_urls_in_db: 
@@ -175,7 +175,7 @@ def DownloadImages(entity_name, entity_url):
       continue
     filename = 'image_' + str(i).zfill(4) + '.jpg'
     img_file_path = os.path.join(img_dir_path, filename)
-    # DownloadImage(url=img_url, file_path=img_file_path, wikidata_id = wikidata_id)
+    DownloadImage(url=img_url, file_path=img_file_path, wikidata_id = wikidata_id)
 
 def ExtractEntityURLs(category):
   entity_list_page_url=ToAbsURL(related_url = f'/wiki/Category:{category}')

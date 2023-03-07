@@ -35,3 +35,5 @@ def delete_exif(paths):
     except Exception:
       print(path)
       traceback.print_exc()
+
+  

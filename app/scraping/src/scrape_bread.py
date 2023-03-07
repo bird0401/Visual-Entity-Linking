@@ -24,7 +24,7 @@ logger = logging.getLogger('main')
 mysql_user = os.environ['MYSQL_USER']
 mysql_password = os.environ['MYSQL_PASS']
 host = os.environ['DB_HOST']
-database = "Automobiles_by_brand_by_model"
+database = "Breads_by_name"
 # database = os.environ['DATABASE']
 
 connection = mysql.connector.connect(
@@ -85,7 +85,7 @@ def ExtractEntityID(entity_url):
     return None
 
 def MakeEntityImgDir(id):
-  img_path = "../data_car/imgs/" + id
+  img_path = "../data_bread/imgs/" + id
   # img_path = "../data/imgs/" + id
   if not os.path.isdir(img_path): os.makedirs(img_path)
   return img_path
@@ -164,9 +164,6 @@ def DownloadImages(entity_name, entity_url):
   if wikidata_id not in wikidata_ids_in_db: 
     cur.execute(insert_new_name, (wikidata_id, entity_name))
     wikidata_ids_in_db.add(wikidata_id)
-  else: # For scraping from the middle
-    logger.info(f"Still exists {entity_name}, {entity_url}")
-    return
 
   img_dir_path = MakeEntityImgDir(wikidata_id)
   for i, img_url in enumerate(ExtractImageURLs(entity_url)):
@@ -175,7 +172,7 @@ def DownloadImages(entity_name, entity_url):
       continue
     filename = 'image_' + str(i).zfill(4) + '.jpg'
     img_file_path = os.path.join(img_dir_path, filename)
-    # DownloadImage(url=img_url, file_path=img_file_path, wikidata_id = wikidata_id)
+    DownloadImage(url=img_url, file_path=img_file_path, wikidata_id = wikidata_id)
 
 def ExtractEntityURLs(category):
   entity_list_page_url=ToAbsURL(related_url = f'/wiki/Category:{category}')
