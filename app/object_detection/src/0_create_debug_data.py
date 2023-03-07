@@ -3,13 +3,15 @@ import glob, random, shutil, os
 import logging
 import logging.config
 from yaml import safe_load
-with open('../conf/logging.yml') as f:
+
+with open("../conf/logging.yml") as f:
     cfg = safe_load(f)
 logging.config.dictConfig(cfg)
-logger = logging.getLogger('main')
+logger = logging.getLogger("main")
+
 
 def main():
-    path_ids = glob.glob("../data/athlete/imgs/Q*") # change directory name by category
+    path_ids = glob.glob("../data/athlete/imgs/Q*")  # change directory name by category
     path_ids_sample = random.sample(path_ids, 10)
     dst_dir = "../data/athlete_debug/imgs"
     try:
@@ -21,5 +23,6 @@ def main():
         id_sample = src_dir.split("/")[-1]
         shutil.copytree(src_dir, f"{dst_dir}/{id_sample}")
 
-if __name__ == '__main__':
-  main()
+
+if __name__ == "__main__":
+    main()

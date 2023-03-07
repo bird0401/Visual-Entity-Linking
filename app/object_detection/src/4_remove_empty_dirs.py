@@ -3,10 +3,12 @@ import glob, shutil
 import logging
 import logging.config
 from yaml import safe_load
-with open('../conf/logging.yml') as f:
+
+with open("../conf/logging.yml") as f:
     cfg = safe_load(f)
 logging.config.dictConfig(cfg)
-logger = logging.getLogger('main')
+logger = logging.getLogger("main")
+
 
 def main():
     # categories = ["us_politician", "director", "athlete", "dog", "bird", "bread", "car", "aircraft"]
@@ -14,7 +16,7 @@ def main():
     is_debug = True
     for category in categories:
         logger.info(f"category: {category}")
-        data_dir = f"../../../data/clean" # For cleaned data
+        data_dir = f"../../../data/clean"  # For cleaned data
         # data_dir = f"../../../data/origin" # For original data
         category_dir = f"{data_dir}/{category}_debug" if is_debug else f"{data_dir}/{category}"
         wikidata_id_dirs = glob.glob(f"{category_dir}/imgs/*/")
@@ -26,5 +28,6 @@ def main():
         logger.info(f"Remove {cnt} dirs")
         print()
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     main()
