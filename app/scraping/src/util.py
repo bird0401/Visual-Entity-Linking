@@ -5,35 +5,38 @@ import time
 import traceback
 from fake_useragent import UserAgent
 
-def ToAbsURL(base_url = 'https://commons.wikimedia.org', related_url = '/wiki/Category'):
-  return base_url+related_url
+
+def ToAbsURL(base_url="https://commons.wikimedia.org", related_url="/wiki/Category"):
+    return base_url + related_url
+
 
 ua = UserAgent()
 # ua = UserAgent(use_cache_server=False)
-header = {'user-agent':ua.chrome}
+header = {"user-agent": ua.chrome}
+
+
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1))
 def Fetch(url):
-  try: 
-    res = requests.get(url, headers=header, timeout=10)
-  except Timeout:
-    print('Timeout has been raised.')
-    return None
-  except Exception:
-    traceback.print_exc()
-    return None
-  time.sleep(1) 
-  return res
+    try:
+        res = requests.get(url, headers=header, timeout=10)
+    except Timeout:
+        print("Timeout has been raised.")
+        return None
+    except Exception:
+        traceback.print_exc()
+        return None
+    time.sleep(1)
+    return res
+
 
 # delete all exif data
 def delete_exif(paths):
-  for path in paths: 
-    try:
-      src = Image.open(path)
-      dst = Image.new(src.mode, src.size)
-      dst.putdata(src.getdata())
-      dst.convert('RGB').save(path)
-    except Exception:
-      print(path)
-      traceback.print_exc()
-
-  
+    for path in paths:
+        try:
+            src = Image.open(path)
+            dst = Image.new(src.mode, src.size)
+            dst.putdata(src.getdata())
+            dst.convert("RGB").save(path)
+        except Exception:
+            print(path)
+            traceback.print_exc()
