@@ -31,9 +31,7 @@ def insert_data(f, path, label, id_wikidata, cnt):
         f["path"].create_dataset(str(cnt), data=path, shape=(1,), dtype=str_dtype)
         f["img"].create_dataset(str(cnt), data=img)
         f["label"].create_dataset(str(cnt), data=label, shape=(1,), dtype=np.int8)
-        f["id_wikidata"].create_dataset(
-            str(cnt), data=id_wikidata, shape=(1,), dtype=str_dtype
-        )
+        f["id_wikidata"].create_dataset(str(cnt), data=id_wikidata, shape=(1,), dtype=str_dtype)
     except Exception:
         traceback.print_exc()
     return f
@@ -85,9 +83,7 @@ def create_dataset(category_dir):
 
             logger.info(f"cnt: {cnt}")
             logger.info(f"out_features: {len(map_id_to_label)}")
-            f.create_dataset(
-                "out_features", data=len(map_id_to_label), shape=(1,), dtype=np.int8
-            )
+            f.create_dataset("out_features", data=len(map_id_to_label), shape=(1,), dtype=np.int8)
 
 
 def main():

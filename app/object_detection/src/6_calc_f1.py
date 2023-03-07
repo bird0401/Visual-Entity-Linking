@@ -24,14 +24,8 @@ def main():
     df["paths"] = caterogy_paths
     df["label"] = df["paths"].str.contains(f"\.\./{dir_name}/clean_samples_{conf}/.*/image_...nm?\.jpg")
     df["pred"] = df["paths"].str.contains(f"\.\./{dir_name}/clean_samples_{conf}/.*/image_...n?m\.jpg")
-    df.loc[
-        df["paths"].str.contains(f"\.\./{dir_name}/clean_samples_{conf}/.*/image_....*FN\.jpg"),
-        "label",
-    ] = True
-    df.loc[
-        df["paths"].str.contains(f"\.\./{dir_name}/clean_samples_{conf}/.*/image_....*FN\.jpg"),
-        "pred",
-    ] = False
+    df.loc[df["paths"].str.contains(f"\.\./{dir_name}/clean_samples_{conf}/.*/image_....*FN\.jpg"), "label",] = True
+    df.loc[df["paths"].str.contains(f"\.\./{dir_name}/clean_samples_{conf}/.*/image_....*FN\.jpg"), "pred",] = False
     logger.info(f'len(df["paths"]): {len(df["paths"])}')
     logger.info(f'num noise: {df["pred"].sum()}')
     logger.info(f'precision_score: {precision_score(df["label"], df["pred"])}')

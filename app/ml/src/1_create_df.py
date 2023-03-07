@@ -61,9 +61,7 @@ def DeleteSmallLabels(df):
 
 
 def split_train_val_test(df):
-    train_val_indices, test_indices = train_test_split(
-        list(range(len(df.label))), test_size=0.2, stratify=df.label
-    )
+    train_val_indices, test_indices = train_test_split(list(range(len(df.label))), test_size=0.2, stratify=df.label)
     df.loc[train_val_indices, "is_train_val"] = 1
     df.loc[test_indices, "is_train_val"] = 0
     df_train, df_test = (
@@ -72,9 +70,7 @@ def split_train_val_test(df):
     )
     logger.debug(f"len(df_train): {len(df_train)}, len(df_test): {len(df_test)}")
 
-    train_indices, val_indices = train_test_split(
-        list(range(len(df_train.label))), test_size=0.2, stratify=df_train.label
-    )
+    train_indices, val_indices = train_test_split(list(range(len(df_train.label))), test_size=0.2, stratify=df_train.label)
     df_train.loc[train_indices, "kfold"] = 1
     df_train.loc[val_indices, "kfold"] = 0
     return df_train, df_test
@@ -105,9 +101,7 @@ def main():
         logger.info(f"category: {category}")
 
         data_dir = f"../../../data/origin" if to_origin else f"../../../data/clean"
-        category_dir = (
-            f"{data_dir}/{category}_debug" if is_debug else f"{data_dir}/{category}"
-        )
+        category_dir = f"{data_dir}/{category}_debug" if is_debug else f"{data_dir}/{category}"
         paths = glob.glob(f"{category_dir}/imgs/*/*.jpg")
 
         df = pd.DataFrame(paths, columns=["path"])

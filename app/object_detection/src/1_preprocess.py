@@ -16,6 +16,7 @@ logger = logging.getLogger("main")
 # - category
 # - is_debug
 
+
 def main():
     categories = [
         "aircraft",

@@ -84,10 +84,7 @@ def prepare_loaders(path_h5, transforms, batch_size, is_train=True, fold=0):
     assert 0 <= fold <= 4
     if is_train:
         datasets = {x: EntityLinkingDataset(path_h5[x], transforms=transforms[x]) for x in ["train", "val"]}
-        dataloaders = {
-            x: DataLoader(datasets[x], batch_size=batch_size[x], num_workers=2, collate_fn=collate_fn, shuffle=True, pin_memory=True, drop_last=True,)
-            for x in ["train", "val"]
-        }
+        dataloaders = {x: DataLoader(datasets[x], batch_size=batch_size[x], num_workers=2, collate_fn=collate_fn, shuffle=True, pin_memory=True, drop_last=True,) for x in ["train", "val"]}
         assert len(dataloaders["train"]) > 0, f"len(dataloaders['train']: {len(dataloaders['train'])}"
         assert len(dataloaders["val"]) > 0, f"len(dataloaders['val']: {len(dataloaders['val'])}"
         logger.info(f"len(dataloaders['train']): {len(dataloaders['train'])}")

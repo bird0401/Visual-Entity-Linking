@@ -6,13 +6,13 @@ import cv2
 src_dir = f"../../../data/clean/athlete"
 path_h5 = {"train": f"{src_dir}/train.h5", "val": f"{src_dir}/val.h5", "test": f"{src_dir}/test.h5"}
 
-with h5py.File(path_h5["train"],'r') as f:
-    path = f['path']
+with h5py.File(path_h5["train"], "r") as f:
+    path = f["path"]
     # print(path)
     # print(path.keys())
-    img = f['img']
-    id_wikidata = f['id_wikidata']
-    label = f['label']
+    img = f["img"]
+    id_wikidata = f["id_wikidata"]
+    label = f["label"]
     for k in path.keys():
         # print(path[k][0], img[k].shape, id_wikidata[k][0], label[k][0])
         # print(type(path[k][0]), type(img[k][0]), type(id_wikidata[k][0]), type(label[k][0]))
@@ -21,7 +21,6 @@ with h5py.File(path_h5["train"],'r') as f:
         print(img[k][0].shape)
         im = cv2.cvtColor(img[k][0], cv2.COLOR_BGR2RGB)
         print(im.shape)
-        plt.imsave(f'{label[k]}_{filename}', im)
+        plt.imsave(f"{label[k]}_{filename}", im)
 
     print(len(label))
-
