@@ -1,11 +1,6 @@
 from bs4 import BeautifulSoup
-import re
-import os
-import shutil
-import pathlib
-import traceback
+import re, os, pathlib, traceback
 import mysql.connector
-import sys
 from util import *
 
 import logging
@@ -17,17 +12,17 @@ with open("../conf/logging.yml") as f:
 logging.config.dictConfig(cfg)
 logger = logging.getLogger("main")
 
-# points to change to scrape certain category
-# - database
-# - img_path
-# - whether there are subcategories
 
 mysql_user = os.environ["MYSQL_USER"]
 mysql_password = os.environ["MYSQL_PASS"]
 host = os.environ["DB_HOST"]
-database = "Gallery_pages_of_birds"
-# database = os.environ['DATABASE']
-
+database = "Aircraft_by_popular_name"
+# Sportspeople_by_name
+# "Gallery_pages_of_birds"
+# "Breads_by_name"
+# "Automobiles_by_brand_by_model"
+# "Film_directors_by_name"
+# "Politicians_of_the_United_States_by_name"
 connection = mysql.connector.connect(user=mysql_user, password=mysql_password, host=host, database=database, port=3306)
 
 cur = connection.cursor()
@@ -39,43 +34,21 @@ wikidata_ids_in_db = cur.fetchall()
 wikidata_ids_in_db = set([wikidata_id for (wikidata_id,) in wikidata_ids_in_db])
 
 
-def ExtractNextPageURL(url, text="next page"):
-    res = Fetch(url)
+def extract_next_page_url(url, text="next page"):
+    res = fetch(url)
     soup = BeautifulSoup(res.text, "html.parser")
     try:
         t = soup.find(text=text)
         if t:
-            return ToAbsURL(related_url=t.parent.attrs["href"])
+            return to_abs_url(related_url=t.parent.attrs["href"])
     except Exception:
         traceback.print_exc()
         return None
 
 
-def ExtractEntityURLs(category):
-    entity_list_page_url = ToAbsURL(related_url=f"/wiki/Category:{category}")
-
-    while entity_list_page_url:
-        res = Fetch(entity_list_page_url)
-        soup = BeautifulSoup(res.text, "html.parser")
-
-        try:
-            elems = soup.find_all(class_="CategoryTreeItem")
-            for elem in elems:
-                entity_name = elem.find("a").text
-                entity_url = ToAbsURL(related_url=elem.find("a").attrs["href"])
-                if entity_name and entity_url:
-                    yield entity_name, entity_url
-                else:
-                    continue
-        except Exception:
-            traceback.print_exc()
-
-        entity_list_page_url = ExtractNextPageURL(entity_list_page_url)
-
-
-def ExtractEntityID(entity_url):
+def extract_entity_id(entity_url):
     try:
-        res = Fetch(entity_url)
+        res = fetch(entity_url)
         soup = BeautifulSoup(res.text, "html.parser")
         wikidata_url = soup.find(href=re.compile("^https://www.wikidata.org/wiki/Q")).attrs["href"]
         wikidata_id = pathlib.Path(wikidata_url).stem
@@ -86,17 +59,16 @@ def ExtractEntityID(entity_url):
         return None
 
 
-def MakeEntityImgDir(id):
-    img_path = "../data_bird/imgs/" + id
-    # img_path = "../data/imgs/" + id
+def make_entity_img_dir(id):
+    img_path = "../data_aircraft/imgs/" + id  # Change this line
     if not os.path.isdir(img_path):
         os.makedirs(img_path)
     return img_path
 
 
-def ExtractImageURL(img_page_url):
+def extract_image_url(img_page_url):
     try:
-        res = Fetch(img_page_url)
+        res = fetch(img_page_url)
         soup = BeautifulSoup(res.text, "html.parser")
         l = soup.find(class_="fullImageLink")
         if l:
@@ -109,37 +81,37 @@ def ExtractImageURL(img_page_url):
         return None
 
 
-def ExtractImageURLs(entity_img_list_page_url):
+def extract_image_urls(entity_img_list_page_url):
     """
     Image Page is the page which contains an image, description, bottons, etc.
     after extract Image Page URL, extract image url from this Page
     """
     first_page = True
     while entity_img_list_page_url:
-        res = Fetch(entity_img_list_page_url)
+        res = fetch(entity_img_list_page_url)
         soup = BeautifulSoup(res.text, "html.parser")
         try:
-            image_classes = soup.find_all(class_="image")
-            # image_classes=soup.find_all(class_="galleryfilename galleryfilename-truncate")
+            image_classes = soup.find_all(class_="galleryfilename galleryfilename-truncate")
             if first_page and len(image_classes) < 5:
                 logger.info(f"{entity_img_list_page_url} has only {len(image_classes)} images")
                 return
             for image_class in image_classes:
-                img_page_url = ToAbsURL(related_url=image_class.attrs["href"])
-                img_url = ExtractImageURL(img_page_url)
+                img_page_url = to_abs_url(related_url=image_class.attrs["href"])
+                img_url = extract_image_url(img_page_url)
                 if img_url:
                     yield img_url
                 else:
                     continue
         except Exception:
             traceback.print_exc()
-        entity_img_list_page_url = ExtractNextPageURL(entity_img_list_page_url)
+        entity_img_list_page_url = extract_next_page_url(entity_img_list_page_url)
         first_page = False
 
 
-def DownloadImage(url, file_path, wikidata_id):
-    res = Fetch(url)
+def download_image(url, file_path, wikidata_id):
+    res = fetch(url)
     if res:
+        logger.info(file_path)
         with open(file_path, "wb") as f:
             f.write(res.content)
 
@@ -159,8 +131,8 @@ def DownloadImage(url, file_path, wikidata_id):
             traceback.print_exc()
 
 
-def DownloadImages(entity_name, entity_url):
-    wikidata_id = ExtractEntityID(entity_url)
+def download_images(entity_name, entity_url):
+    wikidata_id = extract_entity_id(entity_url)
     if not wikidata_id:
         return
     logger.info(f"{entity_name}, {entity_url}")
@@ -168,45 +140,25 @@ def DownloadImages(entity_name, entity_url):
     if wikidata_id not in wikidata_ids_in_db:
         cur.execute(insert_new_name, (wikidata_id, entity_name))
         wikidata_ids_in_db.add(wikidata_id)
+    else:  # For scraping from the middle
+        logger.info(f"Still exists {entity_name}, {entity_url}")
+        return
 
-    img_dir_path = MakeEntityImgDir(wikidata_id)
-    for i, img_url in enumerate(ExtractImageURLs(entity_url)):
-        # print(img_url)
+    img_dir_path = make_entity_img_dir(wikidata_id)
+    for i, img_url in enumerate(extract_image_urls(entity_url)):
         if (wikidata_id, img_url) in img_urls_in_db:
             print(f"still exists: ({wikidata_id}, {img_url})")
             continue
         filename = "image_" + str(i).zfill(4) + ".jpg"
         img_file_path = os.path.join(img_dir_path, filename)
-        DownloadImage(url=img_url, file_path=img_file_path, wikidata_id=wikidata_id)
-
-
-def ExtractEntityURLs(category):
-    entity_list_page_url = ToAbsURL(related_url=f"/wiki/Category:{category}")
-
-    while entity_list_page_url:
-        res = Fetch(entity_list_page_url)
-        soup = BeautifulSoup(res.text, "html.parser")
-
-        try:
-            elems = soup.find_all(class_="CategoryTreeItem")
-            for elem in elems:
-                entity_name = elem.find("a").text
-                entity_url = ToAbsURL(related_url=elem.find("a").attrs["href"])
-                if entity_name and entity_url:
-                    yield entity_name, entity_url
-                else:
-                    continue
-        except Exception:
-            traceback.print_exc()
-
-        entity_list_page_url = ExtractNextPageURL(entity_list_page_url)
+        download_image(url=img_url, file_path=img_file_path, wikidata_id=wikidata_id)
 
 
 def extract_entity_urls_for_gallery(category):
-    entity_list_page_url = ToAbsURL(related_url=f"/wiki/Category:{category}")
+    entity_list_page_url = to_abs_url(related_url=f"/wiki/Category:{category}")
 
     while entity_list_page_url:
-        res = Fetch(entity_list_page_url)
+        res = fetch(entity_list_page_url)
         soup = BeautifulSoup(res.text, "html.parser")
 
         try:
@@ -215,7 +167,7 @@ def extract_entity_urls_for_gallery(category):
                 elems = group.find_all("li")
                 for elem in elems:
                     entity_name = elem.find("a").text
-                    entity_url = ToAbsURL(related_url=elem.find("a").attrs["href"])
+                    entity_url = to_abs_url(related_url=elem.find("a").attrs["href"])
                     if entity_name and entity_url:
                         yield entity_name, entity_url
                     else:
@@ -223,44 +175,62 @@ def extract_entity_urls_for_gallery(category):
         except Exception:
             traceback.print_exc()
 
-        entity_list_page_url = ExtractNextPageURL(entity_list_page_url)
+        entity_list_page_url = extract_next_page_url(entity_list_page_url)
 
 
-def extract_categories(category):
-    category_list_page_url = ToAbsURL(related_url=f"/wiki/Category:{category}")
+def extract_entity_urls(category):
+    entity_list_page_url = to_abs_url(related_url=f"/wiki/Category:{category}")
 
-    while category_list_page_url:
-        res = Fetch(category_list_page_url)
+    while entity_list_page_url:
+        res = fetch(entity_list_page_url)
         soup = BeautifulSoup(res.text, "html.parser")
 
         try:
             elems = soup.find_all(class_="CategoryTreeItem")
             for elem in elems:
-                category_name = elem.find("a").text
-                category_url = ToAbsURL(related_url=elem.find("a").attrs["href"])
-                if category_name and category_url:
-                    yield category_name, category_url
+                entity_name = elem.find("a").text
+                entity_url = to_abs_url(related_url=elem.find("a").attrs["href"])
+                if entity_name and entity_url:
+                    yield entity_name, entity_url
                 else:
                     continue
         except Exception:
             traceback.print_exc()
 
-        category_list_page_url = ExtractNextPageURL(category_list_page_url)
+        entity_list_page_url = extract_next_page_url(entity_list_page_url)
 
 
-category = database
+# def extract_categories(category):
+#     category_list_page_url = to_abs_url(related_url=f"/wiki/Category:{category}")
 
-# If there are subcategories, execute following
-# categories = extract_categories(category)
-# for category, _ in categories:
-#   entity_names_urls = ExtractEntityURLs(category=category)
-#   for entity_name, entity_url in entity_names_urls:
-#     DownloadImages(entity_name, entity_url)
+#     while category_list_page_url:
+#         res = fetch(category_list_page_url)
+#         soup = BeautifulSoup(res.text, "html.parser")
 
-# If there are no subcategories, execute following
-entity_names_urls = extract_entity_urls_for_gallery(category=category)
-for entity_name, entity_url in entity_names_urls:
-    # print(entity_name, entity_url)
-    DownloadImages(entity_name, entity_url)
+#         try:
+#             elems = soup.find_all(class_="CategoryTreeItem")
+#             for elem in elems:
+#                 category_name = elem.find("a").text
+#                 category_url = to_abs_url(related_url=elem.find("a").attrs["href"])
+#                 if category_name and category_url:
+#                     yield category_name, category_url
+#                 else:
+#                     continue
+#         except Exception:
+#             traceback.print_exc()
+
+#         category_list_page_url = extract_next_page_url(category_list_page_url)
+
+
+categories = [(database, None)]
+# If there are subcategories, execute it.
+# categories = extract_categories(database)
+# categories = extract_entity_urls(database) # For car
+
+for category, _ in categories:
+    # entity_names_urls = extract_entity_urls_for_gallery(category=category) # For bird
+    entity_names_urls = extract_entity_urls(category=category)
+    for entity_name, entity_url in entity_names_urls:
+        download_images(entity_name, entity_url)
 
 connection.close()

@@ -6,7 +6,7 @@ import traceback
 from fake_useragent import UserAgent
 
 
-def ToAbsURL(base_url="https://commons.wikimedia.org", related_url="/wiki/Category"):
+def to_abs_url(base_url="https://commons.wikimedia.org", related_url="/wiki/Category"):
     return base_url + related_url
 
 
@@ -16,7 +16,7 @@ header = {"user-agent": ua.chrome}
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1))
-def Fetch(url):
+def fetch(url):
     try:
         res = requests.get(url, headers=header, timeout=10)
     except Timeout:

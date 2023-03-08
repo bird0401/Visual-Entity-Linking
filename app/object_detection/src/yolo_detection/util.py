@@ -53,7 +53,7 @@ def delete_exif(path):
         traceback.print_exc()
 
 
-# Fetch hashtable from file name to their bounding boxes
+# fetch hashtable from file name to their bounding boxes
 def fetch_crops(results):
     crops = defaultdict(list)
     for i, (im, pred) in enumerate(zip(results.ims, results.pred)):

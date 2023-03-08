@@ -39,8 +39,7 @@ def insert_data(f, path, label, id_wikidata, cnt):
 
 def fetch_label(id_wikidata):
     global map_id_to_label
-    assert map_id_to_label
-    assert type(id_wikidata) == int
+    assert type(id_wikidata) == str
     if id_wikidata not in map_id_to_label:
         map_id_to_label[id_wikidata] = len(map_id_to_label)
     return map_id_to_label[id_wikidata]
