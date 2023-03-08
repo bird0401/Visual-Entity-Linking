@@ -80,10 +80,10 @@ def create_dataset(category_dir):
                     f = insert_data(f, path, label, id_wikidata, cnt)
                     cnt += 1
 
-            logger.info(f"cnt: {cnt}")
+            logger.info(f"num of images: {cnt}")
             logger.info(f"out_features: {len(map_id_to_label)}")
             f.create_dataset("out_features", data=len(map_id_to_label), shape=(1,), dtype=np.int8)
-
+            print()
 
 def main():
     data_dir = "../../../data/clean"

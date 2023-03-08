@@ -17,6 +17,7 @@ playground/
 data*/
 latest-run
 images/
+junk/
 
 .d000*
 *.tar
