@@ -13,35 +13,47 @@ logging.config.dictConfig(cfg)
 logger = logging.getLogger("main")
 
 
-def export_imgs(row, category_dir):
+def export_imgs(row, category_dir, mode):
     assert type(row) == pd.Series
     assert type(category_dir) == str
     src = row["path"]
     assert os.path.exists(src), f"{src} does not exist"
-    if row["kfold"] == 0:
-        dst = f"{category_dir}/val/{row['wikidata_id']}/{row['file_name']}"
+    if mode == "train":
+        if row["kfold"] == 0:
+            dst = f"{category_dir}/val/{row['wikidata_id']}/{row['file_name']}"
+        else:
+            dst = f"{category_dir}/train/{row['wikidata_id']}/{row['file_name']}"
     else:
-        dst = f"{category_dir}/train/{row['wikidata_id']}/{row['file_name']}"
+        dst = f"{category_dir}/test/{row['wikidata_id']}/{row['file_name']}"
     os.makedirs(os.path.dirname(dst), exist_ok=True)
     shutil.copyfile(src, dst)
     assert os.path.exists(dst), f"{dst} does not exist"
 
-
+# Change
+# - data_dir
 def main():
-    data_dir = "../../../data/clean"
-    # dir_names = ["aircraft", "athlete", "bird", "bread", "car", "director", "dog", "us_politician"]
-    dir_names = ["us_politician"]
+    data_dir = "../../../data/origin"
+    dir_names = ["aircraft", "athlete", "bird", "bread", "car", "director", "dog", "us_politician"]
+    # dir_names = ["athlete"]
+    # is_train = False
     for dir_name in dir_names:
         category_dir = f"{data_dir}/{dir_name}"
         logger.info(f"category_dir: {category_dir}")
+        for mode in ["train", "val", "test"]:
+            if os.path.exists(f"{category_dir}/{mode}"):
+                shutil.rmtree(f"{category_dir}/{mode}")
+        for mode in ["train", "test"]:
+            logger.info(f"mode: {mode}")
+            df = pd.read_csv(f"{category_dir}/csv/{mode}.csv") 
+            # df = pd.read_csv(f"{category_dir}/csv/train.csv") if is_train else pd.read_csv(f"{category_dir}/csv/test.csv")
+            assert len(df) > 0, "df is empty"
+            logger.info(f"df: {df.shape}")
 
-        df_train = pd.read_csv(f"{category_dir}/csv/train.csv")
-        assert len(df_train) > 0, "df_train is empty"
-        logger.info(f"df_train: {df_train.shape}")
-
-        for _, row in tqdm(df_train.iterrows()):
-            export_imgs(row, category_dir)
-
+            for _, row in tqdm(df.iterrows(), total=len(df)):
+                export_imgs(row, category_dir, mode)
+            
+            logger.info(f"num of images: {len(df)}")
+            print()
 
 if __name__ == "__main__":
     main()

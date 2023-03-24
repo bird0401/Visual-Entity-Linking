@@ -1,6 +1,6 @@
 #!/bin/sh -l
 
-#PJM -L rscgrp=share-debug
+#PJM -L rscgrp=share
 #PJM -L gpu=1
 #PJM -L jobenv=singularity
 #PJM -g gk77

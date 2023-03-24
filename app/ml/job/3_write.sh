@@ -1,7 +1,7 @@
 #!/bin/sh -l
 
-#PJM -L rscgrp=short-a
-#PJM -L node=1
+#PJM -L rscgrp=share
+#PJM -L gpu=1
 #PJM -L jobenv=singularity
 #PJM -g gk77
 #PJM -j

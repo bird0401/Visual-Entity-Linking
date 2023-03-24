@@ -63,6 +63,7 @@ class EntityLinkingDataset(Dataset):
             return {
                 "image": img,
                 "path": path,
+                # "label": torch.tensor(label, dtype=torch.LongTensor),
                 "label": torch.tensor(label, dtype=torch.long),
             }
         except Exception:
