@@ -120,6 +120,11 @@ def main(cfg: OmegaConf):
     set_seed(cfg.general.seed)
 
     # Dataset
+    # path_h5 = {
+    #     "train": f"{cfg.data.data_dir}/train_batch2.h5",
+    #     "val": f"{cfg.data.data_dir}/val_batch2.h5",
+    #     "test": f"{cfg.data.data_dir}/test_batch2.h5",
+    # }
     path_h5 = {
         "train": f"{cfg.data.data_dir}/train.h5",
         "val": f"{cfg.data.data_dir}/val.h5",

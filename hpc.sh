@@ -14,7 +14,7 @@ singularity shell --pwd $HOME/Instance_level_recognition/app/ml/src/ --nv $HOME/
 
 # For train
 python ./4_ml.py data.category=athlete data.data_dir=../../../data/clean/athlete data.batch_size.train=4 data.batch_size.val=8 optimizer.learning_rate=1e-4
-python ./4_ml.py data.category=athlete data.data_dir=../../object_detection/data data.batch_size.train=4 data.batch_size.val=8 optimizer.learning_rate=1e-4 
+python ./4_ml.py data.category=athlete data.data_dir=../../../data/origin/athlete data.batch_size.train=4 data.batch_size.val=8 optimizer.learning_rate=1e-4
 # For test
 python ./4_ml.py data.category=aircraft data.data_dir=../../../data/clean/aircraft data.batch_size.train=128 data.batch_size.val=256 optimizer.learning_rate=5e-4 general.is_train=False +model.weight_file=0316-112142/Loss2.5827_epoch10.bin | tee aircraft.log
 python ./4_ml.py data.category=athlete data.data_dir=../../../data/clean/athlete data.batch_size.train=4 data.batch_size.val=8 optimizer.learning_rate=1e-4 general.is_train=False +model.weight_file=0317-234029/Loss1.2481_epoch10.bin | tee athlete.log

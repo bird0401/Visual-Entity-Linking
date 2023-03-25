@@ -52,9 +52,12 @@ class EntityLinkingDataset(Dataset):
 
     def __getitem__(self, idx):
         try:
-            path = self.h5_path[str(idx)][0]
-            label = self.h5_label[str(idx)][0]
-            img = self.h5_img[str(idx)][0]
+            # path = self.h5_path[str(idx)][0]
+            # label = self.h5_label[str(idx)][0]
+            # img = self.h5_img[str(idx)][0]
+            path = self.h5_path[idx]
+            label = self.h5_label[idx]
+            img = self.h5_img[idx]
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
             if self.transforms:
