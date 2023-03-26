@@ -109,7 +109,8 @@ def run_training(dataloaders, model, optimizer, scheduler, device, cfg, run, sav
 def criterion(outputs, labels):
     return nn.CrossEntropyLoss()(outputs, labels)
 
-
+# Change
+# weight_dir
 @hydra.main(config_path="../conf/", config_name="config.yml")
 def main(cfg: OmegaConf):
     logger.info(f"cfg.data.batch_size.train: {cfg.data.batch_size.train}")
@@ -120,11 +121,6 @@ def main(cfg: OmegaConf):
     set_seed(cfg.general.seed)
 
     # Dataset
-    # path_h5 = {
-    #     "train": f"{cfg.data.data_dir}/train_batch2.h5",
-    #     "val": f"{cfg.data.data_dir}/val_batch2.h5",
-    #     "test": f"{cfg.data.data_dir}/test_batch2.h5",
-    # }
     path_h5 = {
         "train": f"{cfg.data.data_dir}/train.h5",
         "val": f"{cfg.data.data_dir}/val.h5",
@@ -138,20 +134,21 @@ def main(cfg: OmegaConf):
     logger.info(f"out_features = {out_features}")
     model = EntityLinkingModel(cfg.model.model_name, out_features)
     model.to(device)
-
-    optimizer = optim.Adam(model.parameters(), lr=cfg.optimizer.learning_rate, weight_decay=cfg.optimizer.weight_decay,)
-    scheduler = fetch_scheduler(optimizer, cfg.optimizer.scheduler, cfg.optimizer.T_max, cfg.optimizer.learning_rate * 0.1,)
-
-    dt_now = datetime.datetime.now()
-    now = f"{str(dt_now.month).zfill(2)}{str(dt_now.day).zfill(2)}-{str(dt_now.hour).zfill(2)}{str(dt_now.minute).zfill(2)}{str(dt_now.second).zfill(2)}"
-    save_dir = f"../weights/{cfg.data.category}/{now}"
+    weight_dir = f"../weights/clean/{cfg.data.category}"
 
     if cfg.general.is_train:
+        optimizer = optim.Adam(model.parameters(), lr=cfg.optimizer.learning_rate, weight_decay=cfg.optimizer.weight_decay,)
+        scheduler = fetch_scheduler(optimizer, cfg.optimizer.scheduler, cfg.optimizer.T_max, cfg.optimizer.learning_rate * 0.1,)
+
+        dt_now = datetime.datetime.now()
+        now = f"{str(dt_now.month).zfill(2)}{str(dt_now.day).zfill(2)}-{str(dt_now.hour).zfill(2)}{str(dt_now.minute).zfill(2)}{str(dt_now.second).zfill(2)}"
+        save_dir = f"{weight_dir}/{now}"
+
         run = wandb.init(project="VEL", name=f"{cfg.data.category}_{now}", config=OmegaConf.to_container(cfg, resolve=True, throw_on_missing=True),)
         model, history = run_training(dataloaders, model, optimizer, scheduler, device, cfg, run, save_dir)
         run.finish()
     else:
-        model.load_state_dict(torch.load(f"../weights/{cfg.data.category}/{cfg.model.weight_file}"))
+        model.load_state_dict(torch.load(f"{weight_dir}/{cfg.model.weight_file}"))
         model.eval()
         logger.info("test step")
         (val_loss, val_acc, val_precision_macro, val_precision_micro, val_recall_macro, val_recall_micro, val_f1_macro, val_f1_micro,) = valid_one_epoch(dataloaders, model, criterion, device)

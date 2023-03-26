@@ -32,10 +32,9 @@ def export_imgs(row, category_dir, mode):
 # Change
 # - data_dir
 def main():
-    data_dir = "../../../data/origin"
+    data_dir = "../../../data/clean"
     dir_names = ["aircraft", "athlete", "bird", "bread", "car", "director", "dog", "us_politician"]
     # dir_names = ["athlete"]
-    # is_train = False
     for dir_name in dir_names:
         category_dir = f"{data_dir}/{dir_name}"
         logger.info(f"category_dir: {category_dir}")
@@ -45,7 +44,6 @@ def main():
         for mode in ["train", "test"]:
             logger.info(f"mode: {mode}")
             df = pd.read_csv(f"{category_dir}/csv/{mode}.csv") 
-            # df = pd.read_csv(f"{category_dir}/csv/train.csv") if is_train else pd.read_csv(f"{category_dir}/csv/test.csv")
             assert len(df) > 0, "df is empty"
             logger.info(f"df: {df.shape}")
 

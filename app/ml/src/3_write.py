@@ -51,7 +51,7 @@ def create_dataset(f, paths):
     num_data = len(paths)
     batch_size = 128
     num_batches = num_data // batch_size
-    img_size = 512
+    img_size = 224
 
     str_dtype = h5py.special_dtype(vlen=str)
     f.create_dataset("path", shape=(num_data, ), dtype=str_dtype)
@@ -91,10 +91,12 @@ def create_file(category_dir):
             create_dataset(f, paths)
             print()
 
-
+# Change
+# data_dir
+# img_size
 def main():
-    data_dir = "../../../data/origin"
-    # data_dir = "../../../data/clean"
+    # data_dir = "../../../data/origin"
+    data_dir = "../../../data/clean"
     dir_names = ["aircraft", "athlete", "bird", "bread", "car", "director", "dog", "us_politician"]
     # dir_names = ["athlete"]
     for dir_name in dir_names:
