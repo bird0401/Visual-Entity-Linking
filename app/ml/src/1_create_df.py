@@ -70,16 +70,17 @@ def split_train_val_test(df):
     )
     logger.debug(f"len(df_train): {len(df_train)}, len(df_test): {len(df_test)}")
 
-    train_indices, val_indices = train_test_split(list(range(len(df_train.label))), test_size=0.2, stratify=df_train.label)
+    train_indices, val_indices = train_test_split(list(range(len(df_train.label))), test_size=0.25, stratify=df_train.label)
+    logger.info(f"len(train_indices): {len(train_indices)}, len(val_indices): {len(val_indices)}")
     df_train.loc[train_indices, "kfold"] = 1
     df_train.loc[val_indices, "kfold"] = 0
     return df_train, df_test
 
 
 # Change demands on the situation
-# - category
-# - whether sampling df
-# - to_origin
+# - categories
+# - is_debug
+# - data_dir
 def main():
     # categories = ["athlete"]
     categories = [
@@ -93,14 +94,12 @@ def main():
         "us_politician",
     ]
     is_debug = False
-    to_origin = False
     logger.info(f"debug mode") if is_debug else logger.info(f"production mode")
-    logger.info(f"to_origin mode") if to_origin else logger.info(f"to_clean mode")
 
     for category in categories:
         logger.info(f"category: {category}")
 
-        data_dir = f"../../../data/origin" if to_origin else f"../../../data/clean"
+        data_dir = f"../../../data/clean"
         category_dir = f"{data_dir}/{category}_debug" if is_debug else f"{data_dir}/{category}"
         paths = glob.glob(f"{category_dir}/imgs/*/*.jpg")
 
