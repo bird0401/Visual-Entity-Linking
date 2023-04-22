@@ -149,7 +149,7 @@ def main(cfg: OmegaConf):
         model.load_state_dict(torch.load(f"../weights/{cfg.data.category}/{cfg.model.weight_file}"))
         model.eval()
         logger.info("test step")
-        (acc, precision_macro, precision_micro, recall_macro, recall_micro, f1_macro, f1_micro,) = test_one_epoch(dataloaders["val"], model, device)
+        (acc, precision_macro, precision_micro, recall_macro, recall_micro, f1_macro, f1_micro,) = valid_one_epoch(dataloaders["val"], model, device)
         l_names = [
             "Acc",
             "Macro Precision",
