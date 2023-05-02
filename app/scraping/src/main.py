@@ -12,17 +12,19 @@ with open("../conf/logging.yml") as f:
 logging.config.dictConfig(cfg)
 logger = logging.getLogger("main")
 
+# Change
+# - database
 
 mysql_user = os.environ["MYSQL_USER"]
 mysql_password = os.environ["MYSQL_PASS"]
 host = os.environ["DB_HOST"]
-database = "Aircraft_by_popular_name"
-# Sportspeople_by_name
-# "Gallery_pages_of_birds"
-# "Breads_by_name"
-# "Automobiles_by_brand_by_model"
-# "Film_directors_by_name"
-# "Politicians_of_the_United_States_by_name"
+# database = "Aircraft_by_popular_name"
+# database = "Sportspeople_by_name"
+# database = "Gallery_pages_of_birds"
+# database = "Breads_by_name"
+# database = "Automobiles_by_brand_by_model"
+# database = "Film_directors_by_name"
+database = "Politicians_of_the_United_States_by_name"
 connection = mysql.connector.connect(user=mysql_user, password=mysql_password, host=host, database=database, port=3306)
 
 cur = connection.cursor()
@@ -32,7 +34,6 @@ img_urls_in_db = set([(wikidata_id, img_url) for (wikidata_id, img_url) in img_u
 cur.execute("SELECT wikidata_id FROM names")
 wikidata_ids_in_db = cur.fetchall()
 wikidata_ids_in_db = set([wikidata_id for (wikidata_id,) in wikidata_ids_in_db])
-
 
 def extract_next_page_url(url, text="next page"):
     res = fetch(url)
@@ -199,7 +200,7 @@ def extract_entity_urls(category):
 
         entity_list_page_url = extract_next_page_url(entity_list_page_url)
 
-
+# If there are subcategories, execute following codes.
 # def extract_categories(category):
 #     category_list_page_url = to_abs_url(related_url=f"/wiki/Category:{category}")
 
@@ -223,7 +224,7 @@ def extract_entity_urls(category):
 
 
 categories = [(database, None)]
-# If there are subcategories, execute it.
+# If there are subcategories, execute following codes.
 # categories = extract_categories(database)
 # categories = extract_entity_urls(database) # For car
 

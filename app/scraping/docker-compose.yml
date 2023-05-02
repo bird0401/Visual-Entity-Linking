@@ -22,6 +22,7 @@ services:
       - type: bind
         source: ./my.cnf
         target: /etc/my.cnf
+    platform: linux/amd64
 
   application:
     restart: always

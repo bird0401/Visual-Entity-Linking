@@ -77,6 +77,7 @@ def create_dataset(f, paths):
 def create_file(category_dir):
     assert type(category_dir) == str
     logger.info(f"category_dir: {category_dir}")
+    map_id_to_label = {}
 
     for mode in ["train", "val", "test"]:
         logger.info(f"mode: {mode}")

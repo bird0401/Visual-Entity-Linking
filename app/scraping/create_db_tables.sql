@@ -1,9 +1,10 @@
--- command to execute this file
+-- Command to execute this file
 -- mysql -p < create_db_tables.sql
 
+-- Change by Category
 
--- CREATE DATABASE scraping_dog_breeds_by_name CHARACTER SET utf8;
--- USE scraping_dog_breeds_by_name;
+CREATE DATABASE scraping_dog_breeds_by_name CHARACTER SET utf8;
+USE scraping_dog_breeds_by_name;
 
 -- CREATE DATABASE scraping_People_by_name CHARACTER SET utf8;
 -- USE scraping_People_by_name;
@@ -26,8 +27,8 @@
 -- CREATE DATABASE Sportspeople_by_name CHARACTER SET utf8;
 -- USE Sportspeople_by_name;
 
-CREATE DATABASE Film_directors_by_name CHARACTER SET utf8;
-USE Film_directors_by_name;
+-- CREATE DATABASE Film_directors_by_name CHARACTER SET utf8;
+-- USE Film_directors_by_name;
 
 
 CREATE TABLE names(
