@@ -18,6 +18,7 @@ data*/
 latest-run
 images/
 junk/
+wikipedia/
 
 .d000*
 *.tar
