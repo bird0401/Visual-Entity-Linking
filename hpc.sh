@@ -4,6 +4,9 @@
 pjsub --interact -j -o interactive.out -g gk77 -L rscgrp=interactive-a,node=1,jobenv=singularity
 module load singularity/3.7.3
 
+# Scraping
+singularity shell --pwd $HOME/Instance_level_recognition/app/scraping/src/ --nv $HOME/Instance_level_recognition/app/scraping/scraping_latest.sif
+
 # Object Detection
 singularity shell --pwd $HOME/Instance_level_recognition/app/object_detection/src/ --nv $HOME/Instance_level_recognition/app/object_detection/object_detection_latest.sif
 singularity shell --pwd $HOME/Instance_level_recognition/app/object_detection/src/ --nv $HOME/Instance_level_recognition/app/ml/python_ml_latest.sif 

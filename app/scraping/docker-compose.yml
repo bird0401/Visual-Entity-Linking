@@ -6,7 +6,7 @@ services:
     build:
       context: ./customed_mysql5_7
       dockerfile: Dockerfile
-    image: my_mysql # specify name image
+    image: my_mysql # image name
     container_name: db3
     environment:
       MYSQL_ROOT_PASSWORD: $MYSQL_PASS # keep pass secret
@@ -31,7 +31,7 @@ services:
     build:
       context: ./customed_python3_10
       dockerfile: Dockerfile
-    image: my_python # specify name image
+    image: my_python # image name
     container_name: app3
     tty: true
     working_dir: /usr/local/mount_dir

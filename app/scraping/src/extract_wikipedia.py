@@ -96,3 +96,7 @@ category = "Politicians_of_the_United_States_by_name"
 entity_names_urls = extract_entity_urls(category=category)
 for _, entity_url in entity_names_urls:
     download_image_and_text(entity_url)
+# for i, (_, entity_url) in enumerate(entity_names_urls):
+#     download_image_and_text(entity_url)
+#     if i > 10:
+#         break
