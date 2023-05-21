@@ -4,6 +4,10 @@
 pjsub --interact -j -o interactive.out -g gk77 -L rscgrp=interactive-a,node=1,jobenv=singularity
 module load singularity/3.7.3
 
+# multimodal CLIP
+singularity shell --pwd $HOME/CLIP --nv $HOME/CLIP/python_clip_v2_latest.sif
+# singularity shell --pwd $HOME/CLIP --nv $HOME/CLIP/python_multimodal_latest.sif
+
 # Scraping
 singularity shell --pwd $HOME/Instance_level_recognition/app/scraping/src/ --nv $HOME/Instance_level_recognition/app/scraping/scraping_latest.sif
 
@@ -12,7 +16,6 @@ singularity shell --pwd $HOME/Instance_level_recognition/app/object_detection/sr
 singularity shell --pwd $HOME/Instance_level_recognition/app/object_detection/src/ --nv $HOME/Instance_level_recognition/app/ml/python_ml_latest.sif 
 
 # ML
-module load singularity/3.7.3
 singularity shell --pwd $HOME/Instance_level_recognition/app/ml/src/ --nv $HOME/Instance_level_recognition/app/ml/python_ml_latest.sif 
 
 # For train
