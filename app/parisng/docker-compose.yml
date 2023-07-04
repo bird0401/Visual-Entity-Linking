@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  application:
+    restart: always
+    build:
+      context: customed_python/
+      dockerfile: Dockerfile_python_2_7
+    image: python_2_7 # specify name image
+    container_name: python_2_7
+    tty: true
+    working_dir: /usr/local/mount_dir
+    environment:
+      TZ: Asia/Tokyo
+    volumes:
+      - type: bind
+        source: ../
+        target: /usr/local/mount_dir
