@@ -3,6 +3,7 @@
 .vscode/
 .scraping_env/
 .key/
+.api_key
 .DS_Store
 /app/scraping/data/imgs/
 /app/ml/weights/
