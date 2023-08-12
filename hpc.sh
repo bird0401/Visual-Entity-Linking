@@ -9,13 +9,16 @@ singularity shell --pwd $HOME/CLIP --nv $HOME/CLIP/python_clip_v2_latest.sif
 # singularity shell --pwd $HOME/CLIP --nv $HOME/CLIP/python_multimodal_latest.sif
 
 # Scraping
-singularity shell --pwd $HOME/Instance_level_recognition/app/scraping/src/ --nv $HOME/Instance_level_recognition/app/scraping/scraping_latest.sif
+singularity shell --pwd $HOME/Visual_Entity_Linking/app/scraping/src/ --nv $HOME/Visual_Entity_Linking/app/scraping/scraping_latest.sif
+
 
 # Object Detection
 singularity shell --pwd $HOME/Instance_level_recognition/app/object_detection/src/ --nv $HOME/Instance_level_recognition/app/object_detection/object_detection_latest.sif
 singularity shell --pwd $HOME/Instance_level_recognition/app/object_detection/src/ --nv $HOME/Instance_level_recognition/app/ml/python_ml_latest.sif 
 
 # ML
+singularity shell --pwd $HOME/prophet/ --nv $HOME/prophet/python_ml_latest.sif 
+singularity shell --pwd $HOME/Visual_Entity_Linking/app/ml/src/ --nv $HOME/Visual_Entity_Linking/app/ml/python_ml_latest.sif 
 singularity shell --pwd $HOME/Instance_level_recognition/app/ml/src/ --nv $HOME/Instance_level_recognition/app/ml/python_ml_latest.sif 
 
 # For train
