@@ -1,4 +1,5 @@
 from SPARQLWrapper import SPARQLWrapper, JSON
+import json
 
 def main():
     sparql = SPARQLWrapper("https://query.wikidata.org/sparql", returnFormat='json')
@@ -29,9 +30,13 @@ def main():
         """
     )
     try:
-        results = sparql.queryAndConvert()
-        # results = sparql_wikidata.query().convert()
-        print(type(results))
+        ret = sparql.queryAndConvert()
+        entities = ret["results"]["bindings"]
+        for entity in entities:
+            print(entity)
+        print(len(entities))
+        with open('../../../data/clean/wikidata.json', 'w') as f:
+            json.dump(entities, f, indent=2)
     except Exception as e:
         print(e)
 
