@@ -1,7 +1,7 @@
 #!/bin/sh
 
-# $1:image_id, $2:user_name, $3:image_name, $4:tag
+# $1:user_name $2:image_id, $3:tag $4:image_name
 
 sudo docker login
-sudo docker tag $1 $2/$3:$4
-sudo docker push $2/$3:$4
+sudo docker tag $2 $1/$4:$3
+sudo docker push $1/$4:$3
