@@ -4,12 +4,15 @@
 pjsub --interact -j -o interactive.out -g gk77 -L rscgrp=interactive-a,node=1,jobenv=singularity
 module load singularity/3.7.3
 
+# GPT
+singularity shell --pwd $HOME/Visual-Entity-Linking/app/experiment/src --nv $HOME/Visual-Entity-Linking/app/experiment/gpt3_generation_latest.sif
+
 # multimodal CLIP
 singularity shell --pwd $HOME/CLIP --nv $HOME/CLIP/python_clip_v2_latest.sif
 # singularity shell --pwd $HOME/CLIP --nv $HOME/CLIP/python_multimodal_latest.sif
 
 # Scraping
-singularity shell --pwd $HOME/Visual_Entity_Linking/app/scraping/src/ --nv $HOME/Visual_Entity_Linking/app/scraping/scraping_latest.sif
+singularity shell --pwd $HOME/Visual-Entity-Linking/app/scraping/src/ --nv $HOME/Visual-Entity-Linking/app/scraping/scraping_latest.sif
 
 # Object Detection
 singularity shell --pwd $HOME/Instance_level_recognition/app/object_detection/src/ --nv $HOME/Instance_level_recognition/app/object_detection/object_detection_latest.sif
@@ -18,7 +21,7 @@ singularity shell --pwd $HOME/Instance_level_recognition/app/object_detection/sr
 # ML
 singularity shell --pwd $HOME/prophet/ --nv $HOME/prophet/python_ml_latest.sif 
 singularity shell --pwd $HOME/Visual_Entity_Linking/app/gpt --nv $HOME/prophet/python_ml_latest.sif 
-singularity shell --pwd $HOME/Visual_Entity_Linking/app/ml/src/ --nv $HOME/Visual_Entity_Linking/app/ml/python_ml_latest.sif 
+singularity shell --pwd $HOME/Visual-Entity-Linking/app/ml/src/ --nv $HOME/Visual-Entity-Linking/app/ml/python_ml_latest.sif 
 
 # For train
 python ./4_ml.py data.category=athlete data.data_dir=../../../data/clean/athlete data.batch_size.train=4 data.batch_size.val=8 optimizer.learning_rate=1e-4

@@ -11,4 +11,4 @@ module load singularity/3.7.3
 singularity exec \
     --pwd /$HOME/Visual-Entity-Linking/app/scraping/src/ \
     --nv /$HOME/Visual-Entity-Linking/app/scraping/scraping_latest.sif \
-    python extract_wikipedia_article_from_id.py
+    python extract_entity_name_from_id.py

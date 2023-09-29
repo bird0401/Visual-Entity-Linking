@@ -39,20 +39,20 @@ def fetch_article(wikipedia_url):
     except Exception:
         traceback.print_exc()
 
-def download_article(entity_id):
+def download_article(entity_id, category_dir):
     logger.info(f"entity_id: {entity_id}")
     wikipedia_url = extract_wikipedia_url(entity_id)
     article = fetch_article(wikipedia_url)
-    download_text(article, f"{article_dir}/{entity_id}.txt")
+    download_text(article, f"{category_dir}/wikipedia/{entity_id}.txt")
 
 
 data_dir = f"../../../data/clean"
-article_dir = f"{data_dir}/wikipedia"
-make_dir(article_dir)
 categories = ["aircraft", "athlete", "bird", "bread", "car", "director", "dog", "us_politician"]
 for category in categories:
-    ids_file = f"{data_dir}/{category}/csv/ids.csv"
+    category_dir = f"{data_dir}/{category}"
+    ids_file = f"{category_dir}/csv/ids.csv"
     entity_ids = extract_entity_ids(ids_file)
+    make_dir(f"{category_dir}/wikipedia")
     for entity_id in entity_ids:
-        download_article(entity_id)
+        download_article(entity_id, category_dir)
         print()

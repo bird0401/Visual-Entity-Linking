@@ -1,6 +1,21 @@
 import tiktoken
 import openai
 
+def fetch_text(entity_id, category_dir):
+    with open(f"{category_dir}/wikipedia/{entity_id}.txt") as f:
+        article = f.read()
+
+    if not article:
+        print(f"Warning: {entity_id} has no wikipedia article.")
+        print()
+        return 
+    
+    clean_article = article.replace("  ", " ").replace("\n", "; ").replace(';',' ')
+    tokenizer = tiktoken.get_encoding("cl100k_base")
+    tokens = tokenizer.encode(clean_article)
+    input_text = tokenizer.decode(tokens[:4096-200])
+    return input_text
+
 # Split a text into smaller chunks of size n, preferably ending at the end of a sentence
 def create_chunks(text, n, tokenizer):
     tokens = tokenizer.encode(text)
@@ -21,16 +36,17 @@ def create_chunks(text, n, tokenizer):
         yield tokens[i:j]
         i = j
 
-def extract_chunk(document,template_messages, template_content, model):
+# This function is not used now
+def extract_chunk(messages, model):
     
-    document_content = template_content.replace('<document>',document)
-    messages = template_messages + [{"role": "user", "content": document_content}]
+    # document_content = template_messages.replace('<document>',document)
+    # messages = template_messages + [{"role": "user", "content": document_content}]
 
-    response = openai.ChatCompletion.create(
-        model=model,
-        messages=messages,
-        temperature=0,
-    )
+    # response = openai.ChatCompletion.create(
+    #     model=model,
+    #     messages=messages,
+    #     temperature=0,
+    # )
 
     return response.choices[0]["message"]["content"]
 

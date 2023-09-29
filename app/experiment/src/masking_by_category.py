@@ -17,14 +17,17 @@ def mask_entity_name(text, entity_name):
     MODEL = "gpt-3.5-turbo"
     messages=[
     {"role": "system", "content": "You are a helpful annotator of sentences."},
-    {"role": "user", "content": f"Please convert entity name of following sentences to a mask token. Entity name is {entity_name}.\n\nsentences:\n{text}\n\n"},
+    {"role": "user", "content": f"Please convert entity name of following sentences to 'the athlete'. Entity name is {entity_name}.\n\nsentences:\n{text}\n\n"},
     ]
+    print(messages[1]["content"])
     
     response = openai.ChatCompletion.create(
         model=MODEL,
         messages=messages,
         temperature=0,
     )
+    print("response")
+    print(response.choices[0]["message"]["content"])
     return response.choices[0]["message"]["content"]
 
 def main():
@@ -42,7 +45,7 @@ def main():
             for i in range(len(qa_of_entities[entity_id]["QA"])):
                 qa_of_entities[entity_id]["QA"][i]["Q_masked"] = questions_masked[i]
             
-        with open(f"{category_dir}/qa_of_entities_masked.json", 'w') as f:
+        with open(f"{category_dir}/qa_of_entities_masked_test.json", 'w') as f:
             json.dump(qa_of_entities, f, indent=2)
 
 if __name__ == "__main__":

@@ -17,7 +17,7 @@ def mask_entity_name(text, entity_name):
     MODEL = "gpt-3.5-turbo"
     messages=[
     {"role": "system", "content": "You are a helpful annotator of sentences."},
-    {"role": "user", "content": f"Please convert entity name of following sentences to a mask token. Entity name is {entity_name}.\n\nsentences:\n{text}\n\n"},
+    {"role": "user", "content": f"Please convert '[MASK]' of following sentences to 'the athlete'. \n\nsentences:\n{text}\n\n"},
     ]
     
     response = openai.ChatCompletion.create(
