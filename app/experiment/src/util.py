@@ -1,22 +1,14 @@
 import tiktoken
 import openai
 
-def fetch_text(entity_id, category_dir):
-    with open(f"{category_dir}/wikipedia/{entity_id}.txt") as f:
-        article = f.read()
-
-    if not article:
-        print(f"Warning: {entity_id} has no wikipedia article.")
-        print()
-        return 
-    
+def customize_text(article):  
     clean_article = article.replace("  ", " ").replace("\n", "; ").replace(';',' ')
     tokenizer = tiktoken.get_encoding("cl100k_base")
-    tokens = tokenizer.encode(clean_article)
-    input_text = tokenizer.decode(tokens[:4096-200])
+    input_text = tokenizer.decode(tokenizer.encode(clean_article)[:4096-1000])
     return input_text
 
 # Split a text into smaller chunks of size n, preferably ending at the end of a sentence
+# NOT USE NOW
 def create_chunks(text, n, tokenizer):
     tokens = tokenizer.encode(text)
     """Yield successive n-sized chunks from text."""
@@ -35,6 +27,22 @@ def create_chunks(text, n, tokenizer):
             j = min(i + n, len(tokens))
         yield tokens[i:j]
         i = j
+
+# NOT USE NOW
+def cut_text(text, n, tokenizer):
+    tokens = tokenizer.encode(text)
+    i = 0
+    while i < len(tokens):
+        # Find the nearest end of sentence within a range of 0.5 * n and 1.5 * n tokens
+        j = min(n, len(tokens))
+        while j > i:
+            # Decode the tokens and check for full stop or newline
+            chunk = tokenizer.decode(tokens[i:j])
+            if chunk.endswith("."):
+                break
+            j -= 1
+        print(f"len(tokens[i:j]): {len(tokens[i:j])}")
+        return tokenizer.decode(tokens[i:j])
 
 # This function is not used now
 def extract_chunk(messages, model):
