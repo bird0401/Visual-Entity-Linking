@@ -1,5 +1,16 @@
 import tiktoken
 import openai
+import os, textwrap
+
+openai.organization = os.getenv("OPENAI_ORGANIZATION")
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+def merge_text(qas, key):
+    questions = []
+    for qa in qas:
+        questions.append(qa[key])
+    questions_text = "\n".join(questions)
+    return questions_text
 
 def customize_text(article):  
     clean_article = article.replace("  ", " ").replace("\n", "; ").replace(';',' ')

@@ -18,3 +18,6 @@ flake8
 black
 openai
 tiktoken
+tensorflow_hub
+tensorflow_text
+tensorflow

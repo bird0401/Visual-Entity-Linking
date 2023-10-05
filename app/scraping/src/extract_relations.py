@@ -47,7 +47,8 @@ def extract_relations_from_wikidata(id):
 def main():
     categories = ["athlete"]
     for category in categories:
-        with open(f'../../../data/clean/{category}/qa_mask.json') as f:
+        category_dir = f"../../../data/clean/{category}"
+        with open(f'{category_dir}/qa_mask.json') as f:
             qa_mask = json.load(f)
         ids = qa_mask.keys()
         # ids = ["Q4409204"]
@@ -55,16 +56,8 @@ def main():
         results = {}
         for id in ids:
             results[id] = extract_relations_from_wikidata(id)
-        # print(results)
-        for id in results:
-            print(f"id: {id}\n")
-            for i, result in enumerate(results[id]):
-                print(f"result {i+1}:")
-                for key in result:
-                    print(f"{key}: {result[key]['value']}")
-                print()
-        with open(f'../../../data/clean/{category}/relations.pkl', 'wb') as f:
-            pickle.dump(results, f)
+        with open(f'{category_dir}/relations.json', 'w') as f:
+            json.dump(results, f, indent=2)
 
 if __name__ == "__main__":
     main()
