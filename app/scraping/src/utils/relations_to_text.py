@@ -7,12 +7,13 @@ with open("../conf/logging.yml") as f:
 logging.config.dictConfig(cfg)
 logger = logging.getLogger("main")
 
-def relations_to_text(relations):
-    relations_set = set()
-    for relation in relations:
-        for key in relation:
-            relations_set.add(f"{key} is {relation[key]['value']}")
-    return ". ".join(relations_set) + "."
+def relations_to_text(wikidata):
+    for val in wikidata.values():
+        val["text"] = ""
+        for key, relation_list in val["relations"].items():
+            relation_str = ", ".join(relation_list)
+            val["text"] += f"'{key}': {relation_str}. "
+    return wikidata
 
 def relations_to_text_by_categories(categories):
     for category in categories:
@@ -20,8 +21,7 @@ def relations_to_text_by_categories(categories):
         category_dir = f"../../../data/clean/{category}"
         with open(f'{category_dir}/wikidata.json') as f:
             wikidata = json.load(f)
-        for id in wikidata:
-            wikidata[id]["text"] = relations_to_text(wikidata[id]["relations"])
+        wikidata = relations_to_text(wikidata)
         with open(f"{category_dir}/wikidata.json", "w") as f:
             json.dump(wikidata, f, indent=2)
     
