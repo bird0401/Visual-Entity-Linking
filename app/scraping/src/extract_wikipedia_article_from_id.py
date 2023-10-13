@@ -1,5 +1,5 @@
 import re, traceback
-from util import *
+from app.scraping.src.utils.util import *
 import pandas as pd
 
 import logging
@@ -12,13 +12,13 @@ logging.config.dictConfig(cfg)
 logger = logging.getLogger("main")
 
         
-def extract_entity_ids(ids_file):
-    try:
-        ids = pd.read_csv(ids_file)["wikidata_id"]
-        logger.info(f"len(ids): {len(ids)}")
-        return ids
-    except Exception:
-        traceback.print_exc()
+# def extract_entity_ids(ids_file):
+#     try:
+#         ids = pd.read_csv(ids_file)["wikidata_id"]
+#         logger.info(f"len(ids): {len(ids)}")
+#         return ids
+#     except Exception:
+#         traceback.print_exc()
 
 def extract_wikipedia_url(entity_id):
     try:
@@ -43,7 +43,9 @@ def download_article(entity_id, category_dir):
     logger.info(f"entity_id: {entity_id}")
     wikipedia_url = extract_wikipedia_url(entity_id)
     article = fetch_article(wikipedia_url)
-    download_text(article, f"{category_dir}/wikipedia/{entity_id}.txt")
+    if article:
+        with open(f"{category_dir}/wikipedia/{entity_id}.txt", "w") as f:
+            f.write(article) 
 
 
 data_dir = f"../../../data/clean"
@@ -51,8 +53,10 @@ categories = ["aircraft", "athlete", "bird", "bread", "car", "director", "dog", 
 for category in categories:
     category_dir = f"{data_dir}/{category}"
     ids_file = f"{category_dir}/csv/ids.csv"
-    entity_ids = extract_entity_ids(ids_file)
+    ids = pd.read_csv(ids_file)["wikidata_id"]
+    logger.info(f"len(ids): {len(ids)}")
+    # entity_ids = extract_entity_ids(ids_file)
     make_dir(f"{category_dir}/wikipedia")
-    for entity_id in entity_ids:
-        download_article(entity_id, category_dir)
+    for id in ids:
+        download_article(id, category_dir)
         print()

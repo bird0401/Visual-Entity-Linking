@@ -2,16 +2,20 @@
 
 # Interactive
 pjsub --interact -j -o interactive.out -g gk77 -L rscgrp=interactive-a,node=1,jobenv=singularity
-module load singularity/3.7.3
 
 # GPT
+module load singularity/3.7.3
 singularity shell --pwd $HOME/Visual-Entity-Linking/app/experiment/src --nv $HOME/Visual-Entity-Linking/app/experiment/gpt3_generation_latest.sif
+
+module load singularity/3.7.3
+singularity shell --pwd $HOME/Visual-Entity-Linking/app/experiment/src --nv $HOME/Visual-Entity-Linking/app/experiment/tensorflow.sif
 
 # multimodal CLIP
 singularity shell --pwd $HOME/CLIP --nv $HOME/CLIP/python_clip_v2_latest.sif
 # singularity shell --pwd $HOME/CLIP --nv $HOME/CLIP/python_multimodal_latest.sif
 
 # Scraping
+module load singularity/3.7.3
 singularity shell --pwd $HOME/Visual-Entity-Linking/app/scraping/src/ --nv $HOME/Visual-Entity-Linking/app/scraping/scraping_latest.sif
 
 # Object Detection

@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 import re, os, pathlib, traceback
 import mysql.connector
-from util import *
+from app.scraping.src.utils.util import *
 
 import logging
 import logging.config

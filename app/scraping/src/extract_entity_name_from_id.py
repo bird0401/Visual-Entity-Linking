@@ -1,5 +1,5 @@
 import traceback
-from util import *
+from app.scraping.src.utils.util import *
 import pandas as pd
 import pickle
 

@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 import re, os, traceback
-from util import *
+from app.scraping.src.utils.util import *
 
 import logging
 import logging.config
