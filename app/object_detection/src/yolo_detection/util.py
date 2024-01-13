@@ -39,6 +39,9 @@ def set_seed(seed=42):
 
 
 # Delete all exif data
+# TODO: ここで消すまでする必要はないのではないか。
+# TODO: 例外処理ができないのであれば、clean用のコピーを作成してから消すようにする
+# TODO: データ量が大きくなりすぎる問題があるが、現状のquotaを見る限りは問題なさそう
 def delete_exif(path):
     try:
         src = Image.open(path)
@@ -47,10 +50,11 @@ def delete_exif(path):
         dst.convert("RGB").save(path)
     except UnidentifiedImageError:
         print(f"remove {path}")
-        os.remove(path)
+        # os.remove(path)
     except Exception:
         print(path)
         traceback.print_exc()
+    # print(f"cnt: {cnt}")
 
 
 # fetch hashtable from file name to their bounding boxes

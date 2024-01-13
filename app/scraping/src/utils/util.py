@@ -1,8 +1,9 @@
 from tenacity import retry, stop_after_attempt, wait_exponential
 import requests
 from requests.exceptions import Timeout
-import time, os
+import os
 import traceback
+import time
 from fake_useragent import UserAgent
 from bs4 import BeautifulSoup
 
@@ -38,13 +39,12 @@ def to_abs_url(base_url="https://commons.wikimedia.org", related_url="/wiki/Cate
     return base_url + related_url
 
 
-ua = UserAgent()
-# ua = UserAgent(use_cache_server=False)
-header = {"user-agent": ua.chrome}
-
-
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1))
 def fetch(url):
+    ua = UserAgent()
+    # ua = UserAgent(use_cache_server=False)
+    header = {"user-agent": ua.chrome}
+
     try:
         res = requests.get(url, headers=header, timeout=10)
     except Timeout:
@@ -53,7 +53,7 @@ def fetch(url):
     except Exception:
         traceback.print_exc()
         return None
-    time.sleep(1)
+    time.sleep(0.2) # スクレイピング時間短縮のため一旦sleep時間を短くした
     return res
 
 
@@ -88,5 +88,14 @@ def parse_to_soup(url):
 #     try:
 #         with open(save_file_path, "w") as f:
 #             f.write(text) 
+#     except Exception:
+#         traceback.print_exc()
+
+
+# def extract_entity_ids(ids_file):
+#     try:
+#         ids = pd.read_csv(ids_file)["wikidata_id"]
+#         logger.info(f"len(ids): {len(ids)}")
+#         return ids
 #     except Exception:
 #         traceback.print_exc()

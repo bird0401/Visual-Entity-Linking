@@ -1,4 +1,5 @@
 import torch.nn as nn
+import torch
 import timm
 
 import logging
@@ -22,3 +23,20 @@ class EntityLinkingModel(nn.Module):
     def forward(self, images, labels=None):
         output = self.model(images)
         return output
+    
+    # def forward(self, images, labels=None, top_k=1):
+    #     output = self.model(images)
+    #     _, indices = torch.topk(output, top_k, dim=1)
+    #     return output, indices
+    
+    # def forward(self, images, top_k=1, return_confidences=False):
+    #     output = self.model(images)
+
+    #     # それぞれの変数でTOP-Kの結果を返す
+    #     values, indices = torch.topk(output, top_k, dim=1)
+    #     if return_confidences:
+    #         confidence_scores = torch.softmax(values, dim=1)
+    #         return output, indices, confidence_scores  # Return logits, indices, and confidence scores
+    #     else:
+    #         return output, indices  # Return logits and indices
+        

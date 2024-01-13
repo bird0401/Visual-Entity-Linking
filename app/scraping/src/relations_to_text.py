@@ -8,27 +8,32 @@ logging.config.dictConfig(cfg)
 logger = logging.getLogger("main")
 
 def relations_to_text(wikidata):
+    print(f"len(wikidata): {len(wikidata)}")
     for val in wikidata.values():
         val["text"] = ""
         for key, relation_list in val["relations"].items():
             relation_str = ", ".join(relation_list)
+            relation_str.strip()
+            if relation_str.startswith("http"):
+                continue
             val["text"] += f"'{key}': {relation_str}. "
     return wikidata
 
-def relations_to_text_by_categories(categories):
-    for category in categories:
-        print(category)
-        category_dir = f"../../../data/clean/{category}"
-        with open(f'{category_dir}/wikidata.json') as f:
-            wikidata = json.load(f)
-        wikidata = relations_to_text(wikidata)
-        with open(f"{category_dir}/wikidata.json", "w") as f:
-            json.dump(wikidata, f, indent=2)
+def relations_to_text_by_category(category):
+    # for category in categories:
+    print(category)
+    category_dir = f"../../../data/clean/{category}"
+    with open(f'{category_dir}/wikidata_filtered.json') as f:
+        wikidata = json.load(f)
+    wikidata = relations_to_text(wikidata)
+    with open(f"{category_dir}/wikidata_filtered.json", "w") as f:
+        json.dump(wikidata, f, indent=2)
     
 def main():
     categories = ["athlete"]
     # categories = ["aircraft", "athlete", "bird", "bread", "car", "director", "dog", "us_politician"]
-    relations_to_text_by_categories(categories)
+    for category in categories:
+        relations_to_text_by_category(category)
 
 if __name__ == "__main__":
     main()

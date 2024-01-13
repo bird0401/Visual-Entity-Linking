@@ -1,9 +1,8 @@
 #!/bin/sh -l
 
-#PJM -L rscgrp=share
-#PJM -L gpu=1
+#PJM -L rscgrp=debug-a
+#PJM -L node=1
 #PJM -L jobenv=singularity
-#PJM -L elapse=1:00:00
 #PJM -g gk77
 #PJM -j
 

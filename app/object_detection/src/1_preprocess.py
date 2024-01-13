@@ -16,7 +16,8 @@ logger = logging.getLogger("main")
 # - category
 # - is_debug
 
-
+# TODO: 物体検出できないファイルを削除するためのものだが、単に物体検出の際に例外処理を使えば良いのではないか
+# TODO: ここで削除しているファイルは実際に開いても利用できないものばかりであるため、ここで削除しておいて正解かもしれない
 def main():
     categories = [
         "aircraft",
@@ -29,11 +30,15 @@ def main():
         "us_politician",
     ]
     is_debug = False
+    data_dir = "../../../data"
     for category in categories:
         logger.info(f"category: {category}")
-        img_dir = f"../data/{category}_debug/imgs" if is_debug else f"../data/{category}/imgs"  # for debug
-        paths = glob.glob(f"{img_dir}/*/*")
-        assert len(paths) == 0, f"num images: {len(paths)}"
+        img_dir = f"{data_dir}/{category}_debug/images" if is_debug else f"{data_dir}/{category}/images"  # for debug
+        print(f"img_dir: {img_dir}")
+        # img_dir = f"../data/{category}_debug/imgs" if is_debug else f"../data/{category}/imgs"  # for debug
+        # paths = glob.glob(f"{img_dir}/origin/*/*")
+        paths = glob.glob(f"{img_dir}/origin/*/*")
+        assert len(paths) != 0, f"num images: {len(paths)}"
         logger.info(f"img_dir: {img_dir}")
         logger.info(f"num images: {len(paths)}")
 

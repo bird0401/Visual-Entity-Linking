@@ -1,5 +1,6 @@
 import tiktoken
 
+import json
 import logging
 import logging.config
 from yaml import safe_load
@@ -11,12 +12,13 @@ logger = logging.getLogger("main")
 
 def get_label(info):
     if not any(info.values()):
-        label = "_nothing"
+        return "nothing"
     else:
-        label = ""
-        for key in info:
-            if info[key]:
-                label += "_" + key
+        return "_".join([key for key in info if info[key]])
+        # label = ""
+        # for key in info:
+            # if info[key]:
+            #     label += "_" + key
     return label
 
 def merge_text(qas, key):
@@ -27,9 +29,17 @@ def merge_text(qas, key):
     return questions_text
 
 def customize_text(article):  
+    article = article.strip()
     clean_article = article.replace("  ", " ").replace("\n", "; ").replace(';',' ')
     tokenizer = tiktoken.get_encoding("cl100k_base")
     input_text = tokenizer.decode(tokenizer.encode(clean_article)[:4096-1000])
+    return input_text
+
+def customize_relations(relations):  
+    relations = relations.strip()
+    clean_relations = relations.replace("  ", " ").replace("\n", "; ").replace(';',' ')
+    tokenizer = tiktoken.get_encoding("cl100k_base")
+    input_text = tokenizer.decode(tokenizer.encode(clean_relations)[:500])
     return input_text
 
 # Split a text into smaller chunks of size n, preferably ending at the end of a sentence
@@ -110,3 +120,35 @@ def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0613"):
     return num_tokens
 
 
+
+def bem_score_to_bool(bem_score):
+    # We assume that the threshold is 0.5
+    if bem_score >= 0.5:
+        return 1
+    else:
+        return 0
+
+def generate_booled_qas(qas):
+    for entity_id in qas:
+        for qa in qas[entity_id]:
+            qa["bem_score_bool"] = bem_score_to_bool(qa["bem_score"])
+    return qas
+
+def output_booled_qa(category_dir):
+    with open(f"{category_dir}/qas.json") as f:
+        qas = json.load(f) 
+    booled_qas = generate_booled_qas(qas)
+    with open(f"{category_dir}/qas_bool.json", 'w') as f:
+        json.dump(booled_qas, f, indent=2)
+
+def calculate_accuracy(qas_bem_path, pattern):
+    with open(qas_bem_path) as f:
+        qas_bem = json.load(f) 
+    total = 0
+    correct = 0
+    for entity_id in qas_bem:
+        for qa in qas_bem[entity_id]:
+            if qa[get_label(pattern)]["bem_score"] >= 0.5:
+                correct += 1
+            total += 1
+    return correct / total

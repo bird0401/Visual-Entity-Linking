@@ -8,6 +8,6 @@
 
 module load singularity/3.7.3
 singularity exec \
-    --pwd /$HOME/Instance_level_recognition/app/ml/src/ \
-    --nv /$HOME/Instance_level_recognition/app/ml/python_ml_latest.sif \
-    python ./4_ml.py data.category=bird data.data_dir=../../../data/clean/bird data.batch_size.train=32 data.batch_size.val=64 optimizer.learning_rate=1e-3
+    --pwd /$HOME/Visual-Entity-Linking/app/ml/src/ \
+    --nv /$HOME/Visual-Entity-Linking/app/ml/python_ml_latest.sif \
+    python ./4_ml.py data.category=bird data.data_dir=../../../data/clean/bird data.batch_size.train=32 data.batch_size.val=32 optimizer.learning_rate=1e-3

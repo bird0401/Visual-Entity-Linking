@@ -59,7 +59,8 @@ def DeleteSmallLabels(df):
 #         df_train.loc[val_ , "kfold"] = fold
 #   return df_train, df_test
 
-
+# TODO: val, testの両方を生成しているが、同じ元データからこれらの分割を行ってもあまり意味がない。仮にtestをするならば、今回の収集元とは違うデータを用意するべき。
+# TODO: kfoldが必要か確認
 def split_train_val_test(df):
     train_val_indices, test_indices = train_test_split(list(range(len(df.label))), test_size=0.2, stratify=df.label)
     df.loc[train_val_indices, "is_train_val"] = 1
@@ -70,13 +71,15 @@ def split_train_val_test(df):
     )
     logger.debug(f"len(df_train): {len(df_train)}, len(df_test): {len(df_test)}")
 
-    train_indices, val_indices = train_test_split(list(range(len(df_train.label))), test_size=0.25, stratify=df_train.label)
-    logger.info(f"len(train_indices): {len(train_indices)}, len(val_indices): {len(val_indices)}")
-    df_train.loc[train_indices, "kfold"] = 1
-    df_train.loc[val_indices, "kfold"] = 0
+    # train_indices, val_indices = train_test_split(list(range(len(df_train.label))), test_size=0.25, stratify=df_train.label)
+    # logger.info(f"len(train_indices): {len(train_indices)}, len(val_indices): {len(val_indices)}")
+    # df_train.loc[train_indices, "kfold"] = 1
+    # df_train.loc[val_indices, "kfold"] = 0
     return df_train, df_test
 
 
+# TODO: aircraftのみを用いてMLの最後までできるかを確かめる。時間がかかりそうな処理があったらそれは他のカテゴリでも実行しておく
+# TODO: 必要であればoriginのcsvを作成し、cleanと同様に実験を行う
 # Change demands on the situation
 # - categories
 # - is_debug
@@ -84,7 +87,7 @@ def split_train_val_test(df):
 def main():
     # categories = ["athlete"]
     categories = [
-        "aircraft",
+        # "aircraft",
         "athlete",
         "bread",
         "bird",
@@ -93,23 +96,24 @@ def main():
         "dog",
         "us_politician",
     ]
+    # categories = ["aircraft"]
     is_debug = False
     logger.info(f"debug mode") if is_debug else logger.info(f"production mode")
 
     for category in categories:
         logger.info(f"category: {category}")
 
-        data_dir = f"../../../data/clean"
+        data_dir = f"../../../data"
         category_dir = f"{data_dir}/{category}_debug" if is_debug else f"{data_dir}/{category}"
-        paths = glob.glob(f"{category_dir}/imgs/*/*.jpg")
+        image_paths = glob.glob(f"{category_dir}/images/clean/*/*.jpg")
 
-        df = pd.DataFrame(paths, columns=["path"])
+        df = pd.DataFrame(image_paths, columns=["path"])
         logger.debug(f"df['path'][0] : {df['path'][0]}")
         # df['path_noncrop'] = df['path'].apply(GetNonCropPath)
         # logger.debug(f"df['path_noncrop'][0] : {df['path_noncrop'][0]}")
-        df["wikidata_id"] = df["path"].apply(GetWikidataId)
+        df["wikidata_id"] = df["path"].apply(lambda x: x.split("/")[-2])
         logger.debug(f"df['wikidata_id'][0] : {df['wikidata_id'][0]}")
-        df["file_name"] = df["path"].apply(os.path.basename)
+        df["file_name"] = df["path"].apply(lambda x: x.split("/")[-1])
         logger.debug(f"df['file_name'][0] : {df['file_name'][0]}")
 
         # df = df.sample(frac=0.3) # execute if creating sample dataframe

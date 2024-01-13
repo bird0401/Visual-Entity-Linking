@@ -1,4 +1,4 @@
-import os, pickle, textwrap, traceback
+import os, pickle, textwrap, traceback, shutil
 import openai
 from util import *
 
@@ -18,19 +18,24 @@ logger = logging.getLogger("main")
 
 from tenacity import (
     retry,
+    retry_if_exception_type,
     stop_after_attempt,
     wait_random_exponential,
 ) 
 
 data_dir = "../../../data/clean"
 
-@retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
+@retry(
+    retry=retry_if_exception_type((openai.error.APIError, openai.error.APIConnectionError, openai.error.RateLimitError, openai.error.ServiceUnavailableError, openai.error.Timeout)), 
+    wait=wait_random_exponential(min=1, max=60), 
+    stop=stop_after_attempt(6), 
+)
 def generate_qa(entity_name, article):
     try:
         messages = [
             {"role": "system", "content": "You are a helpful annotator of wikipedia articles."},
             {"role": "user", "content": textwrap.dedent(f"""
-                Generate five pairs of QA based on the article. Each question must contain the entity name. Use the following format:
+                Generate ten pairs of QA based on the article. Each question must contain the entity name. Use the following format:
                 Q: Where was Thomas Flögel born?
                 A: Vienna.
                 
@@ -60,34 +65,50 @@ def generate_qa(entity_name, article):
         print(f"article: {article}")
         traceback.print_exc()
 
-def generate_qa_by_categories(categories):
+def generate_qa_by_categories(categories, start_idx=0, end_idx=5000):
     for category in categories:
         logger.info(f"category: {category}")
         category_dir = f"{data_dir}/{category}"
-        with open(f"{category_dir}/id_to_name.pkl", 'rb') as f:
-            id_to_name = pickle.load(f)
-
+        with open(f"{category_dir}/id_to_name.json") as f:
+            id_to_name = json.load(f)
+        # with open(f"{category_dir}/id_to_name.json", 'rb') as f:
+        #     id_to_name = pickle.load(f)
+        
+        # limitを用いてid取得数の上限を設定していたが不要になる可能性が高い
+        # if limit:
+        #     entity_text_files = os.listdir(f"{category_dir}/wikipedia")[:limit]
+        # else:
         entity_text_files = os.listdir(f"{category_dir}/wikipedia")
+
         logger.info(f"len(entity_text_files): {len(entity_text_files)}")
-        for entity_text_file in entity_text_files:
-            entity_id = entity_text_file.split(".")[0]
-            logger.info(f"entity_id: {entity_id}")
 
-            with open(f"{category_dir}/wikipedia/{entity_text_file}") as f:
-                article = f.read()
-            
+        output_dir = f"{category_dir}/gpt_3_output"
+        # if os.path.exists(output_dir):
+        #     shutil.rmtree(output_dir)
+        os.makedirs(output_dir, exist_ok=True)
+        # TODO: idsの取得のために、jsonとentity_text_filesの両方を使っているが、どちらか一方に統一した方が良い
+        logger.info(f"start_idx, endidx: {start_idx}, {end_idx}")
+        for i, entity_text_file in enumerate(entity_text_files[start_idx:end_idx]):
             try:
-                input_text = customize_text(article)
-
-                output = generate_qa(id_to_name[entity_id], input_text)
-                
-                output_dir = f"{category_dir}/gpt_3_output"
-                os.makedirs(output_dir, exist_ok=True)
-                with open(f"{output_dir}/{entity_text_file}", 'w') as f:
-                    f.write(output)
-            except Exception as e:
-                print(f"entity_id: {entity_id}")
-                print(f"article: {article}")
+                entity_id = entity_text_file.split(".")[0]
+                logger.info(f"Generate questions for {entity_id} ({i+1}/{len(entity_text_files)})")
+                if os.path.exists(f"{output_dir}/{entity_text_file}"):
+                    logger.info(f"Skip {entity_id} because already generated")
+                    continue
+                with open(f"{category_dir}/wikipedia/{entity_text_file}") as f:
+                    article = f.read()
+                    input_text = customize_text(article)
+                    output = generate_qa(id_to_name[entity_id], input_text)
+                    if output:
+                        try:
+                            with open(f"{output_dir}/{entity_text_file}", 'w') as f:
+                                f.write(output)
+                        except Exception:
+                            print(f"entity_id: {entity_id}")
+                            print(f"output: {output}")
+                            traceback.print_exc()
+            except Exception:
+                print(f"entity_text_file: {entity_text_file}")
                 traceback.print_exc()
 
 def main():

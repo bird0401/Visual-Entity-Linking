@@ -60,16 +60,31 @@ def rephrase_questions(text):
         logger.error(f"text: {text}")
         logger.error(e)
 
-def rephrase_questions_by_categories(categories):
+def rephrase_questions_by_categories(categories, start_idx=0, end_idx=5000):
     for category in categories:
         logger.info(f"category: {category}")
         category_dir = f"{data_dir}/{category}"
-        with open(f"{category_dir}/qas.json") as f:
+        
+        with open(f"{category_dir}/qas_{start_idx}.json") as f:
             qas = json.load(f)
-        for entity_id in qas:
+        ids = list(qas.keys())
+        # ids = ["Q25172100"]
+        # for i, entity_id in enumerate(ids[start_idx:end_idx]):
+        for i, entity_id in enumerate(ids):
+            logger.info(f"Paraphrase questions for {entity_id} ({i+1}/{len(qas)})")
             try:
-                logger.info(f"entity_id: {entity_id}")
                 questions_merge = merge_text(qas[entity_id], "Q")
+                
+                # 既に全ての質問がパラフレーズされている場合はスキップ
+                cnt = 0
+                for i, qa in enumerate(qas[entity_id]):
+                    if "Q_rephrase" in qa and qa["Q_rephrase"] != "":
+                        cnt += 1
+                # print(f"cnt, len(qas[entity_id]): {cnt}, {len(qas[entity_id])}")
+                if cnt == len(qas[entity_id]):
+                    logger.info(f"Skip {entity_id} because all questions are already paraphrased")
+                    continue    
+                                
                 questions_rephrased = rephrase_questions(questions_merge)
                 questions_rephrased_list = questions_rephrased.split("\n")
                 for i, qa in enumerate(qas[entity_id]):
@@ -77,7 +92,7 @@ def rephrase_questions_by_categories(categories):
             except Exception as e:
                 logger.error(f"entity_id: {entity_id}")
                 logger.error(e)
-        with open(f"{category_dir}/qas.json", 'w') as f:
+        with open(f"{category_dir}/qas_{start_idx}.json", 'w') as f:
             json.dump(qas, f, indent=2)
 
 def main():

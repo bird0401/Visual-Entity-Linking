@@ -1,0 +1,2 @@
+# wikidata上にwikimediaのURLに関する項目は存在しないが、wikimediaのcategory名は取得することが可能
+# これを利用し、category名に基づいて、URLを作成することによって、wikimediaへリクエストを送る
