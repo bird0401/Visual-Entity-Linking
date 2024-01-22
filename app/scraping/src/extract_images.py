@@ -131,6 +131,7 @@ def extract_images(category, start_index=0, end_index=5000):
 # TODO: filerとextractを分割する
 # また、ここでは上位カテゴリ名を指定しているが、wikidataでは下位カテゴリから直接アクセスする
 # 画像収集元がwikimediaのみだと、wikidata上のエンティティのうちかなりの数が対象外となってしまうため、wikipedia上の画像が存在するエンティティも収集対象とする。
+# TODO: commons galleryの画像も収集対象とする
 def main():
     categories = ["aircraft" ]
     # categories = ["aircraft", "athlete", "bird", "bread", "car", "director", "dog", "us_politician"]

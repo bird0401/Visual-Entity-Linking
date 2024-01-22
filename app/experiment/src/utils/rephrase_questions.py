@@ -46,7 +46,7 @@ def rephrase_questions(text):
                 Which league did Caen, Azzeddine Toufiqui's previous club, compete in?
                 When did Azzeddine Toufiqui first play professionally?
 
-                Based on the above examples, please paraphrase following sentences:
+                Based on the above examples, please paraphrase following sentences.
                 """)},
             {"role": "assistant", "content": text},
         ]
