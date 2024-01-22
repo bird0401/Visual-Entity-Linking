@@ -35,7 +35,7 @@ def main():
     # categories = ["athlete"]
     # categories = ["aircraft", "athlete", "bird", "bread", "car", "director", "dog", "us_politician"]
     categories = [sys.argv[1]]
-    mode = sys.argv[2]
+    mode = sys.argv[2] # gen, convert, ans
     start_index = 0
     end_index = 5000
     ans_mode = "oracle"
