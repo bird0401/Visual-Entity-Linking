@@ -19,6 +19,14 @@ def relations_to_text(wikidata):
             val["text"] += f"'{key}': {relation_str}. "
     return wikidata
 
+def triples_to_text(predicate_to_objects):
+    text_list = []
+    for predicate, object_list in predicate_to_objects:
+        object_str = ", ".join(object_list)
+        text_list.append(f"'{predicate}': {object_str}. ")
+    text = ".".join(text_list)
+    return text
+
 def relations_to_text_by_category(category):
     # for category in categories:
     print(category)

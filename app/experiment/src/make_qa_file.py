@@ -18,6 +18,11 @@ logger = logging.getLogger("main")
 
 
 # TODO: 一部のQAはmaskingなど一部かけている影響によって、答えが得られていないため、現在は精度を試す時にそれらは除外している
+# カテゴリごとにそれぞれの処理を行っているのは、カテゴリごとに処理を分けることで、処理速度を改善するため
+# しかしこれがどの程度効果があるのかは不明
+# それぞれのエンティティごとに一気に処理を行っても良いかもしれない。こちらの方がコードが簡潔になる
+# 多段で行った方がそれぞれの処理結果を確認しやすいが、これはあくまでテストでそうしている。一気にやってもコメントアウトなどを適宜行うことで、同じことができる
+
 # 8時間で5000エンティティが目安
 
 # Progress: 
@@ -25,7 +30,7 @@ logger = logging.getLogger("main")
 
 def main():
     patterns = [
-        {"name": False, "article": False, "relations": False, "confidence": False}, 
+        {"name": False, "article": False, "relations": False, "confidence": False},
         {"name": True, "article": False, "relations": False, "confidence": False}, 
         {"name": True, "article": True, "relations": False, "confidence": False}, 
         {"name": True, "article": False, "relations": True, "confidence": False}, 

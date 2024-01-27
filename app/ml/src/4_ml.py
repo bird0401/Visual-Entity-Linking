@@ -40,6 +40,9 @@ logger = logging.getLogger("main")
 # - when using gpt-3.5, there is necessity to split sentneces because of limitation of tokens
 # python 4_ml.py data.category=aircraft data.batch_size.train=128 data.batch_size.val=256 optimizer.learning_rate=1e-4
 
+# % carに関してはあまり充実していないので、収集するカテゴリの指定などを変更してより多くのカテゴリを収集する
+# % GPT-4を用いても良いかもしれない
+
 
 def run_training(dataloaders, model, optimizer, scheduler, device, cfg, run, save_dir):
     logger.info(f"scheduler: {scheduler}")

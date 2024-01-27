@@ -24,6 +24,11 @@ from tenacity import (
 
 data_dir = "../../../data/clean"
 
+# TODO: 
+# 生成されるmasked questionが1つずれているので解決する
+# this categoryが"us_politician"から"US Politician"になるように変更する
+
+
 @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
 def mask_entity_name(category, entity_name, text):
     try:

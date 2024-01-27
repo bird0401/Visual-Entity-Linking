@@ -1,9 +1,18 @@
 import tiktoken
 
 import json
+import traceback
+
 import logging
 import logging.config
 from yaml import safe_load
+
+from tenacity import (
+    retry,
+    retry_if_exception_type,
+    stop_after_attempt,
+    wait_random_exponential,
+) 
 
 with open("../conf/logging.yml") as f:
     cfg = safe_load(f)
@@ -28,7 +37,7 @@ def merge_text(qas, key):
     questions_text = "\n".join(questions)
     return questions_text
 
-def customize_text(article):  
+def customize_text_for_gpt_3_5(article):  
     article = article.strip()
     clean_article = article.replace("  ", " ").replace("\n", "; ").replace(';',' ')
     tokenizer = tiktoken.get_encoding("cl100k_base")
@@ -152,3 +161,22 @@ def calculate_accuracy(qas_bem_path, pattern):
                 correct += 1
             total += 1
     return correct / total
+
+
+@retry(
+    retry=retry_if_exception_type((openai.error.APIError, openai.error.APIConnectionError, openai.error.RateLimitError, openai.error.ServiceUnavailableError, openai.error.Timeout)), 
+    wait=wait_random_exponential(min=1, max=60), 
+    stop=stop_after_attempt(6), 
+)
+def gpt_request(messages):
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=messages,
+            temperature=0,
+        )
+        return response.choices[0]["message"]["content"]
+    except Exception:
+        print(f"messages")
+        print(messages)
+        traceback.print_exc()

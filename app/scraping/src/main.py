@@ -6,6 +6,7 @@ from relations_to_text import relations_to_text_by_category
 from clean_relations_text import clean_relations_text_by_category
 from extract_images import extract_images
 from extract_article_by_category import extract_article_by_category
+from create_ids_file import create_ids_file
 
 # 作成されるファイル
 # - ids_labels.json
@@ -19,6 +20,7 @@ import sys
 # TODO: 一番初めに収集したwikidataのエンティティから、どのくらい削られて最終的なデータセットが作られたのかを表にする
 # TODO: clean時のディレクトリ名の改修。cleanする場合、よりエンティティ種類数が減るため、それに応じてVQA実験時の対象エンティティも絞られる。今回はoriginに対する実験ということで、cleanは行わない。時間があまりそうであれば行う。
 # TODO: 最終的なidsのjsonは、wikdata.jsonではなく、wikidata_with_commons.jsonを使うが、名前が分かりにくいのでリネームの必要あり
+# TODO: ここもごちゃごちゃしているので、整理する
 
 def main():
     start_index, end_index = 0, 5000
@@ -60,6 +62,8 @@ def main():
         if mode == "image":
             # カテゴリのwikidata_with_commons.jsonからwikidata relationsを取得し、それぞれのエンティティのwikimediaカテゴリを取得する
             extract_images(category, start_index, end_index)
+        if mode == "ids":
+            create_ids_file(category)
 
 if __name__ == "__main__":
     main()

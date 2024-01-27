@@ -31,7 +31,10 @@ data_dir = "../../../data/clean"
 def answer(info, question, category, entity_name, wikipedia_article, wikidata_text_by_relation):
     messages = []
     if info["name"] and entity_name:
+        # カテゴリ名で置換されているところをエンティティ名に戻す
         messages.append({"role": "assistant", "content": f"Name of the {category}: {entity_name}"})
+        # TODO: こちらの方が良いのではないか
+        # messages.append({"role": "assistant", "content": f"This {category} is {entity_name}"})
     if info["article"] and wikipedia_article:
         messages.append({"role": "assistant", "content": f"Article:\n{wikipedia_article}"})
     if info["relations"] and wikidata_text_by_relation:
@@ -49,6 +52,7 @@ def answer(info, question, category, entity_name, wikipedia_article, wikidata_te
     return response.choices[0]["message"]["content"]
 
 # TODO: top-kでも対応するようにする
+# TODO: 書き終わったら文字数を測る
 # 1jobあたり5000エンティティくらい(処理時間の見積もりは約8時間)が限界
 def answer_by_categories(categories, patterns, mode="oracle", start_index=0, end_index=5000):
     patterns_str = ",".join([get_label(pattern) for pattern in patterns])
@@ -125,7 +129,7 @@ def answer_by_categories(categories, patterns, mode="oracle", start_index=0, end
                     key = f"{get_label(pattern)}_pred" if mode == "pred" else get_label(pattern)
                     if not key in qa:
                         qa[key] = {}
-                        
+
                     # 既に回答が存在する場合はスキップ
                     if qa[key]:
                         # logger.info(f"Skip because already answered to {entity_id_question}[{i}]['{get_label(pattern)}']")

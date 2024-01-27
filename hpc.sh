@@ -14,7 +14,6 @@ module load singularity/3.7.3
 singularity shell --pwd $HOME/Visual-Entity-Linking/app/object_detection/src/ --nv $HOME/Visual-Entity-Linking/app/object_detection/object_detection_latest.sif
 singularity shell --pwd $HOME/Visual-Entity-Linking/app/object_detection/src/ --nv $HOME/Visual-Entity-Linking/app/ml/python_ml_latest.sif 
 
-
 # Scraping
 module load singularity/3.7.3
 singularity shell --pwd $HOME/Visual-Entity-Linking/app/scraping/src/ --nv $HOME/Visual-Entity-Linking/app/scraping/scraping_latest.sif
