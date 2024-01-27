@@ -2,10 +2,17 @@ import tiktoken
 
 import json
 import traceback
+import os
 
 import logging
 import logging.config
 from yaml import safe_load
+
+from dotenv import load_dotenv
+load_dotenv()
+import openai
+openai.organization = os.getenv("OPENAI_ORGANIZATION")
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 from tenacity import (
     retry,

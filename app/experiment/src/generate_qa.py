@@ -1,13 +1,7 @@
 import os, textwrap, traceback
 from tqdm import tqdm
-import openai
 from util import *
 from config import *
-
-from dotenv import load_dotenv
-load_dotenv()
-openai.organization = os.getenv("OPENAI_ORGANIZATION")
-openai.api_key = os.getenv("OPENAI_API_KEY")
 
 import logging
 import logging.config

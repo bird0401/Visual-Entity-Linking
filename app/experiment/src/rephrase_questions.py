@@ -1,13 +1,7 @@
-import openai
-import os, json, textwrap
+import json, textwrap
 from util import *
 from config import *
 from tqdm import tqdm
-
-from dotenv import load_dotenv
-load_dotenv()
-openai.organization = os.getenv("OPENAI_ORGANIZATION")
-openai.api_key = os.getenv("OPENAI_API_KEY")
 
 import logging
 import logging.config
@@ -79,13 +73,12 @@ def rephrase_questions_by_category(category, start_idx=0, end_idx=5000):
             logger.info(f"Paraphrase questions for {entity_id}, idx: {start_idx+i}")
             try:
             # TODO: QAごとではなくエンティティごとに複数のQAを一気に処理するのは、gptへのリクエスト数を減らせるため
-            # これで大丈夫かテスト
                 entity_to_qas[entity_id] = rephrase_questions_by_entity(entity_to_qas[entity_id])
             except Exception as e:
                 logger.error(e)
 
-        with open(entity_to_qas_path) as f:
-            json.dump(entity_to_qas_path, f, indent=2)
+        with open(entity_to_qas_path, 'w') as f:
+            json.dump(entity_to_qas, f, indent=2)
 
 
 # TODO: 
@@ -95,7 +88,7 @@ def main():
     categories = ["aircraft"]
     # categories = ["aircraft", "athlete", "bird", "bread", "car", "director", "dog", "us_politician"]
     for category in categories:
-        rephrase_questions_by_category(category)
+        rephrase_questions_by_category(category, 0, 3)
 
 
 if __name__ == "__main__":
