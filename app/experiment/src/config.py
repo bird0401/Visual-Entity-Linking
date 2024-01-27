@@ -13,5 +13,5 @@ def get_gpt_output_dir(category_dir):
 def get_article_dir(category_dir):
     return f"{category_dir}/wikipedia"
 
-def get_save_path(category_dir, start_idx, end_idx):
+def get_entity_tp_qas_path(category_dir, start_idx, end_idx):
     return f"{category_dir}/qas_{start_idx}_{end_idx}.json"

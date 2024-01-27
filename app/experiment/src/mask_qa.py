@@ -21,34 +21,45 @@ def capitalize_category_name(category):
         return category.capitalize()
     
 
-# TODO: 暫定的に解消したが、出力の形式をもっと固定する必要がある
-# TODO: まだごく一部のエンティティはmasking後のtextが空になってしまうが、数としては少ないのでスルー。
 def create_messages_for_masking_to_super_category(category, entity_name, text):
 
     messages_for_masking_to_super_category=[
         {"role": "system", "content": "You are a helpful annotator of sentences."},
-        {"role": "user", "content": f"Please convert 'Entity name' of following sentences to 'this {category}'."},
         {"role": "assistant", "content": f"Entity name: {entity_name}"},
-        {"role": "assistant", "content": f"Convert from following sentences:\n{text}"},
+        {"role": "user", "content": f"Convert Entity name of following sentences to 'this {category}'."},
+        {"role": "assistant", "content": f"{text}"},
     ]
 
     return messages_for_masking_to_super_category
 
 
-def mask_questions_by_entity(category, entity_name, qas):
+def mask_questions_by_entity(qas, category, id_to_name,  entity_id):
     # Skip if all questions are already masked
-    cnt = 0
-    for i, qa in enumerate(qas):
-        if "Q_rephrase_mask" in qa and qa["Q_rephrase_mask"]:
-            cnt += 1
-    if cnt == len(qas):
-        logger.info(f"Skip because all questions are already masked")
-        return    
+    # cnt = 0
+    # for i, qa in enumerate(qas):
+    #     if "Q_rephrase_mask" in qa and qa["Q_rephrase_mask"]:
+    #         cnt += 1
+    # if cnt == len(qas):
+    #     logger.info(f"Skip because all questions are already masked")
+    #     return    
+
+    capitalized_category = capitalize_category_name(category)
+    entity_name = id_to_name[entity_id]
 
     # QAごとではなくエンティティごとに複数のQAを一気に処理するのは、gptへのリクエスト数を減らせるため
     questions_merge = merge_list_text(qas, "Q_rephrase")
-    messages_for_masking_to_super_category = create_messages_for_masking_to_super_category(category, entity_name, questions_merge)
+    messages_for_masking_to_super_category = create_messages_for_masking_to_super_category(capitalized_category, entity_name, questions_merge)
+    
+    # for debugging gpt output format
+    # print("messages_for_masking_to_super_category")
+    # for message in messages_for_masking_to_super_category:
+    #     print(message)
+    # print()
+    
     questions_masked = gpt_request(messages_for_masking_to_super_category)
+    print("questions_masked")
+    print(questions_masked)
+    print()
     questions_masked_list = questions_masked.split("\n")
 
     for i, qa in enumerate(qas):
@@ -59,9 +70,6 @@ def mask_questions_by_entity(category, entity_name, qas):
     return qas
 
 
-# TODO: 
-# 生成されるmasked questionが1つずれているので解決する
-# this categoryが"us_politician"から"US Politician"になるように変更する
 def mask_questions_by_category(category, start_idx=0, end_idx=5000):
     logger.info(f"category: {category}")
     category_dir = get_category_dir(category)
@@ -77,10 +85,9 @@ def mask_questions_by_category(category, start_idx=0, end_idx=5000):
 
     for i, entity_id in tqdm(enumerate(entity_to_qas)):
         logger.info(f"Masking questions for {entity_id}, idx: {start_idx+i}")
-        entity_name = id_to_name[entity_id]
 
         try:
-            entity_to_qas[entity_id] = mask_questions_by_entity(capitalized_category, entity_name, entity_to_qas[entity_id])
+            entity_to_qas[entity_id] = mask_questions_by_entity(entity_to_qas[entity_id], category, id_to_name, entity_id)
         except Exception as e:
             logger.error(e)
 
@@ -97,4 +104,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

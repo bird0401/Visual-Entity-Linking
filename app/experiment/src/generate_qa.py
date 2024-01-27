@@ -41,16 +41,23 @@ def create_messages_for_generate_qa(entity_name, article):
     return messages_for_generate_qa
 
 
-def exploit_info_for_gpt(entity_id, id_to_name, wikipedia_dir):
-    entity_name = id_to_name[entity_id]
+def exploit_customized_article(entity_id, wikipedia_dir):
     with open(f"{wikipedia_dir}/{entity_id}.txt") as f:
         article = f.read()
     customized_article = customize_text_for_gpt_3_5(article)
-    return entity_name, customized_article
+    return customized_article
+
+
+def generate_qa_by_entity(entity_id, id_to_name, wikipedia_dir):
+    entity_name = id_to_name[entity_id]
+    article = exploit_customized_article(entity_id, wikipedia_dir)
+    messages = create_messages_for_generate_qa(entity_name, article)
+    gpt_output = gpt_request(messages)   
+    return gpt_output
 
 
 # カテゴリごとにファイルを管理している都合上、カテゴリ単位で実行
-def generate_qa(category, start_idx=0, end_idx=5000):
+def generate_qa_by_category(category, start_idx=0, end_idx=5000):
     logger.info(f"category: {category}")
     category_dir = get_category_dir(category)
 
@@ -79,22 +86,15 @@ def generate_qa(category, start_idx=0, end_idx=5000):
 
         # gptによる生成
         try:
-            entity_name, article = exploit_info_for_gpt(entity_id, id_to_name, wikipedia_dir)
-            messages = create_messages_for_generate_qa(entity_name, article)
-            output = gpt_request(messages)
-        except Exception:
-            print(f"entity_id: {entity_id}")
-            traceback.print_exc()
+            gpt_output = generate_qa_by_entity(entity_id, id_to_name, wikipedia_dir)
         
-        # 出力の保存
-        try:
-            if not output:
+            # 出力の保存
+            if not gpt_output:
                 logger.info(f"Skip {entity_id} because output is empty")
             with open(f"{output_dir}/{entity_id}.txt", 'w') as f:
-                f.write(output)
+                f.write(gpt_output)
+
         except Exception:
-            print(f"entity_id: {entity_id}")
-            print(f"output: {output}")
             traceback.print_exc()
 
 

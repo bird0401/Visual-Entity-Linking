@@ -2,8 +2,8 @@ import sys
 sys.path.append("utils")
 
 from generate_qa import generate_qa_by_categories
-from convert_to_json import convert_text_to_dict_by_categories
-from masking_by_category import mask_entity_name_by_categories
+from app.experiment.src.convert_qa_text_to_json import convert_text_to_dict_by_categories
+from app.experiment.src.mask import mask_entity_name_by_categories
 from rephrase_questions import rephrase_questions_by_categories
 from answer import answer_by_categories
 

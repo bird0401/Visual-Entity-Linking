@@ -26,16 +26,12 @@ with open("../conf/logging.yml") as f:
 logging.config.dictConfig(cfg)
 logger = logging.getLogger("main")
 
-def get_label(info):
-    if not any(info.values()):
+
+def get_label(pattern):
+    if not any(pattern.values()):
         return "nothing"
     else:
-        return "_".join([key for key in info if info[key]])
-        # label = ""
-        # for key in info:
-            # if info[key]:
-            #     label += "_" + key
-    return label
+        return "_".join([key for key in pattern if pattern[key]])
 
 def merge_list_text(qas, key):
     questions = []
