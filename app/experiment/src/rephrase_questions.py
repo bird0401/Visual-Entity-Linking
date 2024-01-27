@@ -52,6 +52,7 @@ def rephrase_questions_by_entity(qas):
         logger.info(f"Skip because all questions are already paraphrased")
         return    
 
+    # QAごとではなくエンティティごとに複数のQAを一気に処理するのは、gptへのリクエスト数を減らせるため
     questions_merge = merge_list_text(qas, "Q")
     messages = create_messages_for_repharase_questions(questions_merge)
     questions_rephrased = gpt_request(messages)
@@ -72,7 +73,6 @@ def rephrase_questions_by_category(category, start_idx=0, end_idx=5000):
         for i, entity_id in tqdm(enumerate(entity_to_qas)):
             logger.info(f"Paraphrase questions for {entity_id}, idx: {start_idx+i}")
             try:
-            # TODO: QAごとではなくエンティティごとに複数のQAを一気に処理するのは、gptへのリクエスト数を減らせるため
                 entity_to_qas[entity_id] = rephrase_questions_by_entity(entity_to_qas[entity_id])
             except Exception as e:
                 logger.error(e)
