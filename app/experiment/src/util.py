@@ -30,7 +30,7 @@ def get_label(info):
             #     label += "_" + key
     return label
 
-def merge_text(qas, key):
+def merge_list_text(qas, key):
     questions = []
     for qa in qas:
         questions.append(qa[key])
@@ -168,10 +168,10 @@ def calculate_accuracy(qas_bem_path, pattern):
     wait=wait_random_exponential(min=1, max=60), 
     stop=stop_after_attempt(6), 
 )
-def gpt_request(messages):
+def gpt_request(messages, model="gpt-3.5-turbo-0613"):
     try:
         response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
+            model=model,
             messages=messages,
             temperature=0,
         )

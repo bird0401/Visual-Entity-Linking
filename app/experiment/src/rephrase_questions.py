@@ -18,12 +18,6 @@ with open("../conf/logging.yml") as f:
 logging.config.dictConfig(cfg)
 logger = logging.getLogger("main")
 
-from tenacity import (
-    retry,
-    stop_after_attempt,
-    wait_random_exponential,
-) 
-
 
 def create_messages_for_repharase_questions(questions):
 
@@ -54,59 +48,51 @@ def create_messages_for_repharase_questions(questions):
     return messages_for_repharase_questions
 
 
-def rephrase_questions_by_entity(entity_id, qas):
-    questions = []
-    for qa in qas:
-        questions.append(qa["Q"])
-    questions_text = "\n".join(questions)
-    messages = create_messages_for_repharase_questions(questions_text)
+def rephrase_questions_by_entity(qas):
+    # Skip if all questions are already paraphrased
+    cnt = 0
+    for i, qa in enumerate(qas):
+        if "Q_rephrase" in qa and qa["Q_rephrase"]:
+            cnt += 1
+    if cnt == len(qas):
+        logger.info(f"Skip because all questions are already paraphrased")
+        return    
+
+    questions_merge = merge_list_text(qas, "Q")
+    messages = create_messages_for_repharase_questions(questions_merge)
     questions_rephrased = gpt_request(messages)
     questions_rephrased_list = questions_rephrased.split("\n")
-    return questions_rephrased_list
+    for i, qa in enumerate(qas):
+        qa["Q_rephrase"] = questions_rephrased_list[i]
+    return qas
+
 
 def rephrase_questions_by_category(category, start_idx=0, end_idx=5000):
         logger.info(f"category: {category}")
         category_dir = get_category_dir(category)
-        qa_path = get_save_path(category_dir, start_idx, end_idx)
+        entity_to_qas_path = get_save_path(category_dir, start_idx, end_idx)
         
-        with open(qa_path) as f:
+        with open(entity_to_qas_path) as f:
             entity_to_qas = json.load(f)
         
         for i, entity_id in tqdm(enumerate(entity_to_qas)):
             logger.info(f"Paraphrase questions for {entity_id}, idx: {start_idx+i}")
             try:
-                # TODO: ここでmergeするのは、gpt-3の入力に対して、一つの文章として入力した方がgptへのリクエスト数を減らせることと、あるエンティティに関する複数のQAをバッチ処理できるため
-
-                questions_rephrased_list = rephrase_questions_by_entity(entity_id, entity_to_qas[entity_id])
-                
-                questions_merge = merge_text(entity_to_qas[entity_id], "Q")
-                
-                # 既にパラフレーズされている場合はスキップ
-
-                cnt = 0
-                for i, qa in enumerate(entity_to_qas[entity_id]):
-                    if "Q_rephrase" in qa and qa["Q_rephrase"]:
-                        cnt += 1
-                # print(f"cnt, len(entity_to_qas[entity_id]): {cnt}, {len(entity_to_qas[entity_id])}")
-                if cnt == len(entity_to_qas[entity_id]):
-                    logger.info(f"Skip {entity_id} because all questions are already paraphrased")
-                    continue    
-                                
-                messages = create_messages_for_repharase_questions(questions_merge)
-                questions_rephrased = gpt_request(messages)
-                questions_rephrased_list = questions_rephrased.split("\n")
-                for i, qa in enumerate(entity_to_qas[entity_id]):
-                    qa["Q_rephrase"] = questions_rephrased_list[i]
+            # TODO: QAごとではなくエンティティごとに複数のQAを一気に処理するのは、gptへのリクエスト数を減らせるため
+            # これで大丈夫かテスト
+                entity_to_qas[entity_id] = rephrase_questions_by_entity(entity_to_qas[entity_id])
             except Exception as e:
-                logger.error(f"entity_id: {entity_id}")
                 logger.error(e)
-        with open(f"{category_dir}/entity_to_qas_{start_idx}.json", 'w') as f:
-            json.dump(entity_to_qas, f, indent=2)
+
+        with open(entity_to_qas_path) as f:
+            json.dump(entity_to_qas_path, f, indent=2)
 
 
-# TODO: attach tqdm overall
+# TODO: 
+# - attach tqdm overall
+# - validate generated QA by gpt, because its output is not always correct
 def main():
-    categories = ["athlete"]
+    categories = ["aircraft"]
     # categories = ["aircraft", "athlete", "bird", "bread", "car", "director", "dog", "us_politician"]
     for category in categories:
         rephrase_questions_by_category(category)
