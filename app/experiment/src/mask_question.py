@@ -57,9 +57,9 @@ def mask_questions_by_entity(qas, category, id_to_name,  entity_id):
     # print()
     
     questions_masked = gpt_request(messages_for_masking_to_super_category)
-    print("questions_masked")
-    print(questions_masked)
-    print()
+    # print("questions_masked")
+    # print(questions_masked)
+    # print()
     questions_masked_list = questions_masked.split("\n")
 
     for i, qa in enumerate(qas):
@@ -73,8 +73,7 @@ def mask_questions_by_entity(qas, category, id_to_name,  entity_id):
 def mask_questions_by_category(category, start_idx=0, end_idx=5000):
     logger.info(f"category: {category}")
     category_dir = get_category_dir(category)
-    entity_to_qas_path = get_save_path(category_dir, start_idx, end_idx)
-    capitalized_category = capitalize_category_name(category)
+    entity_to_qas_path = get_entity_to_qas_path(category, start_idx, end_idx)
 
     # カテゴリごとにそのカテゴリのidと名前の対応付け用ファイルが存在
     with open(f"{category_dir}/id_to_name.json") as f:
