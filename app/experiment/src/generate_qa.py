@@ -41,16 +41,14 @@ def create_messages_for_generate_qa(entity_name, article):
     return messages_for_generate_qa
 
 
-def exploit_customized_article(entity_id, wikipedia_dir):
-    with open(f"{wikipedia_dir}/{entity_id}.txt") as f:
-        article = f.read()
-    customized_article = customize_text_for_gpt_3_5(article)
-    return customized_article
-
-
 def generate_qa_by_entity(entity_id, id_to_name, wikipedia_dir):
     entity_name = id_to_name[entity_id]
+    
     article = exploit_customized_article(entity_id, wikipedia_dir)
+    if not article:
+        logger.info("article is None")
+        return
+    
     messages = create_messages_for_generate_qa(entity_name, article)
     gpt_output = gpt_request(messages)   
     return gpt_output

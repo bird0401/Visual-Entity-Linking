@@ -27,6 +27,13 @@ logging.config.dictConfig(cfg)
 logger = logging.getLogger("main")
 
 
+def exploit_customized_article(entity_id, wikipedia_dir):
+    with open(f"{wikipedia_dir}/{entity_id}.txt") as f:
+        article = f.read()
+    customized_article = customize_text_for_gpt_3_5(article)
+    return customized_article
+
+
 def get_label(pattern):
     if not any(pattern.values()):
         return "nothing"
