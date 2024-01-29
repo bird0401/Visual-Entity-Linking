@@ -105,6 +105,7 @@ def concatenate_qa(category):
     with open(f"{category_dir}/qas_concat.json", 'w') as f:
         json.dump(qa_concatenate, f, indent=2)
 
+# 別々に出力した回答結果のファイルを結合
 def main():
     # categories = ["director"]
     categories = ["us_politician"]

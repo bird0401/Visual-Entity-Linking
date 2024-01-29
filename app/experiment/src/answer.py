@@ -1,4 +1,5 @@
 import json
+import sys
 from util import *
 from config import *
 
@@ -119,6 +120,19 @@ def answer_by_category(category, patterns, mode="oracle", start_idx=0, end_idx=5
 
 
 def main():
+    logger.info("Start answer_by_categories ...")
+
+    # 高速化のため、patternのインデックスを指定し、5つを並行実行できるようにした
+    # patternを1まとめで実行するか、ここで実行をするかを選択する
+    # pattern_mode = sys.argv[3]
+    # if pattern_mode == "split":
+    #     pattern_idx = int(sys.argv[4]) # splitの場合はpattern_idxを指定することが必須
+        # patterns = [patterns[pattern_idx]] # pattern_idx = 0, 1, 2, 3, 4のいずれか
+    # 今のところ必要な処理は存在しないが、一応splitせずに全てのパターンをまとめて行うということ明示するためにallを指定する
+    # elif pattern_mode == "all":
+    #     pass
+
+    # TODO: 本当はこちらも引数でどのパターンを実行するか指定できるようにしたいが、基本的に一挙に実行するため、今は固定
     patterns = [
         {"name": False, "article": False, "relations": False, "confidence": False},
         {"name": True, "article": False, "relations": False, "confidence": False}, 
@@ -127,10 +141,22 @@ def main():
         {"name": True, "article": True, "relations": True, "confidence": False}, 
         # {"name": True, "article": True, "relations": True, "confidence": True}, 
     ]
-    categories = ["aircraft"]
-    # categories = ["aircraft", "athlete", "bird", "bread", "car", "director", "dog", "us_politician"]
-    for category in categories:
-        answer_by_category(category, patterns, mode="oracle", start_idx=0, end_idx=3)
+
+    category = sys.argv[1] # "aircraft"
+    # # if len(sys.argv) >= 7:
+    # start_idx = int(sys.argv[2])
+    # end_idx = int(sys.argv[3])
+    # # if len(sys.argv) >= 8:
+    
+    # For test
+    start_idx = 0
+    end_idx = 3
+
+    # For debug
+    ans_mode = "oracle"
+    # ans_mode = sys.argv[4] # "oracle" or "pred"
+
+    answer_by_category(category, patterns, mode=ans_mode, start_idx=start_idx, end_idx=end_idx)
 
 
 if __name__ == "__main__":

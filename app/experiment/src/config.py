@@ -18,3 +18,13 @@ def get_article_dir(category):
 def get_entity_to_qas_path(category, start_idx, end_idx):
     category_dir = get_category_dir(category)
     return f"{category_dir}/qas_{start_idx}_{end_idx}.json"
+
+
+patterns = [
+    {"name": False, "article": False, "relations": False, "confidence": False}, 
+    {"name": True, "article": False, "relations": False, "confidence": False}, 
+    {"name": True, "article": True, "relations": False, "confidence": False}, 
+    {"name": True, "article": False, "relations": True, "confidence": False}, 
+    {"name": True, "article": True, "relations": True, "confidence": False}, 
+    # {"name": True, "article": True, "relations": True, "confidence": True}, 
+]
