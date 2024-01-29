@@ -35,7 +35,7 @@ def fetch_variables_for_ansewring(mode, gt_entity_id, wikidata, wikipedia_dir, p
 
 def fetch_variables_by_category(category, start_idx, end_idx, patterns):
     category_dir = get_category_dir(category)
-    pattern_to_label = {pattern: get_label(pattern) for pattern in patterns}
+    pattern_to_label = {"pattern": get_label(pattern) for pattern in patterns}
 
     entity_to_qas_path = get_entity_tp_qas_path(category_dir, start_idx, end_idx)
     with open(entity_to_qas_path) as f:
