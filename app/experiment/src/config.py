@@ -6,12 +6,15 @@ def get_category_dir(category):
     return f"{data_dir}/{category}"
 
 # change comment out depending on test or production
-def get_gpt_output_dir(category_dir):
+def get_gpt_output_dir(category):
+    category_dir = get_category_dir(category)
     return f"{category_dir}/gpt_3_output_test"
     # return f"{category_dir}/gpt_3_output"
 
-def get_article_dir(category_dir):
+def get_article_dir(category):
+    category_dir = get_category_dir(category)
     return f"{category_dir}/wikipedia"
 
-def get_entity_tp_qas_path(category_dir, start_idx, end_idx):
+def get_entity_to_qas_path(category, start_idx, end_idx):
+    category_dir = get_category_dir(category)
     return f"{category_dir}/qas_{start_idx}_{end_idx}.json"

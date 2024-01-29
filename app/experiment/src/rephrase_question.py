@@ -65,7 +65,7 @@ def rephrase_questions_by_entity(qas):
 def rephrase_questions_by_category(category, start_idx=0, end_idx=5000):
         logger.info(f"category: {category}")
         category_dir = get_category_dir(category)
-        entity_to_qas_path = get_save_path(category_dir, start_idx, end_idx)
+        entity_to_qas_path = get_entity_to_qas_path(category, start_idx, end_idx)
         
         with open(entity_to_qas_path) as f:
             entity_to_qas = json.load(f)

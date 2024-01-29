@@ -37,14 +37,14 @@ def convert_text_to_dict(gpt_output):
 def convert_text_to_dict_by_category(category, start_idx=0, end_idx=5000):
     logger.info(f"category: {category}")
     category_dir = get_category_dir(category)
-    save_path = get_save_path(category_dir, start_idx, end_idx)
+    save_path = get_entity_to_qas_path(category, start_idx, end_idx)
     
     with open(f"{category_dir}/ids.json") as f:
         entity_ids = json.load(f)
     logger.info(f"len(entity_ids): {len(entity_ids)}")
 
     qas = {}
-    gpt_output_dir = get_gpt_output_dir(category_dir)
+    gpt_output_dir = get_gpt_output_dir(category)
     logger.info(f"len(entity_ids), start_idx, end_idx: {len(entity_ids)}, {start_idx}, {end_idx}")
 
     for entity_id in entity_ids[start_idx:end_idx]:

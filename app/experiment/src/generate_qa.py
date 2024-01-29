@@ -66,8 +66,8 @@ def generate_qa_by_category(category, start_idx=0, end_idx=5000):
     with open(f"{category_dir}/id_to_name.json") as f:
         id_to_name = json.load(f)
 
-    output_dir = get_gpt_output_dir(category_dir)
-    wikipedia_dir = get_article_dir(category_dir)
+    output_dir = get_gpt_output_dir(category)
+    wikipedia_dir = get_article_dir(category)
 
     # 既存の出力先ディレクトリが存在する場合は手動で削除してから実行する必要がある
     os.makedirs(output_dir, exist_ok=False)
@@ -100,7 +100,7 @@ def main():
     categories = ["aircraft"]
     # categories = ["aircraft", "athlete", "bird", "bread", "car", "director", "dog", "us_politician"]
     for category in categories:
-        generate_qa(category, start_idx=0, end_idx=3)
+        generate_qa_by_category(category, start_idx=0, end_idx=3)
 
 
 if __name__ == "__main__":
