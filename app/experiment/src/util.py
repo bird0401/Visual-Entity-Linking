@@ -34,7 +34,6 @@ def exploit_customized_article(entity_id, wikipedia_dir):
     customized_article = customize_text_for_gpt_3_5(article)
     return customized_article
 
-
 def get_label(pattern):
     if not any(pattern.values()):
         return "nothing"
@@ -159,18 +158,6 @@ def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0613"):
 #     booled_qas = generate_booled_qas(qas)
 #     with open(f"{category_dir}/qas_bool.json", 'w') as f:
 #         json.dump(booled_qas, f, indent=2)
-
-def calculate_accuracy(qas_bem_path, pattern):
-    with open(qas_bem_path) as f:
-        qas_bem = json.load(f) 
-    total = 0
-    correct = 0
-    for entity_id in qas_bem:
-        for qa in qas_bem[entity_id]:
-            if qa[get_label(pattern)]["bem_score"] >= 0.5:
-                correct += 1
-            total += 1
-    return correct / total
 
 
 # @retry(

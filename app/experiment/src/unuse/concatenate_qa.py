@@ -19,7 +19,7 @@ def concatenate_qa(category):
     # TODO: change by category
     # start_indice = [0] 
     # start_indice = [0, 5000, 10000] 
-    start_indice = [0, 5000, 10000, 15000, 20000, 25000] 
+    start_indice = [0, 5000, 10000, 15000, 20000, 25000]
 
     # TODO: change by category
     # pattern_mode = "all"
