@@ -7,7 +7,7 @@ from generate_qa import *
 from convert_qa_text_to_json import *
 from rephrase_question import *
 from mask_question import *
-from answer import *
+from app.experiment.src.answer_and_evaluate import *
 
 import logging
 import logging.config

@@ -114,8 +114,6 @@ def calculate_bem_score(qas, mode):
         for j, pattern in enumerate(patterns):
             pattern_label = get_label(pattern)
             qa[f"A_{mode}_{pattern_label}_score"] = float(bem_scores[i * len(patterns) + j])
-    
-    return qas
 
 
 def calculate_bem_score_by_category(category, mode, start_idx, end_idx):
@@ -131,13 +129,11 @@ def calculate_bem_score_by_category(category, mode, start_idx, end_idx):
     # - batch_size may not be necessary because we execute by entity
     for i, entity_id in tqdm(enumerate(entity_to_qas)):
         logger.info(f"entity_id: {entity_id}")
-        qas = calculate_bem_score(entity_to_qas[entity_id], mode)
+        calculate_bem_score(entity_to_qas[entity_id], mode)
 
-    # TODO: temporal file name 
-    # save in other file name not to influence the finalized qa file
     entity_to_qas_bem_path = get_entity_to_qas_bem_path(category, start_idx, end_idx)
     with open(entity_to_qas_bem_path, 'w') as f:
-        json.dump(qas, f, indent=2)
+        json.dump(entity_to_qas, f, indent=2)
 
 
 # 注意: BERTを利用する際に、入力データが多いとセッションが切れる
