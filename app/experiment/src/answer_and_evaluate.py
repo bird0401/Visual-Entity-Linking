@@ -97,6 +97,9 @@ def answer_by_entity(category, gt_entity_id, qas, id_to_name, wikidata, wikipedi
     
 
 # TODO: top-kでも対応するようにする
+# - in ml side, we should make it output top-k entities and their confidence scores
+# - in this side, we should make it top-k information as gpt-3 input. 
+    # - if we do it, gpt-3 input token limitation is a problem
 # TODO: 書き終わったら文字数を測る
 # 1jobあたり5000エンティティくらい(処理時間の見積もりは約8時間)が限界
 def answer_by_category(category, mode="oracle", start_idx=0, end_idx=5000):
