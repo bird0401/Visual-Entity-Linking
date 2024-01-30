@@ -82,7 +82,6 @@ def rephrase_questions_by_category(category, start_idx=0, end_idx=5000):
 
 
 # TODO: 
-# - attach tqdm overall
 # - validate generated QA by gpt, because its output is not always correct
 def main():
     categories = ["aircraft"]

@@ -72,7 +72,6 @@ def generate_qa_by_category(category, start_idx=0, end_idx=5000):
     # 既存の出力先ディレクトリが存在する場合は手動で削除してから実行する必要がある
     os.makedirs(output_dir, exist_ok=False)
 
-    # TODO: ids.jsonファイルの作成
     logger.info(f"len(entity_ids), start_idx, end_idx: {len(entity_ids)}, {start_idx}, {end_idx}")
     for i, entity_id in tqdm(enumerate(entity_ids[start_idx:end_idx])):
         logger.info(f"Generate questions for {entity_id}, idx: {start_idx+i}")
