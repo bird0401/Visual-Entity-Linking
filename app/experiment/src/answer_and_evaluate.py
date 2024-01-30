@@ -96,8 +96,10 @@ def answer_by_entity(category, gt_entity_id, qas, id_to_name, wikidata, wikipedi
     return qas
     
 
-# TODO: top-kでも対応するようにする
-# TODO: 書き終わったら文字数を測る
+# TODO: 
+# - top-kでも対応するようにする
+# - 書き終わったら文字数を測る
+# - write file names used in data directory 
 # 1jobあたり5000エンティティくらい(処理時間の見積もりは約8時間)が限界
 def answer_by_category(category, mode="oracle", start_idx=0, end_idx=5000):
     logger.info(f"category: {category}")
