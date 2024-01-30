@@ -121,7 +121,7 @@ def train_one_epoch(
 
 
 @torch.inference_mode()
-def valid_one_epoch(dataloader, model, criterion, device, top_k=20):
+def valid_one_epoch(dataloader, model, criterion, device, max_top_k=20):
     logger.info("valid_one_epoch")
     assert len(dataloader) > 0, f"len(dataloader): {len(dataloader)}"
     try:
@@ -152,7 +152,7 @@ def valid_one_epoch(dataloader, model, criterion, device, top_k=20):
             epoch_loss = running_loss / dataset_size
 
             # Calculate top-k indices and confidence scores
-            values, indices = torch.topk(outputs, top_k, dim=1)
+            values, indices = torch.topk(outputs, max_top_k, dim=1)
             confidence_scores = torch.softmax(values, dim=1)
 
             # Check top-1, 2, 3, 5, 10, 20 accuracy

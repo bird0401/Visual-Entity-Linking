@@ -20,6 +20,7 @@ from entity_linking.util import *
 from entity_linking.data import *
 from entity_linking.model import *
 from entity_linking.train import *
+from config import *
 
 b_ = Fore.BLUE
 sr_ = Style.RESET_ALL
@@ -71,7 +72,7 @@ def run_training(dataloaders, model, optimizer, scheduler, device, cfg, run, sav
         )
 
         logger.info("valid step")
-        (val_loss, val_acc, val_precision_macro, val_precision_micro, val_recall_macro, val_recall_micro, val_f1_macro, val_f1_micro, val_top1_accuracy, val_top2_accuracy, val_top3_accuracy, val_top5_accuracy, val_top10_accuracy, val_top20_accuracy, id_indices_confidences_dict,) = valid_one_epoch(dataloaders["val"], model, criterion, device, top_k=cfg.train.top_k)
+        (val_loss, val_acc, val_precision_macro, val_precision_micro, val_recall_macro, val_recall_micro, val_f1_macro, val_f1_micro, val_top1_accuracy, val_top2_accuracy, val_top3_accuracy, val_top5_accuracy, val_top10_accuracy, val_top20_accuracy, id_indices_confidences_dict,) = valid_one_epoch(dataloaders["val"], model, criterion, device, max_top_k=cfg.train.max_top_k)
 
         history = {
             "Epoch": epoch,
@@ -220,7 +221,7 @@ def criterion(outputs, labels):
 # weight_dir
 # 画像認識器の訓練、テストの実行
 # 注意: 画像枚数がbatch_sizeに満たない場合は、エラーが出る。その場合はbatch_sizeを小さくするか、画像枚数を増やすかする必要がある。
-# TODO: TOP-Kの予測結果が出力されるように変更する。これをやる。
+# TODO: converrt output of ids and confidences to the file that is easily used by gpt-3.5
 @hydra.main(config_path="../conf/", config_name="config.yml")
 def main(cfg: OmegaConf):
     logger.info(f"cfg.data.category: {cfg.data.category}")
@@ -231,11 +232,15 @@ def main(cfg: OmegaConf):
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     set_seed(cfg.general.seed)
 
+    category_dir = get_category_dir(cfg.data.category)
+
     # Dataset
     path_h5 = {
-        "train": f"{cfg.data.data_dir}/train.h5",
+        "train": f"{category_dir}/train.h5",
+        # "train": f"{cfg.data.data_dir}/train.h5",
         # "val": f"{cfg.data.data_dir}/val.h5",
-        "val": f"{cfg.data.data_dir}/test.h5",
+        "val": f"{category_dir}/test.h5",
+        # "val": f"{cfg.data.data_dir}/test.h5",
         # "test": f"{cfg.data.data_dir}/test.h5",
     }
     data_transforms = GetTransforms(cfg.data.img_size)
@@ -246,7 +251,7 @@ def main(cfg: OmegaConf):
     logger.info(f"out_features = {out_features}")
     model = EntityLinkingModel(cfg.model.model_name, out_features)
     model.to(device)
-    weight_dir = f"../weights/clean/{cfg.data.category}"
+    weight_dir = f"{category_dir}/weights"
 
     if cfg.general.is_train:
         optimizer = optim.Adam(model.parameters(), lr=cfg.optimizer.learning_rate, weight_decay=cfg.optimizer.weight_decay,)

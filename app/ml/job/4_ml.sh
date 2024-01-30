@@ -13,3 +13,6 @@ singularity exec \
     python ./4_ml.py data.category= data.batch_size.train= data.batch_size.val= optimizer.learning_rate= data.data_dir=
     # For test
     # python ./4_ml.py data.category= data.batch_size.train= data.batch_size.val= optimizer.learning_rate= data.data_dir= general.is_train=False +model.weight_file=
+
+    # currenct parameters
+    # python ./4_ml.py data.category=aircraft data.data_dir=../../../data/aircraft data.batch_size.train=32 data.batch_size.val=32 optimizer.learning_rate=1e-4 train.top_k=20
