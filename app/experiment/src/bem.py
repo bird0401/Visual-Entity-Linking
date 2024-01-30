@@ -22,11 +22,9 @@ logging.config.dictConfig(cfg)
 logger = logging.getLogger("main")
 
 
-# decide maxlength her
-
 vocab_table = tf.lookup.StaticVocabularyTable(
         tf.lookup.TextFileInitializer(
-            filename="../../../data/vocab.txt",
+            filename=f"{data_dir}/vocab.txt",
             key_dtype=tf.string,
             key_index=tf.lookup.TextFileIndex.WHOLE_LINE,
             value_dtype=tf.int64,
@@ -60,16 +58,14 @@ def bertify_example(example):
 
     return {'input_ids': input_ids.numpy(), 'segment_ids': segment_ids.numpy()}
 
+
+# TODO: in this code, we truncate a if length of a is more than length
 def pad(a, length=512):
     if length - a.shape[-1] < 0:
         print("length - a.shape[-1] < 0")
         return a[:, :length]
-    # try:
     return np.append(a, np.zeros(length - a.shape[-1], np.int32))
-    # except:
-    #     print(f"length - a.shape[-1]: {length} - {a.shape[-1]}")
-    #     print(f"a.shape: {a.shape}")
-    #     raise
+
 
 def bertify_examples(examples):
     input_ids = []
@@ -84,16 +80,17 @@ def bertify_examples(examples):
 # TODO: 10ずつログ出力するようにする
 # 注意: BERTを利用する際に、入力データが多いとセッションが切れる
 # TODO: check the extent to which session is killed
+# TODO: split to some methods
+# TODO: apply to pred mode
 def main():
-    # categories = ["aircraft"]
-    # categories = ["aircraft", "athlete", "bird", "bread", "car", "director", "dog", "us_politician"]
-    # categories = [sys.argv[1]]
     category = "aircraft"
+    # category = sys.argv[1]
+
     # For test
     start_idx, end_idx = 0, 3
     # start_idx = int(sys.argv[1])
     # end_idx = int(sys.argv[2])
-    ans_mode = "oracle"
+    mode = "oracle"
 
     # for category in categories:
     logger.info(f"category: {category}")
@@ -102,13 +99,11 @@ def main():
     with open(entity_to_qas_path) as f:
         entity_to_qas = json.load(f) 
 
-    total = 0
-    correct = 0
-    batch_size = 10
+    # batch_size = 10
     # TODO: currently, batch_size is executed in this code, but we should execute multiple times splitting by the batch_size
     # - batch_size may not be necessary because we execute by entity
-    for i, (entity_id, qas) in tqdm(enumerate(entity_to_qas[0:batch_size].items())):
-        logger.info(f"entity_id: {entity_id}, correct/total: {correct}/{total} = {correct / total if total > 0 else 0}")
+    for i, (entity_id, qas) in tqdm(enumerate(entity_to_qas.items())):
+        logger.info(f"entity_id: {entity_id}")
         
         try:
             examples = []
@@ -116,39 +111,30 @@ def main():
             for qa in qas:
                 for pattern in patterns:
                     pattern_label = get_label(pattern)
-                    # logger.info(f"pattern: {pattern_label}")
-                    # if not qa['Q_rephrase'] or not qa['A'] or not qa[f"A_{pattern_label}_{ans_mode}"]:
-                    #     logger.info(f"Sentence is empty: {qa}")
                     examples.append({
                         'question': qa['Q_rephrase'],
                         'reference': qa['A'],
-                        'candidate': qa[f"A_{pattern_label}_{ans_mode}"]
+                        'candidate': qa[f"A_{mode}_{pattern_label}"]
                         })
 
-                # for example in examples:
-                #     print(example)
-                print(f"examples: {len(examples)}")
-                
-                inputs = bertify_examples(examples)
-                print(f"inputs: {len(inputs['input_ids'])}")
+            # for example in examples:
+            #     print(example)
+            # print(f"examples: {len(examples)}")
+            
+            inputs = bertify_examples(examples)
+            # print(f"inputs: {len(inputs['input_ids'])}")
 
-                raw_outputs = bem(inputs) # The outputs are raw logits.
-                bem_scores = softmax(np.squeeze(raw_outputs), axis=1)[:, 1]
-                logger.info(f"len(be_scores): {len(bem_scores)}")
-                logger.info("bem_scores")
-                for i in range(int(len(bem_scores) / len(patterns))):
-                    logger.info(bem_scores[i * len(patterns): (i + 1) * len(patterns)])
+            raw_outputs = bem(inputs) # The outputs are raw logits.
+            bem_scores = softmax(np.squeeze(raw_outputs), axis=1)[:, 1]
+            # logger.info(f"len(be_scores): {len(bem_scores)}")
+            logger.info("bem_scores")
+            for i in range(int(len(bem_scores) / len(patterns))):
+                logger.info(bem_scores[i * len(patterns): (i + 1) * len(patterns)])
 
-        except:
+        except Exception:
             logger.info(f"entity_id: {entity_id}")
             traceback.print_exc()
             continue
-    
-        # for testing the extent to which the correct answers are 
-        for bem_score in bem_scores:
-            if bem_score >= 0.5:
-                correct += 1
-            total += 1
 
         # TODO: it is dangerous to assume that the index of qa is the same as the index of bem_scores
         # - if doing it, we should preprocess to delete empty qa
@@ -156,10 +142,12 @@ def main():
         for i, qa in enumerate(qas):
             for j, pattern in enumerate(patterns):
                 pattern_label = get_label(pattern)
-                qa[f"A_{pattern_label}_{ans_mode}_score"] = float(bem_scores[i * len(patterns) + j])
+                qa[f"A_{mode}_{pattern_label}_score"] = float(bem_scores[i * len(patterns) + j])
 
-    # TODO: temporary file name 
-    with open(f"bem_{entity_to_qas_path}", 'w') as f:
+    # TODO: temporal file name 
+    # save in other file name not to influence the finalized qa file
+    entity_to_qas_bem_path = entity_to_qas_path.split(".json")[0] + "_bem.json"
+    with open(entity_to_qas_bem_path, 'w') as f:
         json.dump(qas, f, indent=2)
 
 

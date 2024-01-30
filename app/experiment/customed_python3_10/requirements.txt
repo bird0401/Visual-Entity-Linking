@@ -21,3 +21,7 @@ tiktoken
 tensorflow_hub
 tensorflow_text
 tensorflow
+tqdm
+python-dotenv
+openai
+tenacity

@@ -26,6 +26,7 @@ with open("../conf/logging.yml") as f:
 logging.config.dictConfig(cfg)
 logger = logging.getLogger("main")
 
+# TODO: methods are complex and should be refactored
 
 def exploit_customized_article(entity_id, wikipedia_dir):
     with open(f"{wikipedia_dir}/{entity_id}.txt") as f:
@@ -139,26 +140,25 @@ def num_tokens_from_messages(messages, model="gpt-3.5-turbo-0613"):
     return num_tokens
 
 
+# def bem_score_to_bool(bem_score):
+#     # We assume that the threshold is 0.5
+#     if bem_score >= 0.5:
+#         return 1
+#     else:
+#         return 0
 
-def bem_score_to_bool(bem_score):
-    # We assume that the threshold is 0.5
-    if bem_score >= 0.5:
-        return 1
-    else:
-        return 0
+# def generate_booled_qas(qas):
+#     for entity_id in qas:
+#         for qa in qas[entity_id]:
+#             qa["bem_score_bool"] = bem_score_to_bool(qa["bem_score"])
+#     return qas
 
-def generate_booled_qas(qas):
-    for entity_id in qas:
-        for qa in qas[entity_id]:
-            qa["bem_score_bool"] = bem_score_to_bool(qa["bem_score"])
-    return qas
-
-def output_booled_qa(category_dir):
-    with open(f"{category_dir}/qas.json") as f:
-        qas = json.load(f) 
-    booled_qas = generate_booled_qas(qas)
-    with open(f"{category_dir}/qas_bool.json", 'w') as f:
-        json.dump(booled_qas, f, indent=2)
+# def output_booled_qa(category_dir):
+#     with open(f"{category_dir}/qas.json") as f:
+#         qas = json.load(f) 
+#     booled_qas = generate_booled_qas(qas)
+#     with open(f"{category_dir}/qas_bool.json", 'w') as f:
+#         json.dump(booled_qas, f, indent=2)
 
 def calculate_accuracy(qas_bem_path, pattern):
     with open(qas_bem_path) as f:
@@ -173,8 +173,12 @@ def calculate_accuracy(qas_bem_path, pattern):
     return correct / total
 
 
+# @retry(
+#     retry=retry_if_exception_type((openai.error.APIError, openai.error.APIConnectionError, openai.error.RateLimitError, openai.error.ServiceUnavailableError, openai.error.Timeout)), 
+#     wait=wait_random_exponential(min=1, max=60), 
+#     stop=stop_after_attempt(6), 
+# )
 @retry(
-    retry=retry_if_exception_type((openai.error.APIError, openai.error.APIConnectionError, openai.error.RateLimitError, openai.error.ServiceUnavailableError, openai.error.Timeout)), 
     wait=wait_random_exponential(min=1, max=60), 
     stop=stop_after_attempt(6), 
 )

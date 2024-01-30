@@ -142,7 +142,8 @@ def main():
         # {"name": True, "article": True, "relations": True, "confidence": True}, 
     ]
 
-    category = sys.argv[1] # "aircraft"
+    category = "aircraft" 
+    # category = sys.argv[1] # "aircraft"
     # # if len(sys.argv) >= 7:
     # start_idx = int(sys.argv[2])
     # end_idx = int(sys.argv[3])
@@ -153,10 +154,10 @@ def main():
     end_idx = 3
 
     # For debug
-    ans_mode = "oracle"
-    # ans_mode = sys.argv[4] # "oracle" or "pred"
+    mode = "oracle"
+    # mode = sys.argv[4] # "oracle" or "pred"
 
-    answer_by_category(category, patterns, mode=ans_mode, start_idx=start_idx, end_idx=end_idx)
+    answer_by_category(category, patterns, mode=mode, start_idx=start_idx, end_idx=end_idx)
 
 
 if __name__ == "__main__":
